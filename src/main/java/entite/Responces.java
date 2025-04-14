@@ -50,7 +50,7 @@ public class Responces {
         return user;
     }
 
-    public void setId_user_id(User user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

@@ -2,6 +2,7 @@ package service;
 
 import entite.Forum;
 import entite.Responces;
+import entite.User;
 import util.DataSource;
 
 import java.sql.*;
@@ -121,5 +122,38 @@ public class ResponcesService implements IService<Responces>{
     @Override
     public Responces readById(int id) {
         return null;
+    }
+
+    public List<Responces> readByForumId(int id) {
+        List<Responces> userResponces = new ArrayList<>();
+        String query = "SELECT * FROM responces WHERE id_forum_id = ? ORDER BY date_time DESC";
+
+        try {
+            pst = cnx.prepareStatement(query);
+            pst.setInt(1, id);
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                Responces Responce = new Responces();
+                Responce.setId(rs.getInt("id"));
+                Responce.setComment(rs.getString("comment"));
+                Responce.setMedia(rs.getString("media"));
+                Responce.setType_media(rs.getString("type_media"));
+                Responce.setDate_time(rs.getTimestamp("date_time"));
+
+                // Get user object using UserService
+                UserService userService = new UserService();
+                User user = userService.readById(rs.getInt("id_user_id"));
+                Responce.setUser(user);
+
+                userResponces.add(Responce);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error retrieving forums for user: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return userResponces;
     }
 }

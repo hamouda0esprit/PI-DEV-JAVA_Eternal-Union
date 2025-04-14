@@ -193,8 +193,24 @@ public class ForumListController {
 
         // Add event handler to discuss button
         discussButton.setOnAction(event -> {
-            // Here you can add code to open the discussion for this specific forum post
-            System.out.println("Open discussion for forum #" + forum.getId());
+            try {
+                // Load the FXML file
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/loe/ForumDiscussion.fxml"));
+                Parent discussionView = loader.load();
+
+                // Get the controller and pass the forum data
+                ForumDiscussionController controller = loader.getController();
+                controller.setForum(forum);
+
+                // Set the new scene
+                Scene scene = new Scene(discussionView);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(scene);
+                stage.show();
+            } catch (IOException e) {
+                System.err.println("Error loading discussion view: " + e.getMessage());
+                e.printStackTrace();
+            }
         });
 
         // Add all components to the ticket
@@ -205,4 +221,5 @@ public class ForumListController {
 
         return ticket;
     }
+
 }
