@@ -9,8 +9,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import models.Item;
 import services.ItemService;
-
+import javafx.scene.Parent;
 import java.io.IOException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -30,6 +34,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+
+import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class AfficherItemController implements Initializable {
 
@@ -97,5 +105,43 @@ public class AfficherItemController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    // Handle the Update button click
+    @FXML
+    private void handleUpdate(ActionEvent event) {
+        // Handle the update functionality
+        Item selectedItem = tableview.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            try {
+                // Load the update item form
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/UpdateItem.fxml"));
+                Parent root = loader.load();
+
+                // Get the controller of the update item form
+                UpdateItemController controller = loader.getController();
+                controller.setItem(selectedItem);  // Pass selected item to the update form
+
+                // Switch to the update item form
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                showAlert("Error", "Error loading update form.");
+                e.printStackTrace();
+            }
+        } else {
+            showAlert("Selection Error", "Please select an item to update.");
+        }
+    }
+
+    // Show an alert message
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 
 }
