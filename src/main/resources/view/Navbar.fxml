@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<HBox styleClass="navbar" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <HBox spacing="10" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+            <Button text="Accueil" styleClass="nav-button"/>
+            <Button text="Cours" styleClass="nav-button"/>
+            <Button text="Examen" styleClass="nav-button"/>
+            <Button text="Événements" styleClass="nav-button" style="-fx-background-color: #5B9BD5; -fx-text-fill: white;"/>
+        </HBox>
+        
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 10;">
+            <Button text="AhmedAbid" styleClass="profile-button" style="-fx-background-color: #5B9BD5; -fx-text-fill: white; -fx-background-radius: 20;"/>
+        </HBox>
+    </children>
+</HBox> 
