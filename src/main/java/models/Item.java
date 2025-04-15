@@ -15,6 +15,12 @@ public class Item {
         this.content = content;
     }
 
+    public Item( int lessonId, String typeItem, String content) {
+        this.lessonId = lessonId;
+        this.typeItem = typeItem;
+        this.content = content;
+    }
+
     // Getters and setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

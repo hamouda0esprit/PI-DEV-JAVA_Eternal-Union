@@ -19,11 +19,12 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
-
+import javafx.stage.Stage;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class AfficherLessonController implements Initializable {
-
 
     private int currentCourseId = -1; // Default: show all lessons
     @FXML
@@ -48,24 +49,20 @@ public class AfficherLessonController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialize table columns
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        courseIdCol.setCellValueFactory(new PropertyValueFactory<>("courseId"));
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        // Ensure tableview is not null and initialize columns
+        if (tableview != null) {
+            idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+            courseIdCol.setCellValueFactory(new PropertyValueFactory<>("courseId"));
+            titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+            descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        }
     }
 
     private void loadAllLessons() throws SQLException {
         LessonService service = new LessonService();
         List<Lesson> lessons = service.recuperer();
         ObservableList<Lesson> obs = FXCollections.observableList(lessons);
-
         tableview.setItems(obs);
-
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        courseIdCol.setCellValueFactory(new PropertyValueFactory<>("courseId"));
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
     }
 
     private void loadLessonsByCourse() throws SQLException {
@@ -74,8 +71,6 @@ public class AfficherLessonController implements Initializable {
         ObservableList<Lesson> obs = FXCollections.observableList(lessons);
         tableview.setItems(obs);
     }
-
-
 
     @FXML
     void deleteSelectedLesson(ActionEvent event) {
@@ -153,6 +148,36 @@ public class AfficherLessonController implements Initializable {
             alert.show();
             // Return empty list on error
             tableview.setItems(FXCollections.observableArrayList());
+        }
+    }
+
+    @FXML
+    public void handleShowItems(ActionEvent event) {
+        // Récupère la leçon sélectionnée dans la TableView
+        Lesson selectedLesson = tableview.getSelectionModel().getSelectedItem();
+        if (selectedLesson != null) {
+            try {
+                // Crée un FXMLLoader avec le chemin du fichier FXML
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherItems.fxml"));
+
+                // Charge le fichier FXML
+                Parent root = loader.load();
+
+                // Récupère le contrôleur de AfficherItemController
+                AfficherItemController itemController = loader.getController();
+
+                // Appelle la méthode de AfficherItemController pour afficher les items de la leçon sélectionnée
+                itemController.showForLesson(selectedLesson.getId());
+
+                // Remplace le contenu de mainPane par la nouvelle vue
+                mainPane.getChildren().setAll(root);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Erreur de chargement du fichier FXML");
+            }
+        } else {
+            System.out.println("Veuillez sélectionner une leçon.");
         }
     }
 }

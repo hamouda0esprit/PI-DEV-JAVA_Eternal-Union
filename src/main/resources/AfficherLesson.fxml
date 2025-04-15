@@ -26,7 +26,7 @@
 
       <Button layoutX="751.0" layoutY="141.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="ADD" onAction="#OpenAjouter" />
       <Button layoutX="751.0" layoutY="235.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="DELETE" onAction="#deleteSelectedLesson" />
-      <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="SHOW ITEMS" />
+      <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="SHOW ITEMS"  onAction="#handleShowItems" />
       <Button layoutX="751.0" layoutY="188.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="UPDATE" onAction="#handleUpdateLesson" />
       <Button layoutX="751.0" layoutY="282.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="PDF" />
       <Button layoutX="751.0" layoutY="330.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="EXCEL" />
