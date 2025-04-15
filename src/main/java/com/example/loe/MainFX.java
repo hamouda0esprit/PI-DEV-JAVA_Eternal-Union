@@ -13,7 +13,7 @@ public class MainFX extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("Forum.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("AdminForum.fxml"));
             Parent root = loader.load();
 
             primaryStage.setTitle("Hello World");
