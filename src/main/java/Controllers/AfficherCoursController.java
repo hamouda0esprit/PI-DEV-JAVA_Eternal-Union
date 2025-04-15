@@ -163,6 +163,32 @@ public class AfficherCoursController {
         }
     }
 
+    @FXML
+    public void showLessonsOfSelectedCourse() {
+        try {
+            // Load the FXML file of AfficherLesson
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherLesson.fxml"));
+            Parent root = loader.load();
+
+            // Get the current stage (current window)
+            Stage stage = (Stage) tableview.getScene().getWindow();
+
+            // Set the new scene for the same window
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+
+            // Optionally, you can set the title of the stage if needed
+            stage.setTitle("Lessons");
+
+            // Show the new scene in the same window
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    
 
 
 

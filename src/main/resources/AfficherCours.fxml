@@ -26,7 +26,7 @@
             <Font name="Arial" size="49.0" />
          </font>
       </Text>
-      <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="SHOW LESSONS" />
+      <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" onAction="#showLessonsOfSelectedCourse" text="SHOW LESSONS" />
       <Button layoutX="751.0" layoutY="141.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" onAction="#OpenAjouter" text="ADD" />
       <Button layoutX="751.0" layoutY="188.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="UPDATE" onAction="#modifierSelectedCours" />
       <Button layoutX="751.0" layoutY="235.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" onAction="#deleteSelectedCours" text="DELETE" />

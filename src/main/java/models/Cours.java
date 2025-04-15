@@ -11,8 +11,7 @@ public class Cours {
     private int rate;
     private LocalDateTime lastUpdate;
 
-    public Cours() {
-    }
+    public Cours() {}
 
     public Cours(int id, int userId, String title, String image, String subject, int rate, LocalDateTime lastUpdate) {
         this.id = id;
@@ -23,7 +22,8 @@ public class Cours {
         this.rate = rate;
         this.lastUpdate = lastUpdate;
     }
-    public Cours(int userId, String title, String image, String subject, int rate, LocalDateTime lastUpdate) {
+
+    public Cours( int userId, String title, String image, String subject, int rate, LocalDateTime lastUpdate) {
         this.userId = userId;
         this.title = title;
         this.image = image;
@@ -32,8 +32,7 @@ public class Cours {
         this.lastUpdate = lastUpdate;
     }
 
-
-    // Getters and setters
+    // Getters and Setters
     public int getId() {
         return id;
     }
