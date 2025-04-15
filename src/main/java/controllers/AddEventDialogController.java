@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import javafx.scene.control.Label;
 
 public class AddEventDialogController {
     @FXML private TextField nameField;
@@ -18,6 +19,7 @@ public class AddEventDialogController {
     @FXML private TextField timeField;
     @FXML private TextField locationField;
     @FXML private TextField photoField;
+    @FXML private Label dialogTitle;
     
     private Stage dialogStage;
     private Evenement event;
@@ -35,13 +37,18 @@ public class AddEventDialogController {
     public void setEvent(Evenement event) {
         this.event = event;
         
-        // Populate fields with event data
-        nameField.setText(event.getName());
-        descriptionArea.setText(event.getDescription());
-        locationField.setText(event.getLocation());
-        timeField.setText(event.getTime().toString());
-        photoField.setText(event.getPhoto());
-        selectedDate = event.getDateevent().toLocalDate();
+        if (event != null) {
+            // Update dialog title for edit mode
+            dialogTitle.setText("Modification d'evenement");
+            
+            // Populate fields with event data
+            nameField.setText(event.getName());
+            descriptionArea.setText(event.getDescription());
+            locationField.setText(event.getLocation());
+            timeField.setText(event.getTime().toString());
+            photoField.setText(event.getPhoto());
+            selectedDate = event.getDateevent().toLocalDate();
+        }
     }
     
     public boolean isSaveClicked() {

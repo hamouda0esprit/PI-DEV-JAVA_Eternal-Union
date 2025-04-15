@@ -10,6 +10,7 @@
     -fx-font-size: 14px;
     -fx-padding: 8 15;
     -fx-cursor: hand;
+    -fx-background-radius: 5;
 }
 
 .nav-button:hover {
@@ -18,6 +19,18 @@
 
 .nav-button:pressed {
     -fx-background-color: #d0d0d0;
+}
+
+.nav-button.active {
+    -fx-background-color: #54a2e0;
+}
+
+.nav-button.active .label {
+    -fx-text-fill: white;
+}
+
+.nav-button.active:hover {
+    -fx-background-color: #3d8fd1;
 }
 
 .profile-button {
@@ -364,8 +377,4 @@
 
 .sidebar-nav-button.active {
     -fx-background-color: #3498db;
-}
-
-.sidebar-nav-button.active:hover {
-    -fx-background-color: #2980b9;
 } 

@@ -3,12 +3,16 @@ package Controllers.Navigation;
 import com.example.pijava.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.scene.image.Image;
 
-public class NavbarController {
+public class NavbarController implements Initializable {
     @FXML
     private Button homeButton;
     @FXML
@@ -22,28 +26,79 @@ public class NavbarController {
     @FXML
     private Button userProfileButton;
 
+    private NavigationStateManager navigationState;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        navigationState = NavigationStateManager.getInstance();
+        
+        // Listen for changes in the current view
+        navigationState.currentViewProperty().addListener((observable, oldValue, newValue) -> {
+            updateActiveButton(newValue);
+        });
+
+        // Set initial state
+        String currentView = navigationState.getCurrentView();
+        if (currentView != null) {
+            updateActiveButton(currentView);
+        }
+    }
+
+    private void updateActiveButton(String view) {
+        // Remove active class from all buttons
+        homeButton.getStyleClass().remove("active");
+        coursButton.getStyleClass().remove("active");
+        examenButton.getStyleClass().remove("active");
+        evenementsButton.getStyleClass().remove("active");
+        forumButton.getStyleClass().remove("active");
+
+        // Add active class to the appropriate button
+        switch (view) {
+            case "Home":
+                homeButton.getStyleClass().add("active");
+                break;
+            case "Cours":
+                coursButton.getStyleClass().add("active");
+                break;
+            case "Examen":
+                examenButton.getStyleClass().add("active");
+                break;
+            case "Evenement":
+                evenementsButton.getStyleClass().add("active");
+                break;
+            case "Forum":
+                forumButton.getStyleClass().add("active");
+                break;
+        }
+    }
+
     @FXML
     private void handleHomeNavigation() {
+        navigationState.setCurrentView("Home");
         loadView("/view/Home.fxml");
     }
 
     @FXML
     private void handleCoursNavigation() {
+        navigationState.setCurrentView("Cours");
         loadView("/view/Cours.fxml");
     }
 
     @FXML
     private void handleExamenNavigation() {
+        navigationState.setCurrentView("Examen");
         loadView("/view/Examen.fxml");
     }
 
     @FXML
     private void handleEvenementsNavigation() {
+        navigationState.setCurrentView("Evenement");
         loadView("/view/Evenement.fxml");
     }
 
     @FXML
     private void handleForumNavigation() {
+        navigationState.setCurrentView("Forum");
         loadView("/view/Forum.fxml");
     }
 
@@ -54,12 +109,21 @@ public class NavbarController {
 
     private void loadView(String fxmlPath) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
             Stage stage = (Stage) homeButton.getScene().getWindow();
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(Main.class.getResource("/styles/style.css").toExternalForm());
-
-
+            
+            // Add the stylesheet
+            String css = getClass().getResource("/styles/style.css").toExternalForm();
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(css);
+            
+            // Set the window icon
+            Image icon = new Image(getClass().getResourceAsStream("/images/logo.png"));
+            stage.getIcons().clear();
+            stage.getIcons().add(icon);
+            
             stage.setScene(scene);
             stage.show();
         } catch (Exception e) {

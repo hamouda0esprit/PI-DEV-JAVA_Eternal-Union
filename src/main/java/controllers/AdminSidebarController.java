@@ -1,16 +1,21 @@
 package Controllers;
 
+import Controllers.Navigation.AdminNavigationStateManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
+import javafx.scene.image.Image;
 
-public class AdminSidebarController {
+public class AdminSidebarController implements Initializable {
     @FXML private Button dashboardButton;
     @FXML private Button usersButton;
     @FXML private Button forumsButton;
@@ -20,92 +25,95 @@ public class AdminSidebarController {
     @FXML private Button backButton;
 
     private List<Button> navButtons;
+    private AdminNavigationStateManager navigationState;
 
-    @FXML
-    public void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         // Initialize the list of navigation buttons
         navButtons = Arrays.asList(
             dashboardButton, usersButton, forumsButton,
             eventsButton, examsButton, coursesButton
         );
 
+        navigationState = AdminNavigationStateManager.getInstance();
+        
+        // Listen for changes in the current view
+        navigationState.currentViewProperty().addListener((observable, oldValue, newValue) -> {
+            updateActiveButton(newValue);
+        });
+
+        // Set initial state
+        String currentView = navigationState.getCurrentView();
+        if (currentView != null) {
+            updateActiveButton(currentView);
+        }
+
         // Setup click handlers for navigation
         setupNavigationHandlers();
-
-        // Set initial active state for events button
-        //eventsButton.getStyleClass().add("active");
     }
 
-    public void setActiveSection(String section) {
-        switch (section) {
+    private void updateActiveButton(String view) {
+        // Remove active class from all buttons
+        navButtons.forEach(button -> button.getStyleClass().remove("active"));
+
+        // Add active class to the appropriate button
+        switch (view) {
             case "Dashboard":
-                setActiveButton(dashboardButton);
+                dashboardButton.getStyleClass().add("active");
                 break;
             case "Users":
-                setActiveButton(usersButton);
+                usersButton.getStyleClass().add("active");
                 break;
             case "Forum":
-                setActiveButton(forumsButton);
+                forumsButton.getStyleClass().add("active");
                 break;
             case "Evenement":
-                setActiveButton(eventsButton);
+                eventsButton.getStyleClass().add("active");
                 break;
             case "Exams":
-                setActiveButton(examsButton);
+                examsButton.getStyleClass().add("active");
                 break;
             case "Courses":
-                setActiveButton(coursesButton);
+                coursesButton.getStyleClass().add("active");
                 break;
         }
     }
 
-
     private void setupNavigationHandlers() {
         dashboardButton.setOnAction(e -> {
-            // Don't set active state, just navigate
+            navigationState.setCurrentView("Dashboard");
             navigateTo("Dashboard");
         });
         
         usersButton.setOnAction(e -> {
-            // Don't set active state, just navigate
+            navigationState.setCurrentView("Users");
             navigateTo("Users");
         });
         
         forumsButton.setOnAction(e -> {
-            // Toggle the forums button
-            setActiveButton(forumsButton);
+            navigationState.setCurrentView("Forum");
             navigateTo("Forum");
         });
         
         eventsButton.setOnAction(e -> {
-            // Toggle the events button
-            setActiveButton(eventsButton);
+            navigationState.setCurrentView("Evenement");
             navigateTo("Evenement");
-            // No need to navigate, we're already on the events page
         });
         
         examsButton.setOnAction(e -> {
-            // Don't set active state, just navigate
+            navigationState.setCurrentView("Exams");
             navigateTo("Exams");
         });
         
         coursesButton.setOnAction(e -> {
-            // Don't set active state, just navigate
+            navigationState.setCurrentView("Courses");
             navigateTo("Courses");
         });
         
         backButton.setOnAction(e -> {
-            // Remove active state from all buttons when returning to main site
             navButtons.forEach(button -> button.getStyleClass().remove("active"));
             returnToMainSite();
         });
-    }
-
-    private void setActiveButton(Button activeButton) {
-        // Remove active class from all buttons
-        navButtons.forEach(button -> button.getStyleClass().remove("active"));
-        // Add active class to clicked button
-        activeButton.getStyleClass().add("active");
     }
 
     private void navigateTo(String page) {
@@ -113,12 +121,19 @@ public class AdminSidebarController {
             String fxmlPath = "/view/Admin" + page + ".fxml";
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
-
-            // Get the sidebar controller and set the active section
-            //AdminSidebarController sidebarController = loader.getController();
-
             Stage stage = (Stage) dashboardButton.getScene().getWindow();
             Scene scene = new Scene(root);
+            
+            // Add the stylesheet
+            String css = getClass().getResource("/styles/admin.css").toExternalForm();
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(css);
+            
+            // Set the window icon
+            Image icon = new Image(getClass().getResourceAsStream("/images/logo.png"));
+            stage.getIcons().clear();
+            stage.getIcons().add(icon);
+            
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -127,13 +142,23 @@ public class AdminSidebarController {
         }
     }
 
-
     private void returnToMainSite() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Forum.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
             Scene scene = new Scene(root);
+            
+            // Add the stylesheet
+            String css = getClass().getResource("/styles/style.css").toExternalForm();
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(css);
+            
+            // Set the window icon
+            Image icon = new Image(getClass().getResourceAsStream("/images/logo.png"));
+            stage.getIcons().clear();
+            stage.getIcons().add(icon);
+            
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {

@@ -15,8 +15,8 @@
     
     <!-- Logo and Title -->
     <HBox alignment="CENTER_LEFT" spacing="15" prefHeight="80">
-        <ImageView fx:id="logoImage" fitHeight="45" fitWidth="45" pickOnBounds="true" preserveRatio="true">
-            <!-- Add your logo image here -->
+        <ImageView fitHeight="45" fitWidth="45" preserveRatio="true">
+            <Image url="@../images/logo.png" />
         </ImageView>
         <VBox spacing="5">
             <Label text="Panneau" styleClass="sidebar-title">
