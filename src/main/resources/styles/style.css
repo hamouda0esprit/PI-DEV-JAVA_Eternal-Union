@@ -252,4 +252,120 @@
     -fx-background-position: center;
     -fx-min-height: 150;
     -fx-max-height: 150;
+}
+
+/* Admin Interface Styles */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #5B9BD5;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-size: 35;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #ffffff;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #e9ecef;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #cfe2f3;
+}
+
+.search-field {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8;
+}
+
+.search-field:focused {
+    -fx-border-color: #5B9BD5;
+}
+
+/* Admin Sidebar Styles */
+.admin-sidebar {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.admin-button {
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+}
+
+.admin-button:hover {
+    -fx-opacity: 0.9;
+}
+
+.status-bar {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 8;
+}
+
+/* Admin Sidebar Styles */
+.admin-sidebar {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.admin-sidebar-title {
+    -fx-text-fill: white;
+    -fx-padding: 0 0 10 0;
+}
+
+.admin-sidebar .separator {
+    -fx-background-color: #34495e;
+}
+
+.sidebar-nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 15;
+    -fx-cursor: hand;
+    -fx-pref-width: 200;
+}
+
+.sidebar-nav-button .label {
+    -fx-font-size: 16px;
+    -fx-padding: 0 10 0 0;
+}
+
+.sidebar-nav-button:hover {
+    -fx-background-color: #34495e;
+}
+
+.sidebar-nav-button.active {
+    -fx-background-color: #3498db;
+}
+
+.sidebar-nav-button.active:hover {
+    -fx-background-color: #2980b9;
 } 

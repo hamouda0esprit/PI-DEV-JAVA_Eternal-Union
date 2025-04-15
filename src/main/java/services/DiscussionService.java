@@ -87,4 +87,16 @@ public class DiscussionService {
             System.err.println("Error updating discussion: " + e.getMessage());
         }
     }
+
+    public void deleteDiscussionsForEvent(int eventId) {
+        try {
+            String query = "DELETE FROM discussion WHERE event_id = ?";
+            PreparedStatement ps = DataSource.getInstance().getCnx().prepareStatement(query);
+            ps.setInt(1, eventId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            throw new RuntimeException("Error deleting discussions for event: " + e.getMessage());
+        }
+    }
 } 

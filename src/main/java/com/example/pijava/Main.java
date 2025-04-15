@@ -11,7 +11,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             // Get the FXML loader
-            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/view/Evenement.fxml"));
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/view/AdminEvenement.fxml"));
             Parent root = loader.load();
             
             // Create and set the scene

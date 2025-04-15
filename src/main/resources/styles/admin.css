@@ -1,0 +1,152 @@
+/* Admin Interface Styles */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #5B9BD5;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-size: 35;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #ffffff;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #e9ecef;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #cfe2f3;
+}
+
+.search-field {
+    -fx-background-color: white;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8;
+}
+
+.search-field:focused {
+    -fx-border-color: #5B9BD5;
+}
+
+/* Admin Sidebar Styles */
+.admin-sidebar {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.admin-button {
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-text-fill: #7f8c8d;
+    -fx-cursor: hand;
+}
+
+.admin-button:hover {
+    -fx-background-color: #f8f9fa;
+    -fx-text-fill: #3498db;
+}
+
+.admin-button.active {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: #3498db;
+}
+
+.status-bar {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 10 20;
+}
+
+/* Admin Header Styles */
+.admin-header {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 20;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 0 0 1 0;
+}
+
+.admin-title {
+    -fx-font-size: 24;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.add-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.add-button:hover {
+    -fx-opacity: 0.9;
+}
+
+/* Admin Content Area */
+.admin-content {
+    -fx-background-color: white;
+    -fx-padding: 20;
+}
+
+/* Action Buttons Styles */
+.action-button {
+    -fx-cursor: hand;
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-background-radius: 16;
+    -fx-font-size: 14px;
+}
+
+.view-button {
+    -fx-background-color: #ffeaa7;
+    -fx-text-fill: #fdcb6e;
+}
+
+.view-button:hover {
+    -fx-background-color: #fdcb6e;
+    -fx-text-fill: white;
+}
+
+.edit-button {
+    -fx-background-color: #74b9ff;
+    -fx-text-fill: #0984e3;
+}
+
+.edit-button:hover {
+    -fx-background-color: #0984e3;
+    -fx-text-fill: white;
+}
+
+.delete-button {
+    -fx-background-color: #ff7675;
+    -fx-text-fill: #d63031;
+}
+
+.delete-button:hover {
+    -fx-background-color: #d63031;
+    -fx-text-fill: white;
+}
