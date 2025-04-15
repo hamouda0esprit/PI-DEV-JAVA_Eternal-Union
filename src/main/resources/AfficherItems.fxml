@@ -22,7 +22,7 @@
             <Font name="Arial" size="49.0" />
          </font>
       </Text>
-      <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="ADD" />
+      <Button fx:id="addButton" layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="ADD" onAction="#showAddForm" />
       <Button layoutX="751.0" layoutY="142.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="UPDATE" />
       <Button layoutX="751.0" layoutY="189.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="DELETE" />
       <Button layoutX="751.0" layoutY="236.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="PDF" />

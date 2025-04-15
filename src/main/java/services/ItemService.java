@@ -14,15 +14,17 @@ public class ItemService {
         connection = MyDabase.getInstance().getConnection();
     }
 
-    // Ajouter un item
-    public void add(Item item) throws SQLException {
+    public void ajouter(Item item) throws SQLException {
         String sql = "INSERT INTO item (lesson_id, type_item, content) VALUES (?, ?, ?)";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setInt(1, item.getLessonId());
-        statement.setString(2, item.getTypeItem());
-        statement.setString(3, item.getContent());
-        statement.executeUpdate();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, item.getLessonId());
+        ps.setString(2, item.getTypeItem());
+        ps.setString(3, item.getContent());
+        ps.executeUpdate();
     }
+
+
+
 
     // Modifier un item
     public void update(Item item) throws SQLException {

@@ -22,9 +22,17 @@ public class MyDabase {
             return instance;
 
     }
-      public Connection getConnection(){
-          return connection;
+    public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(URL, USER, PASS);
+                System.out.println("Reconnected to DB");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return connection;
+    }
 
 
 }

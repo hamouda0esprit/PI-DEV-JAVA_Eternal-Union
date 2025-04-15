@@ -10,15 +10,34 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import models.Item;
 import services.ItemService;
 
+import java.io.IOException;
+
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
+
 public class AfficherItemController implements Initializable {
 
     @FXML
     private TableView<Item> tableview;
+
+    @FXML
+    private Button addButton;
 
     @FXML
     private TableColumn<Item, Integer> idCol;
@@ -61,4 +80,22 @@ public class AfficherItemController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    public void showAddForm() {
+        try {
+            // Load the new FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterItem.fxml"));
+            AnchorPane addItemPane = loader.load();
+
+            // Replace current root with the new content
+            // Assumes addButton is inside an AnchorPane (the root layout of your main view)
+            AnchorPane currentRoot = (AnchorPane) addButton.getScene().getRoot();
+            currentRoot.getChildren().setAll(addItemPane);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
