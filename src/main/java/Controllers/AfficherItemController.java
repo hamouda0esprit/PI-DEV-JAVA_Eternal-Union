@@ -143,5 +143,38 @@ public class AfficherItemController implements Initializable {
         alert.showAndWait();
     }
 
+    @FXML
+    private void handleDelete(ActionEvent event) {
+        Item selectedItem = tableview.getSelectionModel().getSelectedItem();
+
+        if (selectedItem != null) {
+            // Optional confirmation
+            Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
+            confirmAlert.setTitle("Delete Confirmation");
+            confirmAlert.setHeaderText(null);
+            confirmAlert.setContentText("Are you sure you want to delete this item?");
+
+            confirmAlert.showAndWait().ifPresent(response -> {
+                if (response == javafx.scene.control.ButtonType.OK) {
+                    try {
+                        // Delete from DB
+                        itemService.delete(selectedItem.getId());
+
+                        // Remove from TableView
+                        tableview.getItems().remove(selectedItem);
+
+                        showAlert("Success", "Item deleted successfully.");
+                    } catch (SQLException e) {
+                        showAlert("Error", "Failed to delete item.");
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        } else {
+            showAlert("Selection Error", "Please select an item to delete.");
+        }
+    }
+
 
 }

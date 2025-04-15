@@ -40,9 +40,13 @@ public class ItemService {
     // Supprimer un item
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM item WHERE id = ?";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setInt(1, id);
-        statement.executeUpdate();
+
+        try (Connection conn =  MyDabase.getInstance().getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        }
     }
 
     // Récupérer tous les items

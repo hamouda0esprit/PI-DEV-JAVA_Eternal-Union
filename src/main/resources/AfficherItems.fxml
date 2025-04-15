@@ -24,7 +24,7 @@
       </Text>
       <Button fx:id="addButton" layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="ADD" onAction="#showAddForm" />
       <Button layoutX="751.0" layoutY="142.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="UPDATE" onAction="#handleUpdate" />
-      <Button layoutX="751.0" layoutY="189.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="DELETE" />
+      <Button layoutX="751.0" layoutY="189.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="DELETE" onAction="#handleDelete"/>
       <Button layoutX="751.0" layoutY="236.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="PDF" />
       <Button layoutX="751.0" layoutY="284.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="EXCEL" />
    </children>
