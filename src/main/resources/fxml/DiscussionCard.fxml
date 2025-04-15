@@ -8,7 +8,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="controllers.DiscussionCardController"
+      fx:controller="Controllers.DiscussionCardController"
       spacing="10"
       styleClass="discussion-card">
     

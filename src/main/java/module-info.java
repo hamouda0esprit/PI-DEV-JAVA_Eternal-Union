@@ -1,7 +1,7 @@
 module com.example.pijava {
     requires javafx.controls;
     requires javafx.fxml;
-    requires transitive java.sql;
+    requires java.sql;
     requires transitive javafx.graphics;
     requires java.desktop;
 
@@ -11,6 +11,7 @@ module com.example.pijava {
     opens entite to javafx.base, javafx.fxml;
     opens service to javafx.fxml;
     opens utils to javafx.fxml;
+    opens Controllers.Navigation to javafx.fxml;
 
     exports com.example.pijava;
     exports Controllers;
@@ -18,4 +19,5 @@ module com.example.pijava {
     exports entite;
     exports service;
     exports utils;
+    exports Controllers.Navigation;
 }
