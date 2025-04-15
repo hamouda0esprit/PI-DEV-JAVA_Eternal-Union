@@ -17,16 +17,16 @@
             <TableColumn fx:id="imageCol" prefWidth="381.0" text="description" />
          </columns>
       </TableView>
-      <Text layoutX="47.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lesson" wrappingWidth="335.13671875">
+      <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="SHOW ITEMS" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="141.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="ADD" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="188.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="UPDATE" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="235.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="DELETE" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="282.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="PDF" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="330.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="EXEL" textFill="#40a1e1" />
+      <Text fill="#40a1e1" layoutX="47.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lesson" wrappingWidth="335.13671875">
          <font>
             <Font name="Arial" size="49.0" />
          </font>
       </Text>
-      <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="SHOW ITEMS" />
-      <Button layoutX="751.0" layoutY="141.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="ADD" />
-      <Button layoutX="751.0" layoutY="188.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="UPDATE" />
-      <Button layoutX="751.0" layoutY="235.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="DELETE" />
-      <Button layoutX="751.0" layoutY="282.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="PDF" />
-      <Button layoutX="751.0" layoutY="330.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" text="EXEL" />
    </children>
 </AnchorPane>

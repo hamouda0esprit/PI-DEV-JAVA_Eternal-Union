@@ -11,14 +11,14 @@
       <TextField fx:id="txtLessonId" layoutX="361.0" layoutY="157.0" />
       <TextField fx:id="txtType" layoutX="361.0" layoutY="193.0" />
       <TextField fx:id="txtContent" layoutX="361.0" layoutY="232.0" />
-      <Text layoutX="340.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ADD ITEM" textAlignment="CENTER">
+      <Text fill="#40a1e1" layoutX="340.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ADD ITEM" textAlignment="CENTER">
          <font>
             <Font name="Arial Black" size="35.0" />
          </font>
       </Text>
-      <Button layoutX="361.0" layoutY="266.0" mnemonicParsing="false" onAction="#Ajouter" prefHeight="49.0" prefWidth="149.0" text="Add Course" />
-      <Text layoutX="361.0" layoutY="153.0" strokeType="OUTSIDE" strokeWidth="0.0" text="id Lesson" />
-      <Text layoutX="361.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" text="type" />
-      <Text layoutX="361.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="content" />
+      <Button layoutX="361.0" layoutY="266.0" mnemonicParsing="false" onAction="#Ajouter" prefHeight="49.0" prefWidth="149.0" style="-fx-background-color: transparent; -fx-border-radius: 10px; -fx-border-color: #40a1e1;" text="Add Course" textFill="#40a1e1" />
+      <Text fill="#40a1e1" layoutX="361.0" layoutY="153.0" strokeType="OUTSIDE" strokeWidth="0.0" text="id Lesson" />
+      <Text fill="#40a1e1" layoutX="361.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" text="type" />
+      <Text fill="#40a1e1" layoutX="361.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="content" />
    </children>
 </AnchorPane>

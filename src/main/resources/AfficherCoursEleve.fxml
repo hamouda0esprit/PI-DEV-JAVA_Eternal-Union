@@ -21,11 +21,11 @@
             </columns>
         </TableView>
 
-        <Text layoutX="47.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cours" wrappingWidth="335.13671875">
+        <Text fill="#40a1e1" layoutX="47.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cours" wrappingWidth="335.13671875">
             <font>
                 <Font name="Arial" size="49.0" />
             </font>
         </Text>
-        <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" onAction="#showLessonsEleve" text="SHOW LESSONS" />
+        <Button layoutX="751.0" layoutY="95.0" mnemonicParsing="false" onAction="#showLessonsEleve" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-background-color: transparent; -fx-border-radius: 10px;" text="SHOW LESSONS" textFill="#40a1e1" />
     </children>
 </AnchorPane>

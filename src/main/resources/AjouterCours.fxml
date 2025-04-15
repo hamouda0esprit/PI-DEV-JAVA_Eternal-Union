@@ -14,18 +14,18 @@
       <TextField fx:id="txtSubject" layoutX="361.0" layoutY="272.0" />
       <TextField fx:id="txtRate" layoutX="361.0" layoutY="311.0" />
 
-      <Text layoutX="307.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ADD COURSE" textAlignment="CENTER">
+      <Text fill="#40a1e1" layoutX="307.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ADD COURSE" textAlignment="CENTER">
          <font>
             <Font name="Arial Black" size="35.0" />
          </font>
       </Text>
 
-      <Button layoutX="361.0" layoutY="348.0" mnemonicParsing="false" onAction="#Ajouter" prefHeight="49.0" prefWidth="149.0" text="Add Course" />
+      <Button layoutX="361.0" layoutY="348.0" mnemonicParsing="false" onAction="#Ajouter" prefHeight="49.0" prefWidth="149.0" style="-fx-background-color: transparent; -fx-border-color: #40a1e1; -fx-border-radius: 10px;" text="Add Course" textFill="#40a1e1" />
 
-      <Text layoutX="361.0" layoutY="153.0" strokeType="OUTSIDE" strokeWidth="0.0" text="id professor" />
-      <Text layoutX="361.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" text="title" />
-      <Text layoutX="361.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="image" />
-      <Text layoutX="361.0" layoutY="270.0" strokeType="OUTSIDE" strokeWidth="0.0" text="subject" />
-      <Text layoutX="362.0" layoutY="307.0" strokeType="OUTSIDE" strokeWidth="0.0" text="rate" />
+      <Text fill="#40a1e1" layoutX="361.0" layoutY="153.0" strokeType="OUTSIDE" strokeWidth="0.0" text="id professor" />
+      <Text fill="#40a1e1" layoutX="361.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" text="title" />
+      <Text fill="#40a1e1" layoutX="361.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="image" />
+      <Text fill="#40a1e1" layoutX="361.0" layoutY="270.0" strokeType="OUTSIDE" strokeWidth="0.0" text="subject" />
+      <Text fill="#40a1e1" layoutX="362.0" layoutY="307.0" strokeType="OUTSIDE" strokeWidth="0.0" text="rate" />
    </children>
 </AnchorPane>
