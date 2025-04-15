@@ -180,4 +180,33 @@ public class AfficherLessonController implements Initializable {
             System.out.println("Veuillez sélectionner une leçon.");
         }
     }
+
+
+    @FXML
+    public void handleShowItemsEleve(ActionEvent event) {
+        Lesson selectedLesson = tableview.getSelectionModel().getSelectedItem();
+        if (selectedLesson != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherItemEleve.fxml"));
+                Parent root = loader.load();
+
+                // Get controller
+                AfficherItemController itemController = loader.getController();
+
+                // Pass lesson id to item controller
+                itemController.showForLesson(selectedLesson.getId());
+
+                // Set scene
+                mainPane.getChildren().setAll(root);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Erreur de chargement du fichier FXML");
+            }
+        } else {
+            System.out.println("Veuillez sélectionner une leçon.");
+        }
+    }
+
+
 }

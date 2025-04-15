@@ -61,6 +61,9 @@ public class AfficherItemController implements Initializable {
 
     private final ItemService itemService = new ItemService();
 
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -77,6 +80,7 @@ public class AfficherItemController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     public void showForLesson(int lessonId) {

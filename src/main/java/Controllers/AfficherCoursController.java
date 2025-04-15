@@ -189,4 +189,33 @@ public class AfficherCoursController {
         }
     }
 
+    @FXML
+    public void showLessonsEleve(ActionEvent event) {
+        try {
+            Cours selectedCourse = tableview.getSelectionModel().getSelectedItem();
+            if (selectedCourse == null) {
+                System.out.println("Veuillez sélectionner un cours.");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherLessonEleve.fxml"));
+            Parent root = loader.load();
+
+            // Use AfficherLessonController here
+            AfficherLessonController controller = loader.getController();
+            controller.setCourseIdFilter(selectedCourse.getId());
+
+            // Replace the current scene
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Leçons Élève - " + selectedCourse.getTitle());
+            stage.show();
+
+        } catch (IOException e) {
+            System.err.println("Erreur chargement AfficherLessonEleve.fxml : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 }
