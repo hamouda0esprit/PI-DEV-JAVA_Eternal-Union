@@ -1,6 +1,6 @@
-package services;
+package service;
 
-import entities.Discussion;
+import entite.Discussion;
 import utils.DataSource;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ public class DiscussionService {
     private Connection conn;
 
     public DiscussionService() {
-        conn = DataSource.getInstance().getCnx();
+        conn = DataSource.getInstance().getConncetion();
     }
 
     public List<Discussion> getDiscussionsForEvent(int eventId) {
@@ -91,7 +91,7 @@ public class DiscussionService {
     public void deleteDiscussionsForEvent(int eventId) {
         try {
             String query = "DELETE FROM discussion WHERE event_id = ?";
-            PreparedStatement ps = DataSource.getInstance().getCnx().prepareStatement(query);
+            PreparedStatement ps = DataSource.getInstance().getConncetion().prepareStatement(query);
             ps.setInt(1, eventId);
             ps.executeUpdate();
         } catch (SQLException e) {

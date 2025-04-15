@@ -1,7 +1,6 @@
-package controllers;
+package Controllers;
 
-import entities.Evenement;
-import javafx.event.ActionEvent;
+import entite.Evenement;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,18 +10,19 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import services.EvenementService;
-import services.IEvenementService;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
+import service.EvenementService;
+import service.IEvenementService;
+import service.DiscussionService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
-import services.DiscussionService;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class AdminEvenementController implements Initializable {
     @FXML private TableView<Evenement> eventTable;
@@ -35,14 +35,6 @@ public class AdminEvenementController implements Initializable {
     @FXML private TextField searchField;
     @FXML private Button addButton;
     @FXML private Label statusLabel;
-    
-    // Sidebar buttons
-    @FXML private Button dashboardButton;
-    @FXML private Button usersButton;
-    @FXML private Button forumsButton;
-    @FXML private Button eventsButton;
-    @FXML private Button examsButton;
-    @FXML private Button backButton;
 
     private IEvenementService evenementService;
     private DiscussionService discussionService;
@@ -57,41 +49,6 @@ public class AdminEvenementController implements Initializable {
         loadEvents();
         setupSearch();
         setupAddButton();
-        setupSidebarNavigation();
-    }
-
-    private void setupSidebarNavigation() {
-        // Setup click handlers for navigation
-
-    }
-
-    private void navigateTo(String destination) {
-        try {
-            String fxmlPath = switch (destination) {
-                case "Dashboard" -> "/view/AdminDashboard.fxml";
-                case "Users" -> "/view/AdminUsers.fxml";
-                case "Forums" -> "/view/AdminForums.fxml";
-                case "Exams" -> "/view/AdminExams.fxml";
-                default -> throw new IllegalArgumentException("Unknown destination: " + destination);
-            };
-            
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Scene scene = eventTable.getScene();
-            scene.setRoot(loader.load());
-            
-        } catch (IOException e) {
-            showError("Navigation Error", "Unable to load " + destination + " view");
-        }
-    }
-
-    private void returnToMainSite() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Evenement.fxml"));
-            Scene scene = eventTable.getScene();
-            scene.setRoot(loader.load());
-        } catch (IOException e) {
-            showError("Navigation Error", "Unable to return to main site");
-        }
     }
 
     private void setupTable() {
@@ -210,7 +167,6 @@ public class AdminEvenementController implements Initializable {
 
     private void handleView(Evenement event) {
         if (event != null) {
-            // Implement view logic
             showInfo("Voir l'événement", 
                     String.format("Titre: %s\nDate: %s\nHeure: %s\nLieu: %s\nDescription: %s",
                     event.getName(), event.getDateevent(), event.getTime(), 
@@ -292,26 +248,5 @@ public class AdminEvenementController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    public void handleCourses(ActionEvent actionEvent) {
-    }
-
-    public void handleExamens(ActionEvent actionEvent) {
-    }
-
-    public void handleEvents(ActionEvent actionEvent) {
-    }
-
-    public void handleBack(ActionEvent actionEvent) {
-    }
-
-    public void handleUsers(ActionEvent actionEvent) {
-    }
-
-    public void handleForums(ActionEvent actionEvent) {
-    }
-
-    public void handleDashboard(ActionEvent actionEvent) {
     }
 } 

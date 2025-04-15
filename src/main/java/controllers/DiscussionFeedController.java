@@ -1,4 +1,4 @@
-package controllers;
+package Controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -6,9 +6,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import entities.Discussion;
-import entities.Evenement;
-import services.DiscussionService;
+import entite.Discussion;
+import entite.Evenement;
+import service.DiscussionService;
 
 import java.io.File;
 import java.io.IOException;

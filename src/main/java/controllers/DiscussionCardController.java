@@ -1,10 +1,10 @@
-package controllers;
+package Controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import entities.Discussion;
+import entite.Discussion;
 import java.io.File;
 import java.time.format.DateTimeFormatter;
 

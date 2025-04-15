@@ -1,6 +1,6 @@
-package controllers;
+package Controllers;
 
-import entities.Evenement;
+import entite.Evenement;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;

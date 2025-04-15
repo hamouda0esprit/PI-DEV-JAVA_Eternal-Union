@@ -1,8 +1,8 @@
-package controllers;
+package Controllers;
 
-import entities.Evenement;
-import services.IEvenementService;
-import services.EvenementService;
+import entite.Evenement;
+import service.IEvenementService;
+import service.EvenementService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;

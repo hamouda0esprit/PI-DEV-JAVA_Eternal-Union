@@ -7,7 +7,7 @@
 <?import javafx.scene.image.ImageView?>
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="controllers.DiscussionDialogController"
+      fx:controller="Controllers.DiscussionDialogController"
       spacing="20" style="-fx-background-color: white;">
     
     <!-- Header with title -->

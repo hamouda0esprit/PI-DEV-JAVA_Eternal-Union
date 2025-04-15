@@ -1,6 +1,6 @@
-package controllers;
+package Controllers;
 
-import entities.Evenement;
+import entite.Evenement;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
@@ -13,8 +13,8 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
-import services.EvenementService;
-import services.IEvenementService;
+import service.EvenementService;
+import service.IEvenementService;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.io.File;

@@ -1,4 +1,4 @@
-package controllers;
+package Controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -8,8 +8,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import entities.Discussion;
-import services.DiscussionService;
+import entite.Discussion;
+import service.DiscussionService;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;

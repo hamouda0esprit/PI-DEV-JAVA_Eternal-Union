@@ -1,6 +1,6 @@
-package services;
+package service;
 
-import entities.Evenement;
+import entite.Evenement;
 import utils.DataSource;
 
 import java.sql.*;
@@ -12,7 +12,7 @@ public class EvenementService implements IEvenementService {
     private PreparedStatement pst;
 
     public EvenementService() {
-        conn = DataSource.getInstance().getCnx();
+        conn = DataSource.getInstance().getConncetion();
     }
 
     @Override

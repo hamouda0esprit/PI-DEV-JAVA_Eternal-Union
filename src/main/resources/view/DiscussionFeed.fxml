@@ -8,7 +8,7 @@
 <?import java.lang.String?>
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="controllers.DiscussionFeedController"
+      fx:controller="Controllers.DiscussionFeedController"
       style="-fx-background-color: #f0f2f5;"
       stylesheets="@../styles/discussion-feed.css">
       

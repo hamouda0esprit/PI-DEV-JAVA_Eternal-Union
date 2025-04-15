@@ -1,6 +1,6 @@
-package services;
+package service;
 
-import entities.Evenement;
+import entite.Evenement;
 import java.util.List;
 
 public interface IEvenementService {

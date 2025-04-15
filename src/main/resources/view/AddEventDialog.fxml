@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="15" styleClass="event-dialog" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AddEventDialogController">
+<VBox spacing="15" styleClass="event-dialog" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddEventDialogController">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
