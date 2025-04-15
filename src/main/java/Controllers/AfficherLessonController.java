@@ -20,8 +20,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.scene.control.Alert;
+
 public class AfficherLessonController implements Initializable {
 
+
+    private int currentCourseId = -1; // Default: show all lessons
     @FXML
     private AnchorPane mainPane;
 
@@ -44,11 +48,11 @@ public class AfficherLessonController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            loadAllLessons();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        // Initialize table columns
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        courseIdCol.setCellValueFactory(new PropertyValueFactory<>("courseId"));
+        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
     }
 
     private void loadAllLessons() throws SQLException {
@@ -71,14 +75,7 @@ public class AfficherLessonController implements Initializable {
         tableview.setItems(obs);
     }
 
-    public void setCourseIdFilter(int courseId) {
-        this.courseIdFilter = courseId;
-        try {
-            loadLessonsByCourse();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     @FXML
     void deleteSelectedLesson(ActionEvent event) {
@@ -128,6 +125,34 @@ public class AfficherLessonController implements Initializable {
             }
         } else {
             System.out.println("Veuillez sélectionner un lesson à modifier.");
+        }
+    }
+
+    public void setCourseIdFilter(int courseId) {
+        this.currentCourseId = courseId;
+        refreshLessons(); // No SQLException here
+    }
+
+    private void refreshLessons() {
+        try {
+            LessonService service = new LessonService();
+            List<Lesson> lessons;
+
+            if (currentCourseId == -1) {
+                lessons = service.recuperer(); // All lessons
+            } else {
+                lessons = service.getLessonsByCourse(currentCourseId); // Filtered
+            }
+
+            ObservableList<Lesson> obs = FXCollections.observableList(lessons);
+            tableview.setItems(obs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Show error to user (optional)
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Database error!");
+            alert.show();
+            // Return empty list on error
+            tableview.setItems(FXCollections.observableArrayList());
         }
     }
 }

@@ -166,30 +166,27 @@ public class AfficherCoursController {
     @FXML
     public void showLessonsOfSelectedCourse() {
         try {
-            // Load the FXML file of AfficherLesson
+            Cours selectedCourse = tableview.getSelectionModel().getSelectedItem();
+            if (selectedCourse == null) {
+                System.out.println("Please select a course first");
+                return;
+            }
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherLesson.fxml"));
             Parent root = loader.load();
 
-            // Get the current stage (current window)
+            AfficherLessonController lessonController = loader.getController();
+            lessonController.setCourseIdFilter(selectedCourse.getId()); // No SQLException here
+
             Stage stage = (Stage) tableview.getScene().getWindow();
-
-            // Set the new scene for the same window
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-
-            // Optionally, you can set the title of the stage if needed
-            stage.setTitle("Lessons");
-
-            // Show the new scene in the same window
+            stage.setScene(new Scene(root));
+            stage.setTitle("Lessons for Course: " + selectedCourse.getTitle());
             stage.show();
 
         } catch (IOException e) {
+            System.err.println("Error loading AfficherLesson.fxml: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
-    
-
-
 
 }

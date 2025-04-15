@@ -47,22 +47,27 @@ public class LessonService {
         ps.executeUpdate();
     }
 
-    public List<Lesson> getLessonsByCourse(int courseId) throws SQLException {
+    public List<Lesson> getLessonsByCourse(int courseId) {
         List<Lesson> list = new ArrayList<>();
-        String sql = "SELECT * FROM lesson WHERE course_id = ?";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, courseId);
-        ResultSet rs = ps.executeQuery();
+        try {
+            String sql = "SELECT * FROM lesson WHERE course_id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, courseId);
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            list.add(new Lesson(
-                    rs.getInt("id"),
-                    rs.getInt("course_id"),
-                    rs.getString("title"),
-                    rs.getString("description")
-            ));
+            while (rs.next()) {
+                list.add(new Lesson(
+                        rs.getInt("id"),
+                        rs.getInt("course_id"),
+                        rs.getString("title"),
+                        rs.getString("description")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching lessons: " + e.getMessage());
+            e.printStackTrace();
         }
-        return list;
+        return list; // Returns empty list on error
     }
 
     public void update(Lesson lesson) throws SQLException {

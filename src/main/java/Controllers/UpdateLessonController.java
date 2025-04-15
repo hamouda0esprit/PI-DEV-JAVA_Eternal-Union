@@ -3,18 +3,21 @@ package Controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
-import models.Lesson;
-import services.LessonService;
+import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 
 import java.sql.SQLException;
 import java.io.IOException;
 
+import models.Lesson;
+import services.LessonService;
+
 public class UpdateLessonController {
 
     @FXML
-    private AnchorPane mainPane;  // reference to the parent pane
+    private AnchorPane mainPane;  // Reference to the parent pane
 
     @FXML
     private TextField txtCourseId;
@@ -46,19 +49,44 @@ public class UpdateLessonController {
                 service.update(lessonToEdit);
                 System.out.println("Lesson updated!");
 
-                // Now load the AfficherLesson.fxml back into the main pane
+                // Load the AfficherLesson.fxml view
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherLesson.fxml"));
-
-                // Check if the resource loading fails
-                if (loader.getLocation() == null) {
-                    throw new IOException("FXML file not found");
-                }
-
                 Parent root = loader.load();
-                mainPane.getChildren().setAll(root); // Replace current pane with AfficherLesson
+
+                // Get controller and pass the course ID
+                AfficherLessonController controller = loader.getController();
+                controller.setCourseIdFilter(lessonToEdit.getCourseId());
+
+                // Replace current view
+                Stage stage = (Stage) mainPane.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Lessons for Course ID: " + lessonToEdit.getCourseId());
+                stage.show();
+
             } catch (SQLException | IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+
+    @FXML
+    private void handleSave() {
+        try {
+            LessonService service = new LessonService();
+            service.update(lessonToEdit); // Save to database
+
+            // Load AfficherLesson.fxml and pass courseId back
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherLesson.fxml"));
+            Parent root = loader.load();
+
+            AfficherLessonController controller = loader.getController();
+            controller.setCourseIdFilter(lessonToEdit.getCourseId()); // Pass the course ID back
+
+            Stage stage = (Stage) mainPane.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
         }
     }
 }
