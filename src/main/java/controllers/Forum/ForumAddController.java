@@ -74,7 +74,7 @@ public class ForumAddController {
     @FXML
     void HandleReturn(ActionEvent event) {
         try {
-            Parent ajoutForumView = FXMLLoader.load(getClass().getResource("/com/example/loe/Forum.fxml"));
+            Parent ajoutForumView = FXMLLoader.load(getClass().getResource("/view/Forum.fxml"));
             Scene scene = new Scene(ajoutForumView);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);
