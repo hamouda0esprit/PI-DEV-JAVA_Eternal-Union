@@ -8,7 +8,7 @@ public class DataSourceBK {
     private static DataSourceBK instance;
     private Connection cnx;
     
-    private final String URL = "jdbc:mysql://localhost:3306/loe2";
+    private final String URL = "jdbc:mysql://localhost:3306/loe22";
     private final String USERNAME = "root";
     private final String PASSWORD = "";
     

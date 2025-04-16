@@ -48,6 +48,26 @@ public class ForumService implements IService<Forum>{
         }
     }
 
+    @Override
+    public void ajouter(Forum forum) throws SQLException {
+
+    }
+
+    @Override
+    public void modifier(Forum forum) throws SQLException {
+
+    }
+
+    @Override
+    public void sipprimer(int id) throws SQLException {
+
+    }
+
+    @Override
+    public List<Forum> recuperer() throws SQLException {
+        return List.of();
+    }
+
 
     //Not recommended because of SQL injections (Quoted by SOUSOU)
     @Override

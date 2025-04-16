@@ -1,0 +1,67 @@
+/* Style des en-têtes de colonne */
+.table-view .column-header,
+.table-view .column-header-background .filler {
+    -fx-background-color: #33a8db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 0 10px 0;
+}
+
+/* Style des cellules */
+.table-row-cell {
+    -fx-cell-size: 40px;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 5;
+}
+
+/* Style des lignes alternées */
+.table-row-cell:odd {
+    -fx-background-color: #f4f4f4;
+}
+
+.table-row-cell:even {
+    -fx-background-color: white;
+}
+
+/* Style lors de la sélection d'une ligne */
+.table-row-cell:selected {
+    -fx-background-color: #e6f7ff;
+    -fx-text-fill: black;
+    -fx-background-insets: 0;
+}
+
+/* Style des boutons d'action */
+.update-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 3 10;
+    -fx-background-radius: 4;
+}
+
+.delete-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 3 10;
+    -fx-background-radius: 4;
+}
+
+.add-questions-button {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 3 10;
+    -fx-background-radius: 4;
+}
+
+/* Hover effect for buttons */
+.update-button:hover, .delete-button:hover, .add-questions-button:hover {
+    -fx-opacity: 0.8;
+} 

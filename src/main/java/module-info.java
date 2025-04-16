@@ -3,6 +3,9 @@ module com.example.pijava {
     requires javafx.fxml;
     requires java.sql;
     requires transitive javafx.graphics;
+    requires org.apache.poi.ooxml;
+    requires itextpdf;
+    requires com.github.librepdf.openpdf;
     requires java.desktop;
 
     opens com.example.pijava to javafx.fxml;
@@ -12,7 +15,7 @@ module com.example.pijava {
     opens service to javafx.fxml;
     opens utils to javafx.fxml;
     opens Controllers.Navigation to javafx.fxml;
-
+    opens models to javafx.base, javafx.fxml;
     exports com.example.pijava;
     exports Controllers;
     exports Controllers.Forum;

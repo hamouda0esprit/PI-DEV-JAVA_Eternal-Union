@@ -102,7 +102,7 @@ public class AdminSidebarController implements Initializable {
         
         examsButton.setOnAction(e -> {
             navigationState.setCurrentView("Exams");
-            navigateTo("Exams");
+            navigateTo("Panel");
         });
         
         coursesButton.setOnAction(e -> {

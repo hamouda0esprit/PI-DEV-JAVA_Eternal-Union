@@ -1,6 +1,5 @@
 package Controllers.Navigation;
 
-import com.example.pijava.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -81,13 +80,13 @@ public class NavbarController implements Initializable {
     @FXML
     private void handleCoursNavigation() {
         navigationState.setCurrentView("Cours");
-        loadView("/view/Cours.fxml");
+        loadView("/view/AfficherCours.fxml");
     }
 
     @FXML
     private void handleExamenNavigation() {
         navigationState.setCurrentView("Examen");
-        loadView("/view/Examen.fxml");
+        loadView("/view/LoginView.fxml");
     }
 
     @FXML

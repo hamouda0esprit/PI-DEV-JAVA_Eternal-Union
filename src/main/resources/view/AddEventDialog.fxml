@@ -3,36 +3,44 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<VBox spacing="15" styleClass="event-dialog" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddEventDialogController">
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-    
-    <Label text="Add New Event" styleClass="dialog-title" fx:id="dialogTitle"/>
-    
-    <GridPane hgap="10" vgap="10">
-        <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+<AnchorPane prefHeight="700" prefWidth="1000" style="-fx-background-color: #42a5f5;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddEventDialogController">
+   <children>
+      <fx:include source="Navbar.fxml"/>
+      
+      <!-- En-tête avec le titre -->
+      <VBox alignment="TOP_CENTER" layoutX="50" layoutY="20" prefWidth="900" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
         
-        <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextArea fx:id="descriptionArea" prefRowCount="3" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Add New Event" styleClass="dialog-title" fx:id="dialogTitle"/>
         
-        <Label text="Time:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="timeField" promptText="HH:mm" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <GridPane hgap="10" vgap="10">
+            <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            
+            <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextArea fx:id="descriptionArea" prefRowCount="3" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            
+            <Label text="Time:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="timeField" promptText="HH:mm" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            
+            <Label text="Location:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <TextField fx:id="locationField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            
+            <Label text="Photo:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                <TextField fx:id="photoField" HBox.hgrow="ALWAYS"/>
+                <Button text="Browse" onAction="#handleBrowsePhoto"/>
+            </HBox>
+        </GridPane>
         
-        <Label text="Location:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <TextField fx:id="locationField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-        
-        <Label text="Photo:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
-            <TextField fx:id="photoField" HBox.hgrow="ALWAYS"/>
-            <Button text="Browse" onAction="#handleBrowsePhoto"/>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Cancel" onAction="#handleCancel" styleClass="dialog-button"/>
+            <Button text="Save" onAction="#handleSave" styleClass="dialog-button, save-button"/>
         </HBox>
-    </GridPane>
-    
-    <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button text="Cancel" onAction="#handleCancel" styleClass="dialog-button"/>
-        <Button text="Save" onAction="#handleSave" styleClass="dialog-button, save-button"/>
-    </HBox>
-</VBox> 
+      </VBox>
+   </children>
+</AnchorPane> 
