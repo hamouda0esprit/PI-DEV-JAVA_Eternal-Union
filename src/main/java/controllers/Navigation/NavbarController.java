@@ -1,5 +1,8 @@
 package Controllers.Navigation;
 
+import Controllers.ProfileController;
+import Controllers.LoginController;
+import entite.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,6 +13,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.image.Image;
+import java.io.IOException;
 
 public class NavbarController implements Initializable {
     @FXML
@@ -26,10 +30,12 @@ public class NavbarController implements Initializable {
     private Button userProfileButton;
 
     private NavigationStateManager navigationState;
+    private User currentUser;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         navigationState = NavigationStateManager.getInstance();
+        currentUser = LoginController.getAuthenticatedUser();
         
         // Listen for changes in the current view
         navigationState.currentViewProperty().addListener((observable, oldValue, newValue) -> {
@@ -41,6 +47,10 @@ public class NavbarController implements Initializable {
         if (currentView != null) {
             updateActiveButton(currentView);
         }
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
     }
 
     private void updateActiveButton(String view) {
@@ -103,7 +113,20 @@ public class NavbarController implements Initializable {
 
     @FXML
     private void handleUserProfile() {
-        loadView("/view/UserProfile.fxml");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Profile.fxml"));
+            Parent root = loader.load();
+            
+            // Get the ProfileController and set the current user
+            ProfileController profileController = loader.getController();
+            profileController.setCurrentUser(currentUser);
+            
+            // Get the current stage and set the new scene
+            Stage stage = (Stage) userProfileButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadView(String fxmlPath) {

@@ -1,201 +1,319 @@
 package Controllers;
 
+import com.example.pijava.Main;
+import entite.User;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
-import service.UserService;
+import javafx.stage.Modality;
+import javafx.stage.StageStyle;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.ParallelTransition;
+import javafx.util.Duration;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.Alert;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.io.IOException;
 
 public class LoginController implements Initializable {
-
-    @FXML private TextField idField;
-    @FXML private Button fastLoginButton;
-    @FXML private Label fastLoginErrorLabel;
+    @FXML
+    private Button googleSignUpButton;
     
-    private UserService userService;
-
+    @FXML
+    private Button facebookSignUpButton;
+    
+    @FXML
+    private Button createAccountButton;
+    
+    @FXML
+    private Button connectButton;
+    
+    @FXML
+    private VBox logoContainer;
+    
+    @FXML
+    private ImageView logoImage;
+    
+    @FXML
+    private StackPane mainContainer;
+    
+    private Stage stage;
+    private LoginDialogController lastLoginDialogController;
+    
+    private static User authenticatedUser;
+    
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // Initialiser le message d'erreur
-        fastLoginErrorLabel.setVisible(false);
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Set action handlers
+        setButtonActions();
         
-        // Initialiser le service utilisateur
-        userService = new UserService();
-        System.out.println("LoginController initialisé");
+        // Apply responsive design after the stage is set and components are loaded
+        javafx.application.Platform.runLater(this::setupResponsiveDesign);
+    }
+    
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        
+        // Add listener for window width changes
+        stage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            handleResponsiveLayout(newWidth.doubleValue());
+        });
+    }
+    
+    private void setupResponsiveDesign() {
+        if (stage == null) {
+            // Try to get the stage from one of the nodes
+            stage = (Stage) googleSignUpButton.getScene().getWindow();
+        }
+        
+        if (stage != null) {
+            // Initial responsive setup
+            handleResponsiveLayout(stage.getWidth());
+            
+            // Also listen for height changes to maintain the fixed 150px spacing
+            stage.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+                // The login container's padding is set in FXML/CSS, so no additional code needed here
+                // This ensures the spacing remains at 150px even when height changes
+            });
+        }
+    }
+    
+    private void handleResponsiveLayout(double width) {
+        // Hide logo container on smaller screens, but keep the form static
+        if (width < 700) {
+            logoContainer.setVisible(false);
+            logoContainer.setManaged(false);
+        } else {
+            logoContainer.setVisible(true);
+            logoContainer.setManaged(true);
+        }
+        
+        // Adjust logo size based on available space
+        if (width < 900 && width >= 700) {
+            logoImage.setFitWidth(300);
+            logoImage.setFitHeight(300);
+        } else {
+            logoImage.setFitWidth(400);
+            logoImage.setFitHeight(400);
+        }
+        
+        // If the window gets really small, ensure form stays at minimum size
+        // This prevents the form from getting too squished
+        if (width < 500) {
+            // We'll rely on the CSS min-width instead of dynamically changing the layout
+            // The form will be scrollable rather than getting too small
+        }
+    }
+    
+    private void setButtonActions() {
+        googleSignUpButton.setOnAction(event -> {
+            System.out.println("Sign up with Google clicked");
+            // Implement Google sign up logic
+        });
+        
+        facebookSignUpButton.setOnAction(event -> {
+            System.out.println("Sign up with Facebook clicked");
+            // Implement Facebook sign up logic
+        });
+        
+        createAccountButton.setOnAction(this::handleCreateButtonAction);
+        
+        connectButton.setOnAction(event -> {
+            System.out.println("Connect to account clicked");
+            showLoginDialog();
+        });
     }
     
     @FXML
-    private void handleFastLogin() {
-        // Cacher le message d'erreur
-        fastLoginErrorLabel.setVisible(false);
-        
-        // Récupérer l'ID rapide
-        String fastId = idField.getText().trim();
-        System.out.println("Tentative de connexion avec ID: " + fastId);
-        
-        // Vérifier que l'ID est rempli
-        if (fastId.isEmpty()) {
-            showError("Veuillez entrer votre identifiant");
-            return;
-        }
-        
-        // Vérifier l'authentification rapide
-        boolean isAuthenticated = userService.authenticateFast(fastId);
-        System.out.println("Authentification: " + (isAuthenticated ? "réussie" : "échec"));
-        
-        if (isAuthenticated) {
-            // Récupérer le rôle et rediriger
-            String role = userService.getFastUserRole(fastId);
-            System.out.println("Rôle récupéré: " + role);
-            
-            if (role == null) {
-                showError("Erreur: Rôle utilisateur non trouvé");
-                return;
-            }
-            
-            // Vérifier si l'utilisateur est un administrateur
-            if (role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("administrateur") || role.equals("2")) {
-                System.out.println("Redirection vers l'interface administrateur");
-                navigateToAdminPanel();
-            }
-            // Vérifier les rôles étudiant
-            else if (role.equalsIgnoreCase("Étudiant") || role.equalsIgnoreCase("student") || role.equals("0")) {
-                System.out.println("Redirection vers l'interface étudiant");
-                navigateToStudentHome();
-            } 
-            // Vérifier les rôles professeur
-            else if (role.equalsIgnoreCase("Professeur") || role.equalsIgnoreCase("teacher") || 
-                      role.equalsIgnoreCase("prof") || role.equals("1")) {
-                System.out.println("Redirection vers l'interface professeur");
-                navigateToTeacherHome();
-            } else {
-                System.out.println("Rôle non reconnu: " + role);
-                showError("Erreur: Rôle non reconnu - " + role);
-            }
-        } else {
-            showError("Identifiant invalide");
-        }
-    }
-    
-    private void navigateToAdminPanel() {
+    public void handleCreateButtonAction(ActionEvent event) {
         try {
-            String fxmlPath = "/view/AdminPanel.fxml";
-            System.out.println("Chargement du fichier FXML: " + fxmlPath);
+            // Create semi-transparent overlay
+            Pane overlay = new Pane();
+            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+            overlay.setPrefSize(mainContainer.getWidth(), mainContainer.getHeight());
             
-            URL resource = getClass().getResource(fxmlPath);
-            if (resource == null) {
-                System.err.println("ERREUR: Fichier FXML non trouvé: " + fxmlPath);
-                showError("Fichier d'interface administrateur non trouvé");
-                return;
-            }
+            // Load the first step of registration dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/RegisterDialogStep1.fxml"));
+            Parent dialogRoot = loader.load();
             
-            FXMLLoader loader = new FXMLLoader(resource);
-            Parent root = loader.load();
+            RegisterDialogController controller = loader.getController();
             
-            // Passer l'ID utilisateur au contrôleur
-            AdminPanelController controller = loader.getController();
-            if (controller != null) {
-                controller.setUserId(idField.getText().trim());
-            }
+            // Create dialog stage
+            Stage dialogStage = new Stage();
+            dialogStage.initStyle(StageStyle.UNDECORATED);
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(((Node) event.getSource()).getScene().getWindow());
             
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) fastLoginButton.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Panneau d'Administration");
-            stage.show();
-            System.out.println("Interface administrateur chargée avec succès");
+            Scene scene = new Scene(dialogRoot);
+            dialogStage.setScene(scene);
+            
+            controller.setDialogStage(dialogStage);
+            
+            // Add overlay to the mainContainer
+            mainContainer.getChildren().add(overlay);
+            
+            // Animations
+            FadeTransition fadeInOverlay = new FadeTransition(Duration.millis(300), overlay);
+            fadeInOverlay.setFromValue(0);
+            fadeInOverlay.setToValue(1);
+            
+            // Center the dialog properly on the screen
+            Stage primaryStage = (Stage) mainContainer.getScene().getWindow();
+            double dialogWidth = 500; // Width from FXML
+            double dialogHeight = 460; // Height from FXML
+            double centerX = primaryStage.getX() + (primaryStage.getWidth() / 2) - (dialogWidth / 2);
+            double centerY = primaryStage.getY() + (primaryStage.getHeight() / 2) - (dialogHeight / 2);
+            
+            dialogStage.setX(centerX);
+            dialogStage.setY(centerY);
+            
+            // Show overlay animation
+            fadeInOverlay.play();
+            
+            // Pass the overlay to the controller so it can be removed when the registration is complete
+            controller.setMainContainerOverlay(overlay, mainContainer);
+            
+            // Show the dialog and wait for it to close
+            dialogStage.showAndWait();
+            
+            // When dialog is closed, remove the overlay with animation
+            FadeTransition fadeOutOverlay = new FadeTransition(Duration.millis(300), overlay);
+            fadeOutOverlay.setFromValue(1);
+            fadeOutOverlay.setToValue(0);
+            fadeOutOverlay.setOnFinished(e -> mainContainer.getChildren().remove(overlay));
+            fadeOutOverlay.play();
+            
         } catch (IOException e) {
-            System.err.println("Erreur lors du chargement de l'interface administrateur:");
+            System.out.println("Could not load registration dialog: " + e.getMessage());
             e.printStackTrace();
-            showError("Erreur lors de la navigation vers le panneau d'administration: " + e.getMessage());
         }
     }
     
-    private void navigateToStudentHome() {
-        try {
-            String fxmlPath = "/view/AccueilEtudiant.fxml";
-            System.out.println("Chargement du fichier FXML: " + fxmlPath);
-            
-            URL resource = getClass().getResource(fxmlPath);
-            if (resource == null) {
-                System.err.println("ERREUR: Fichier FXML non trouvé: " + fxmlPath);
-                showError("Fichier d'interface étudiant non trouvé");
-                return;
-            }
-            
-            FXMLLoader loader = new FXMLLoader(resource);
-            Parent root = loader.load();
-            
-            // Passer l'ID utilisateur au contrôleur
-            AccueilEtudiantController controller = loader.getController();
-            if (controller != null) {
-                controller.setUserId(idField.getText().trim());
-            }
-            
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) fastLoginButton.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Espace Étudiant");
-            stage.show();
-            System.out.println("Interface étudiant chargée avec succès");
-        } catch (IOException e) {
-            System.err.println("Erreur lors du chargement de l'interface étudiant:");
-            e.printStackTrace();
-            showError("Erreur lors de la navigation vers l'accueil étudiant: " + e.getMessage());
-        }
+    public static User getAuthenticatedUser() {
+        return authenticatedUser;
     }
     
-    private void navigateToTeacherHome() {
+    private void showLoginDialog() {
         try {
-            String fxmlPath = "/view/AccueilProfesseur.fxml";
-            System.out.println("Chargement du fichier FXML: " + fxmlPath);
+            // Create semi-transparent overlay
+            Pane overlay = new Pane();
+            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+            overlay.setPrefSize(mainContainer.getWidth(), mainContainer.getHeight());
             
-            URL resource = getClass().getResource(fxmlPath);
-            if (resource == null) {
-                System.err.println("ERREUR: Fichier FXML non trouvé: " + fxmlPath);
-                showError("Fichier d'interface professeur non trouvé");
-                return;
-            }
+            // Load the login dialog
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginDialog.fxml"));
+            AnchorPane loginDialogPane = loader.load();
+            loginDialogPane.setMaxWidth(450);
+            loginDialogPane.setMaxHeight(350);
             
-            FXMLLoader loader = new FXMLLoader(resource);
-            Parent root = loader.load();
+            // Get the controller
+            LoginDialogController controller = loader.getController();
             
-            // Passer l'ID utilisateur au contrôleur
-            try {
-                // Vérifier si le contrôleur a une méthode pour définir l'ID utilisateur
-                Object controller = loader.getController();
-                if (controller != null && controller.getClass().getMethod("setUserId", String.class) != null) {
-                    controller.getClass().getMethod("setUserId", String.class).invoke(controller, idField.getText().trim());
-                    System.out.println("ID utilisateur défini dans le contrôleur professeur");
+            // Create a new stage for the dialog
+            Stage dialogStage = new Stage();
+            dialogStage.initStyle(StageStyle.UNDECORATED);
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(mainContainer.getScene().getWindow());
+            
+            // Set the dialog scene
+            Scene scene = new Scene(loginDialogPane);
+            dialogStage.setScene(scene);
+            
+            // Set the stage in the controller
+            controller.setDialogStage(dialogStage);
+            
+            // Store the controller reference for later use
+            lastLoginDialogController = controller;
+            
+            // Add overlay to the mainContainer
+            mainContainer.getChildren().add(overlay);
+            
+            // Animations
+            FadeTransition fadeInOverlay = new FadeTransition(Duration.millis(300), overlay);
+            fadeInOverlay.setFromValue(0);
+            fadeInOverlay.setToValue(1);
+            
+            // Center the dialog properly
+            Stage primaryStage = (Stage) mainContainer.getScene().getWindow();
+            double centerX = primaryStage.getX() + (primaryStage.getWidth() / 2) - (loginDialogPane.getMaxWidth() / 2);
+            double centerY = primaryStage.getY() + (primaryStage.getHeight() / 2) - (loginDialogPane.getMaxHeight() / 2);
+            
+            dialogStage.setX(centerX);
+            dialogStage.setY(centerY);
+            
+            // Show dialog and overlay with animations
+            fadeInOverlay.play();
+            dialogStage.showAndWait();
+            
+            // When dialog is closed, remove the overlay with animation
+            FadeTransition fadeOutOverlay = new FadeTransition(Duration.millis(300), overlay);
+            fadeOutOverlay.setFromValue(1);
+            fadeOutOverlay.setToValue(0);
+            fadeOutOverlay.setOnFinished(e -> mainContainer.getChildren().remove(overlay));
+            fadeOutOverlay.play();
+            
+            // Check if login was successful
+            if (controller.isLoginSuccessful()) {
+                System.out.println("Login successful!");
+                
+                authenticatedUser = controller.getAuthenticatedUser();
+                if (authenticatedUser != null) {
+                    // Load the events page
+                    try {
+                        FXMLLoader eventLoader = new FXMLLoader(getClass().getResource("/view/Evenement.fxml"));
+                        Parent eventRoot = eventLoader.load();
+
+                        // Get the event controller and set the authenticated user
+                        EvenementController eventController = eventLoader.getController();
+                        eventController.setCurrentUser(authenticatedUser);
+
+                        // Replace the current scene with the events page
+                        Scene eventScene = new Scene(eventRoot);
+                        stage.setTitle("LOE - Événements");
+                        stage.setScene(eventScene);
+                        eventScene.getStylesheets().add(Main.class.getResource("/styles/style.css").toExternalForm());
+
+                        System.out.println("Successfully redirected to events page for user: " + authenticatedUser.getName());
+                    } catch (IOException e) {
+                        System.out.println("Error loading events page: " + e.getMessage());
+                        e.printStackTrace();
+
+                        // Show error alert
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Could not load events page");
+                        alert.setContentText("An error occurred: " + e.getMessage());
+                        alert.showAndWait();
+                    }
+                } else {
+                    // Fallback if user is null (should not happen)
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Login Successful");
+                    alert.setHeaderText("Welcome back!");
+                    alert.setContentText("You are now connected to your account.");
+                    alert.showAndWait();
                 }
-            } catch (Exception ex) {
-                // Si la méthode n'existe pas, enregistrer dans les logs mais continuer
-                System.out.println("Méthode setUserId non disponible dans le contrôleur professeur: " + ex.getMessage());
             }
             
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) fastLoginButton.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Espace Professeur");
-            stage.show();
-            System.out.println("Interface professeur chargée avec succès");
         } catch (IOException e) {
-            System.err.println("Erreur lors du chargement de l'interface professeur:");
+            System.out.println("Could not load login dialog: " + e.getMessage());
             e.printStackTrace();
-            showError("Erreur lors de la navigation vers l'accueil professeur: " + e.getMessage());
         }
-    }
-    
-    private void showError(String message) {
-        System.err.println("ERREUR AFFICHÉE: " + message);
-        fastLoginErrorLabel.setText(message);
-        fastLoginErrorLabel.setVisible(true);
     }
 } 

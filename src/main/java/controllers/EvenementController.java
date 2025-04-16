@@ -1,6 +1,7 @@
 package Controllers;
 
 import entite.Evenement;
+import entite.User;
 import service.IEvenementService;
 import service.EvenementService;
 import javafx.fxml.FXML;
@@ -36,11 +37,19 @@ public class EvenementController implements Initializable {
     private IEvenementService evenementService;
     private YearMonth currentYearMonth;
     private Map<LocalDate, List<Evenement>> eventsByDate;
+    private User currentUser;
     
     public EvenementController() {
         this.evenementService = new EvenementService();
         this.currentYearMonth = YearMonth.now();
         this.eventsByDate = new HashMap<>();
+    }
+    
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+        loadEvents();
+        updateCalendar();
+        updateUpcomingEvents();
     }
     
     @Override
