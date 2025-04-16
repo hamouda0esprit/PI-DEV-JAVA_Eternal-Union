@@ -107,10 +107,16 @@ public class ForumListController {
         userImage.setFitWidth(40);
         userImage.setPreserveRatio(true);
 
+
         // Set the user image if available
         if (forum.getUser() != null && forum.getUser().getImg() != null) {
             try {
-                Image img = new Image(forum.getUser().getImg());
+                //Image img = new Image(forum.getUser().getImg());
+
+
+
+                Image img = new Image(getClass().getResourceAsStream("/images/ForumUser.jpg"));
+
                 userImage.setImage(img);
             } catch (Exception e) {
                 System.out.println("Could not load user image: " + e.getMessage());
@@ -126,7 +132,10 @@ public class ForumListController {
         // Same for images
         if (forum.getUser() != null && forum.getUser().getImg() != null && !forum.getUser().getImg().isEmpty()) {
             try {
-                Image img = new Image(forum.getUser().getImg());
+                //Image img = new Image(forum.getUser().getImg());
+
+                Image img = new Image(getClass().getResourceAsStream("/images/ForumUser.jpg"));
+
                 userImage.setImage(img);
             } catch (Exception e) {
                 System.out.println("Could not load user image: " + e.getMessage());

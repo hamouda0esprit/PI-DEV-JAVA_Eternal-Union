@@ -2,7 +2,7 @@ package utils;
 import java.sql.*;
 
 public class MyDabase {
-    final String URL = "jdbc:mysql://localhost:3306/loe22";
+    final String URL = "jdbc:mysql://localhost:3307/loe";
     final String USER="root";
     final String PASS="";
    private Connection connection;

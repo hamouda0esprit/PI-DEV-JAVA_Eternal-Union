@@ -114,8 +114,11 @@ public class ForumDiscussionController {
         try {
             // This is a placeholder. You may need to adjust based on your actual implementation
             if (author.getImg() != null && !author.getImg().isEmpty()) {
-                Image image = new Image(author.getImg());
-                authorPhoto.setImage(image);
+                //Image image = new Image(author.getImg());
+
+                Image img = new Image(getClass().getResourceAsStream("/images/ForumUser.jpg"));
+
+                authorPhoto.setImage(img);
             }
         } catch (Exception e) {
             System.err.println("Error loading user image: " + e.getMessage());
@@ -174,7 +177,10 @@ public class ForumDiscussionController {
 
         try {
             if (author.getImg() != null && !author.getImg().isEmpty()) {
-                Image img = new Image(author.getImg());
+                //Image img = new Image(author.getImg());
+
+                Image img = new Image(getClass().getResourceAsStream("/images/ForumUser.jpg"));
+
                 avatar.setImage(img);
             }
         } catch (Exception e) {
