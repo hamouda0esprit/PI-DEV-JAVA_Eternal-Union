@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS discussion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    event_id INT NOT NULL,
+    description TEXT NOT NULL,
+    photo_path VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES evenement(id) ON DELETE CASCADE
+); 

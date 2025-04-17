@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.image.Image?>
+<BorderPane prefHeight="675.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.Forum.ForumModifyController">
+    <!-- Top Navigation Bar -->
+    <top>
+        <fx:include source="Navbar.fxml" />
+    </top>
+
+    <center>
+        <StackPane style="-fx-background-color: #42a5f5;">
+            <VBox alignment="CENTER" maxWidth="800">
+                <padding>
+                    <Insets bottom="30" left="30" right="30" top="30" />
+                </padding>
+
+                <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 10;">
+                    <padding>
+                        <Insets bottom="25" left="25" right="25" top="25" />
+                    </padding>
+                    <Button fx:id="ReturnButton" onAction="#HandleReturn" prefHeight="32.0" prefWidth="33.0" style="-fx-background-color: white; -fx-background-radius: 50;" text="&lt;-" />
+
+                    <Label alignment="CENTER" maxWidth="Infinity" prefWidth="690.0" style="-fx-font-size: 24; -fx-text-fill: #42a5f5;" text="Modifier la discussion" />
+
+                    <TextField fx:id="Title" promptText="Entrez le titre" style="-fx-background-radius: 5;" />
+
+                    <TextArea fx:id="Description" prefHeight="150" promptText="Écrivez votre discussion ici..." style="-fx-background-radius: 5;" wrapText="true" />
+
+                    <HBox alignment="CENTER" minHeight="50" style="-fx-border-color: #e0e0e0; -fx-border-radius: 5; -fx-background-color: #f8f8f8;">
+                        <TextArea fx:id="MediaField" prefHeight="150" promptText="Lien média ou contenu" style="-fx-background-radius: 5;" wrapText="true" />
+                    </HBox>
+
+                    <ComboBox fx:id="Subject" maxWidth="Infinity" promptText="Sélectionnez une matière">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Math" />
+                                <String fx:value="Physics" />
+                                <String fx:value="Science" />
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+
+                    <Button fx:id="ModifyButton" maxWidth="Infinity" onAction="#handleModify" style="-fx-background-color: #42a5f5; -fx-text-fill: white; -fx-font-size: 14;" text="Mettre à jour" />
+                </VBox>
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>

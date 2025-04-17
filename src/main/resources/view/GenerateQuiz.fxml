@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.GenerateQuizController">
+   <top>
+      <VBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+         <children>
+            <Label text="Générer un Quiz avec IA" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Separator prefWidth="200.0" />
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+         <content>
+            <VBox spacing="15.0">
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+               <children>
+                  <GridPane hgap="10.0" vgap="15.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="100.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Titre du Quiz:" GridPane.rowIndex="0" />
+                        <TextField fx:id="titreField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        
+                        <Label text="Matière:" GridPane.rowIndex="1" />
+                        <TextField fx:id="subjectField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        
+                        <Label text="Niveau de difficulté:" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="difficultyComboBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        
+                        <Label text="Nombre de questions:" GridPane.rowIndex="3" />
+                        <Spinner fx:id="questionCountSpinner" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        
+                        <Label text="Instructions supplémentaires:" GridPane.rowIndex="4" />
+                        <TextArea fx:id="additionalInstructionsArea" prefHeight="100.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                     </children>
+                  </GridPane>
+                  
+                  <HBox alignment="CENTER" spacing="20.0">
+                     <children>
+                        <Button fx:id="generateButton" mnemonicParsing="false" onAction="#handleGenerateQuiz" prefWidth="150.0" text="Générer Quiz" />
+                        <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefWidth="150.0" text="Annuler" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+                  
+                  <Separator prefWidth="200.0" />
+                  
+                  <VBox fx:id="previewBox" spacing="10.0">
+                     <!-- La prévisualisation du quiz sera ajoutée ici dynamiquement -->
+                  </VBox>
+                  
+                  <HBox alignment="CENTER" spacing="20.0">
+                     <children>
+                        <Button fx:id="saveQuizButton" mnemonicParsing="false" onAction="#handleSaveQuiz" prefWidth="200.0" text="Enregistrer le Quiz" />
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </center>
+</BorderPane> 

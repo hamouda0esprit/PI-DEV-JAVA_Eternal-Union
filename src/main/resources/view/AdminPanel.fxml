@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.shape.SVGPath?>
+
+<HBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.AdminPanelController"
+      stylesheets="@../styles/admin.css">
+      
+    <!-- Include Sidebar -->
+    <fx:include source="AdminSidebar.fxml"/>
+    
+    <!-- Main Content -->
+    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white;">
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="admin-header">
+            <Label text="Gestion des Examens" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="searchField" promptText="Rechercher des examens..." prefWidth="300" styleClass="search-field">
+                <HBox.margin>
+                    <Insets right="20"/>
+                </HBox.margin>
+            </TextField>
+            <Button fx:id="addExamButton" text="Ajouter un examen" styleClass="add-button" onAction="#handleAddExam">
+                <padding>
+                    <Insets top="8" right="15" bottom="8" left="15"/>
+                </padding>
+            </Button>
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+        </HBox>
+        
+        <!-- Table -->
+        <TableView fx:id="examensTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="titreColumn" text="Titre" prefWidth="200"/>
+                <TableColumn fx:id="instructeurColumn" text="Instructeur" prefWidth="150"/>
+                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="250"/>
+                <TableColumn fx:id="dateCreationColumn" text="Date de création" prefWidth="120"/>
+                <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150"/>
+            </columns>
+            <VBox.margin>
+                <Insets top="10" right="20" bottom="20" left="20"/>
+            </VBox.margin>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+        
+        <!-- Status Bar -->
+        <HBox styleClass="status-bar">
+            <Label fx:id="statusLabel" text="Total examens: 0"/>
+        </HBox>
+    </VBox>
+</HBox> 

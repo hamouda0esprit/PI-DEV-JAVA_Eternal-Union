@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f5f7fa;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.QuestionController">
+    <children>
+        <VBox spacing="0" AnchorPane.topAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+            <fx:include source="Navbar.fxml"/>
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" style="-fx-background-color: #2196F3;">
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+                <children>
+                    <Button fx:id="backButton" onAction="#handleCancel" style="-fx-background-color: transparent; -fx-text-fill: white;">
+                        <graphic>
+                            <Label text="←" textFill="WHITE">
+                                <font>
+                                    <Font size="24.0" />
+                                </font>
+                            </Label>
+                        </graphic>
+                    </Button>
+                    <VBox alignment="CENTER_LEFT" spacing="5.0">
+                        <HBox.margin>
+                            <Insets left="20.0" />
+                        </HBox.margin>
+                        <children>
+                            <Label text="Quiz :" textFill="WHITE">
+                                <font>
+                                    <Font name="System Bold" size="20.0" />
+                                </font>
+                            </Label>
+                            <Label fx:id="examenTitreLabel" text="devoir synthese" textFill="WHITE">
+                                <font>
+                                    <Font name="System Bold" size="16.0" />
+                                </font>
+                            </Label>
+                            <Label fx:id="examenDescriptionLabel" text="evaluation importante" textFill="WHITE">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
+            
+            <!-- Navigation Tabs -->
+            <HBox alignment="CENTER" style="-fx-background-color: white;">
+                <padding>
+                    <Insets bottom="10.0" top="10.0" />
+                </padding>
+                <children>
+                    <ToggleButton selected="true" style="-fx-background-color: transparent; -fx-text-fill: #2196F3; -fx-border-color: #2196F3; -fx-border-width: 0 0 2 0; -fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="8.0">
+                                <children>
+                                    <Label text="○" textFill="#2196F3" />
+                                    <Label text="Questions" textFill="#2196F3">
+                                        <font>
+                                            <Font name="System Bold" size="14.0" />
+                                        </font>
+                                    </Label>
+                                </children>
+                            </HBox>
+                        </graphic>
+                        <padding>
+                            <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+                        </padding>
+                    </ToggleButton>
+                    <ToggleButton fx:id="reponsesToggle" onAction="#handleReponsesToggle" style="-fx-background-color: transparent; -fx-text-fill: #757575; -fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="8.0">
+                                <children>
+                                    <Label text="○" textFill="#757575" />
+                                    <Label text="Réponses" textFill="#757575">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                </children>
+                            </HBox>
+                        </graphic>
+                        <padding>
+                            <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+                        </padding>
+                    </ToggleButton>
+                    <ToggleButton fx:id="consulterToggle" onAction="#handleConsulterQuizToggle" style="-fx-background-color: transparent; -fx-text-fill: #757575; -fx-focus-color: transparent; -fx-faint-focus-color: transparent;">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="8.0">
+                                <children>
+                                    <Label text="○" textFill="#757575" />
+                                    <Label text="Consulter Quiz" textFill="#757575">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                </children>
+                            </HBox>
+                        </graphic>
+                        <padding>
+                            <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+                        </padding>
+                    </ToggleButton>
+                </children>
+            </HBox>
+            
+            <!-- Main Content -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background: #f5f7fa; -fx-background-color: transparent; -fx-padding: 0 20 20 20;">
+                <content>
+                    <VBox spacing="20.0" style="-fx-padding: 20;">
+                        <!-- Question List -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
+                            <children>
+                                <VBox fx:id="questionsListContainer" spacing="0">
+                                    <!-- Les questions seront ajoutées ici dynamiquement -->
+                                </VBox>
+                            </children>
+                        </VBox>
+                        
+                        <!-- Question Form -->
+                        <VBox style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-padding: 20;">
+                            <children>
+                                <Label text="QUESTION" style="-fx-text-fill: #757575; -fx-font-weight: bold;" />
+                                <TextArea fx:id="questionArea" prefHeight="80.0" promptText="Entrez votre question ici..." style="-fx-border-color: #e0e0e0; -fx-border-radius: 4; -fx-background-radius: 4;" wrapText="true">
+                                    <VBox.margin>
+                                        <Insets bottom="15.0" top="5.0" />
+                                    </VBox.margin>
+                                </TextArea>
+                                
+                                <Label text="POINTS" style="-fx-text-fill: #757575; -fx-font-weight: bold;" />
+                                <TextField fx:id="nbPointsField" promptText="Nombre de points" style="-fx-border-color: #e0e0e0; -fx-border-radius: 4; -fx-background-radius: 4;">
+                                    <VBox.margin>
+                                        <Insets bottom="15.0" top="5.0" />
+                                    </VBox.margin>
+                                </TextField>
+                                
+                                <!-- Bottom Buttons -->
+                                <HBox alignment="CENTER_RIGHT">
+                                    <VBox.margin>
+                                        <Insets top="20.0" />
+                                    </VBox.margin>
+                                    <children>
+                                        <Button fx:id="saveButton" onAction="#handleSaveAndAdd" style="-fx-background-color: #2196F3; -fx-background-radius: 4; -fx-text-fill: white;">
+                                            <graphic>
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                    <children>
+                                                        <Label text="Ajouter" textFill="WHITE" />
+                                                    </children>
+                                                </HBox>
+                                            </graphic>
+                                            <padding>
+                                                <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
+                                            </padding>
+                                        </Button>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </VBox>
+        
+        <!-- Template for question generation (hidden) -->
+        <HBox fx:id="questionTemplate" visible="false" managed="false" alignment="CENTER_LEFT" style="-fx-border-color: #f0f0f0; -fx-border-width: 0 0 1 0; -fx-padding: 15;">
+            <children>
+                <Label fx:id="templateQuestionLabel" text="Question 1: " HBox.hgrow="ALWAYS" />
+                <Pane HBox.hgrow="ALWAYS" />
+                <HBox alignment="CENTER_RIGHT" spacing="8.0">
+                    <Button fx:id="templateEditButton" style="-fx-background-color: #2196F3; -fx-background-radius: 4;">
+                        <graphic>
+                            <Label text="✎" textFill="WHITE" />
+                        </graphic>
+                    </Button>
+                    <Button fx:id="templateDeleteButton" style="-fx-background-color: #F44336; -fx-background-radius: 4;">
+                        <graphic>
+                            <Label text="🗑" textFill="WHITE" />
+                        </graphic>
+                    </Button>
+                </HBox>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane> 
