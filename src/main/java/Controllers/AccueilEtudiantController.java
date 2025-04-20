@@ -3,6 +3,7 @@ package Controllers;
 import entite.Examen;
 import entite.ResultatQuiz;
 import entite.Feedback;
+import entite.Rating;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +24,7 @@ import service.QuestionService;
 import service.ReponseService;
 import service.ResultatQuizService;
 import service.FeedbackService;
+import service.RatingService;
 import entite.Question;
 import entite.Reponse;
 
@@ -40,6 +42,7 @@ public class AccueilEtudiantController implements Initializable {
     private ExamenService examenService;
     private ResultatQuizService resultatQuizService;
     private FeedbackService feedbackService;
+    private RatingService ratingService;
     
     // Variable pour stocker l'ID de l'utilisateur
     private String userId;
@@ -49,6 +52,7 @@ public class AccueilEtudiantController implements Initializable {
         examenService = new ExamenService();
         resultatQuizService = new ResultatQuizService();
         feedbackService = new FeedbackService();
+        ratingService = new RatingService();
         
         // Charger les examens et créer les cartes
         Platform.runLater(() -> {
@@ -100,70 +104,82 @@ public class AccueilEtudiantController implements Initializable {
                       "-fx-pref-width: 270; -fx-pref-height: 220;"); // Augmenter la hauteur pour ajouter l'info
         quizCard.setPadding(new Insets(20));
         quizCard.setSpacing(10);
-   // Conteneur pour le titre et l'icône œil (si applicable)
-HBox titleContainer = new HBox();
-titleContainer.setAlignment(Pos.CENTER_LEFT);
-titleContainer.setSpacing(10);
-HBox.setHgrow(titleContainer, Priority.ALWAYS);
+        
+        // Conteneur pour le titre et l'icône œil (si applicable)
+        HBox titleContainer = new HBox();
+        titleContainer.setAlignment(Pos.CENTER_LEFT);
+        titleContainer.setSpacing(10);
+        HBox.setHgrow(titleContainer, Priority.ALWAYS);
 
-// Titre du quiz
-Label titleLabel = new Label(examen.getTitre());
-titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-text-fill: #333333;");
-titleLabel.setWrapText(true);
-HBox.setHgrow(titleLabel, Priority.ALWAYS);
+        // Titre du quiz
+        Label titleLabel = new Label(examen.getTitre());
+        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-text-fill: #333333;");
+        titleLabel.setWrapText(true);
+        HBox.setHgrow(titleLabel, Priority.ALWAYS);
 
-// Ajouter le titre au conteneur
-titleContainer.getChildren().add(titleLabel);
+        // Ajouter le titre au conteneur
+        titleContainer.getChildren().add(titleLabel);
 
-// Ajouter un espaceur pour pousser l'icône à droite
-Region spacer = new Region();
-HBox.setHgrow(spacer, Priority.ALWAYS);
-titleContainer.getChildren().add(spacer);
-
-// Vérifier s'il faut afficher l'icône d'œil (quand nbr_essai = 0)
-boolean showEyeIcon = false;
-if (examen.getNbrEssai() > 0 && userId != null && !userId.isEmpty()) {
-    try {
-        int userIdInt = Integer.parseInt(userId);
-        ResultatQuiz resultatQuiz = resultatQuizService.recupererParUtilisateurEtExamen(userIdInt, examen.getId());
-        if (resultatQuiz != null && resultatQuiz.getNbrEssai() <= 0) {
-            showEyeIcon = true;
+        // Ajouter un espaceur pour pousser l'icône à droite
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        titleContainer.getChildren().add(spacer);
+        
+        // Vérifier s'il faut afficher l'icône d'œil (quand nbr_essai = 0)
+        boolean showEyeIcon = false;
+        if (examen.getNbrEssai() > 0 && userId != null && !userId.isEmpty()) {
+            try {
+                int userIdInt = Integer.parseInt(userId);
+                ResultatQuiz resultatQuiz = resultatQuizService.recupererParUtilisateurEtExamen(userIdInt, examen.getId());
+                if (resultatQuiz != null && resultatQuiz.getNbrEssai() <= 0) {
+                    showEyeIcon = true;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Erreur lors de la conversion de l'ID utilisateur: " + e.getMessage());
+            }
         }
-    } catch (NumberFormatException e) {
-        System.err.println("Erreur lors de la conversion de l'ID utilisateur: " + e.getMessage());
-    }
-}
 
-// Ajouter l'icône d'œil si nécessaire
-if (showEyeIcon) {
-    Button eyeButton = new Button();
-    eyeButton.setTooltip(new Tooltip("Consulter les réponses correctes"));
-    eyeButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+        // Ajouter l'icône d'œil si nécessaire
+        if (showEyeIcon) {
+            Button eyeButton = new Button();
+            eyeButton.setTooltip(new Tooltip("Consulter les réponses correctes"));
+            eyeButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
 
-    // Créer une icône SVG pour l'œil
-    SVGPath eyeIcon = new SVGPath();
-    eyeIcon.setContent("M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z");
-    eyeIcon.setFill(Color.web("#1976d2"));
-    eyeIcon.setStroke(Color.TRANSPARENT);
+            // Créer une icône SVG pour l'œil
+            SVGPath eyeIcon = new SVGPath();
+            eyeIcon.setContent("M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z");
+            eyeIcon.setFill(Color.web("#1976d2"));
+            eyeIcon.setStroke(Color.TRANSPARENT);
 
-    // Définir la taille de l'icône
-    eyeButton.setGraphic(eyeIcon);
-    eyeButton.setPrefSize(24, 24);
-    eyeButton.setMinSize(24, 24);
-    eyeButton.setMaxSize(24, 24);
+            // Définir la taille de l'icône
+            eyeButton.setGraphic(eyeIcon);
+            eyeButton.setPrefSize(24, 24);
+            eyeButton.setMinSize(24, 24);
+            eyeButton.setMaxSize(24, 24);
 
-    // Action du bouton - consulter les réponses correctes
-    eyeButton.setOnAction(e -> consulterReponsesQuiz(examen.getId(), examen.getTitre()));
-
-    // Ajouter le bouton à droite du conteneur
-    titleContainer.getChildren().add(eyeButton);
-}
+            // Action du bouton - consulter les réponses correctes
+            eyeButton.setOnAction(e -> consulterReponsesQuiz(examen.getId(), examen.getTitre()));
+            
+            // Ajouter le bouton à droite du conteneur
+            titleContainer.getChildren().add(eyeButton);
+        }
 
         // Description
         Label descriptionLabel = new Label(examen.getDescription());
         descriptionLabel.setStyle("-fx-text-fill: #757575; -fx-font-size: 14px;");
         descriptionLabel.setWrapText(true);
         VBox.setMargin(descriptionLabel, new Insets(0, 0, 10, 0));
+        
+        // Afficher l'évaluation moyenne pour cet examen
+        HBox ratingInfoContainer = new HBox(5);
+        ratingInfoContainer.setAlignment(Pos.CENTER_LEFT);
+        
+        // Récupérer la moyenne des évaluations et le nombre d'évaluations
+        double moyenneEvaluations = ratingService.calculerMoyenneExamen(examen.getId());
+        int nombreEvaluations = ratingService.compterEvaluationsExamen(examen.getId());
+        
+        // Arrondir la moyenne à 1 décimale
+        double moyenneArrondie = Math.round(moyenneEvaluations * 10.0) / 10.0;
         
         // Conteneur pour les informations du bas
         HBox infoContainer = new HBox();
@@ -196,6 +212,26 @@ if (showEyeIcon) {
         
         // Ajout des boîtes d'informations au conteneur
         infoContainer.getChildren().addAll(categoryBox, durationBox);
+        
+        // Afficher les étoiles uniquement s'il y a des évaluations
+        if (nombreEvaluations > 0) {
+            HBox ratingBox = new HBox(5);
+            ratingBox.setAlignment(Pos.CENTER_LEFT);
+            
+            Label ratingValue = new Label(String.format("%.1f", moyenneArrondie));
+            ratingValue.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #FF9800;");
+            
+            Label starIcon = new Label("★");
+            starIcon.setStyle("-fx-font-size: 14px; -fx-text-fill: #FFD700;");
+            
+            Label ratingCount = new Label("(" + nombreEvaluations + ")");
+            ratingCount.setStyle("-fx-font-size: 12px; -fx-text-fill: #757575;");
+            
+            ratingBox.getChildren().addAll(ratingValue, starIcon, ratingCount);
+            
+            // Ajouter l'info de rating à côté des autres informations
+            infoContainer.getChildren().add(ratingBox);
+        }
         
         // Conteneur pour les essais et autres informations
         VBox essaisContainer = new VBox();
@@ -341,9 +377,11 @@ if (showEyeIcon) {
             // Ajouter le bouton à buttonBox
             buttonBox.getChildren().add(startButton);
         } else {
-            // Aucun essai restant, vérifier si l'utilisateur a déjà fourni un feedback
+            // Aucun essai restant, vérifier si l'utilisateur a déjà fourni un feedback et une évaluation
             boolean feedbackExists = false;
+            boolean ratingExists = false;
             String feedbackContenu = "";
+            Integer ratingStars = null;
             
             if (userId != null && !userId.isEmpty()) {
                 try {
@@ -351,6 +389,9 @@ if (showEyeIcon) {
                     
                     // Vérifier si un feedback existe déjà
                     feedbackExists = feedbackService.verifierExistenceFeedback(userIdInt, examen.getId());
+                    
+                    // Vérifier si une évaluation existe déjà
+                    ratingExists = ratingService.verifierExistenceRating(userIdInt, examen.getId());
                     
                     // Si feedback existe, récupérer son contenu
                     if (feedbackExists) {
@@ -362,11 +403,24 @@ if (showEyeIcon) {
                             }
                         }
                     }
+                    
+                    // Si rating existe, récupérer le nombre d'étoiles
+                    if (ratingExists) {
+                        Rating rating = ratingService.recupererParUtilisateurEtExamen(userIdInt, examen.getId());
+                        if (rating != null) {
+                            ratingStars = rating.getStars();
+                        }
+                    }
                 } catch (NumberFormatException e) {
                     System.err.println("Erreur lors de la conversion de l'ID utilisateur: " + e.getMessage());
                 }
             }
             
+            // Conteneur pour le feedback et la notation
+            VBox feedbackRatingBox = new VBox(10);
+            feedbackRatingBox.setAlignment(Pos.CENTER_LEFT);
+            
+            // Afficher le feedback existant ou le bouton de feedback
             if (feedbackExists) {
                 // Afficher le feedback existant
                 VBox feedbackBox = new VBox(5);
@@ -387,25 +441,99 @@ if (showEyeIcon) {
                 contentLabel.setWrapText(true);
                 
                 feedbackContent.getChildren().addAll(bulletLabel, contentLabel);
-                
                 feedbackBox.getChildren().addAll(ruckMeldungLabel, feedbackContent);
                 
-                // Ajouter le feedbackBox au buttonBox
-                buttonBox.getChildren().add(feedbackBox);
-                buttonBox.setAlignment(Pos.CENTER_LEFT);
-                HBox.setHgrow(feedbackBox, Priority.ALWAYS);
+                // Ajouter le feedbackBox
+                feedbackRatingBox.getChildren().add(feedbackBox);
             } else {
-                // Aucun essai restant et pas de feedback, ajouter le bouton de feedback
+                // Aucun feedback, ajouter le bouton de feedback
                 Button feedbackButton = new Button("Donner feedback");
                 feedbackButton.setPrefWidth(140);
                 feedbackButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 4;");
                 
                 // Action du bouton - ouvrir une fenêtre de feedback
-                feedbackButton.setOnAction(e -> openFeedbackDialog(examen.getId(), examen.getTitre(), quizCard, buttonBox));
+                feedbackButton.setOnAction(e -> openFeedbackDialog(examen.getId(), examen.getTitre(), quizCard, feedbackRatingBox));
                 
-                // Ajouter le bouton au buttonBox
-                buttonBox.getChildren().add(feedbackButton);
+                // Ajouter le bouton au feedbackRatingBox
+                feedbackRatingBox.getChildren().add(feedbackButton);
             }
+            
+            // Afficher la notation existante ou ajouter le système de notation
+            if (ratingExists && ratingStars != null) {
+                // Afficher la notation existante
+                VBox ratingBox = new VBox(5);
+                ratingBox.setAlignment(Pos.CENTER_LEFT);
+                
+                Label ratingLabel = new Label("Votre évaluation:");
+                ratingLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #FF9800;");
+                
+                // Afficher les étoiles
+                HBox starsBox = new HBox(2);
+                starsBox.setAlignment(Pos.CENTER_LEFT);
+                
+                for (int i = 1; i <= 5; i++) {
+                    Label starLabel = new Label(i <= ratingStars ? "★" : "☆");
+                    starLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: " + (i <= ratingStars ? "#FFD700" : "#DDDDDD") + ";");
+                    starsBox.getChildren().add(starLabel);
+                }
+                
+                ratingBox.getChildren().addAll(ratingLabel, starsBox);
+                
+                // Ajouter le ratingBox
+                feedbackRatingBox.getChildren().add(ratingBox);
+            } else {
+                // Aucune notation, ajouter le système de notation
+                VBox ratingBox = new VBox(5);
+                ratingBox.setAlignment(Pos.CENTER_LEFT);
+                
+                Label ratingLabel = new Label("Évaluer cet examen:");
+                ratingLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #FF9800;");
+                
+                // Système d'étoiles interactif
+                HBox starsBox = new HBox(2);
+                starsBox.setAlignment(Pos.CENTER_LEFT);
+                
+                // La valeur sélectionnée (initialement 0)
+                final int[] selectedRating = {0};
+                
+                // Créer 5 étoiles
+                for (int i = 1; i <= 5; i++) {
+                    final int rating = i;
+                    Label starLabel = new Label("☆");
+                    starLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #DDDDDD; -fx-cursor: hand;");
+                    
+                    // Effet hover
+                    starLabel.setOnMouseEntered(event -> {
+                        highlightStars(starsBox, rating);
+                    });
+                    
+                    // Retour à l'état précédent quand la souris quitte
+                    starLabel.setOnMouseExited(event -> {
+                        highlightStars(starsBox, selectedRating[0]);
+                    });
+                    
+                    // Sélection
+                    starLabel.setOnMouseClicked(event -> {
+                        selectedRating[0] = rating;
+                        highlightStars(starsBox, rating);
+                        
+                        // Enregistrer l'évaluation
+                        saveRating(examen.getId(), rating);
+                    });
+                    
+                    starsBox.getChildren().add(starLabel);
+                }
+                
+                ratingBox.getChildren().addAll(ratingLabel, starsBox);
+                
+                // Ajouter le ratingBox
+                feedbackRatingBox.getChildren().add(ratingBox);
+            }
+            
+            // Ajouter le feedbackRatingBox au buttonBox
+            buttonBox.getChildren().add(feedbackRatingBox);
+            buttonBox.setAlignment(Pos.CENTER_LEFT);
+            HBox.setHgrow(feedbackRatingBox, Priority.ALWAYS);
         }
         
         // Ajouter le buttonBox à la carte dans tous les cas
@@ -487,9 +615,9 @@ if (showEyeIcon) {
      * @param examenId L'identifiant de l'examen
      * @param quizTitle Le titre du quiz
      * @param quizCard La carte du quiz à mettre à jour
-     * @param buttonBox Le conteneur du bouton à remplacer
+     * @param container Le conteneur à mettre à jour après l'ajout du feedback
      */
-    private void openFeedbackDialog(Integer examenId, String quizTitle, VBox quizCard, HBox buttonBox) {
+    private void openFeedbackDialog(Integer examenId, String quizTitle, VBox quizCard, VBox container) {
         // Vérifier si l'utilisateur a déjà donné un feedback pour ce quiz
         if (userId != null && !userId.isEmpty()) {
             try {
@@ -556,7 +684,7 @@ if (showEyeIcon) {
         // Afficher la boîte de dialogue et traiter le résultat
         dialog.showAndWait().ifPresent(commentaire -> {
             if (commentaire != null && !commentaire.isEmpty()) {
-                saveFeedback(examenId, commentaire, quizCard, buttonBox);
+                saveFeedback(examenId, commentaire, quizCard, container);
             }
         });
     }
@@ -566,9 +694,9 @@ if (showEyeIcon) {
      * @param examenId L'identifiant de l'examen
      * @param commentaire Les commentaires de l'utilisateur
      * @param quizCard La carte du quiz à mettre à jour
-     * @param buttonBox Le conteneur du bouton à remplacer
+     * @param container Le conteneur à mettre à jour après l'ajout du feedback
      */
-    private void saveFeedback(Integer examenId, String commentaire, VBox quizCard, HBox buttonBox) {
+    private void saveFeedback(Integer examenId, String commentaire, VBox quizCard, VBox container) {
         try {
             // Convertir l'ID utilisateur en entier
             int userIdInt = Integer.parseInt(userId);
@@ -587,7 +715,7 @@ if (showEyeIcon) {
                 System.out.println("Feedback enregistré avec succès pour l'examen #" + examenId);
                 
                 // Mettre à jour l'interface immédiatement
-                buttonBox.getChildren().clear(); // Supprimer le bouton feedback
+                container.getChildren().clear(); // Supprimer les éléments existants
                 
                 // Créer une zone d'affichage du feedback
                 VBox feedbackBox = new VBox(5);
@@ -610,10 +738,13 @@ if (showEyeIcon) {
                 feedbackContent.getChildren().addAll(bulletLabel, contentLabel);
                 feedbackBox.getChildren().addAll(ruckMeldungLabel, feedbackContent);
                 
-                // Ajouter le feedbackBox au buttonBox
-                buttonBox.getChildren().add(feedbackBox);
-                buttonBox.setAlignment(Pos.CENTER_LEFT);
-                HBox.setHgrow(feedbackBox, Priority.ALWAYS);
+                // Ajouter le feedbackBox au conteneur
+                container.getChildren().add(feedbackBox);
+                
+                // Rafraîchir les évaluations
+                Platform.runLater(() -> {
+                    loadQuizzes();
+                });
                 
                 showAlert(Alert.AlertType.INFORMATION, 
                           "Feedback envoyé", 
@@ -775,6 +906,92 @@ if (showEyeIcon) {
             showAlert(Alert.AlertType.ERROR, 
                       "Erreur", 
                       "Impossible d'afficher les réponses correctes: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Met en évidence les étoiles jusqu'à l'indice spécifié
+     * @param starsBox Le conteneur d'étoiles
+     * @param rating Le nombre d'étoiles à mettre en évidence
+     */
+    private void highlightStars(HBox starsBox, int rating) {
+        for (int i = 0; i < starsBox.getChildren().size(); i++) {
+            Label starLabel = (Label) starsBox.getChildren().get(i);
+            if (i < rating) {
+                starLabel.setText("★");
+                starLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #FFD700; -fx-cursor: hand;");
+            } else {
+                starLabel.setText("☆");
+                starLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: #DDDDDD; -fx-cursor: hand;");
+            }
+        }
+    }
+    
+    /**
+     * Enregistre l'évaluation de l'utilisateur pour un examen
+     * @param examenId L'identifiant de l'examen
+     * @param stars Le nombre d'étoiles
+     */
+    private void saveRating(Integer examenId, int stars) {
+        if (userId == null || userId.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, 
+                "Connexion requise", 
+                "Vous devez être connecté pour évaluer cet examen.");
+            return;
+        }
+        
+        try {
+            // Convertir l'ID utilisateur en entier
+            int userIdInt = Integer.parseInt(userId);
+            
+            // Vérifier si une évaluation existe déjà
+            Rating existingRating = ratingService.recupererParUtilisateurEtExamen(userIdInt, examenId);
+            
+            boolean success;
+            if (existingRating != null) {
+                // Mettre à jour l'évaluation existante
+                existingRating.setStars(stars);
+                success = ratingService.mettreAJour(existingRating);
+            } else {
+                // Créer une nouvelle évaluation
+                Rating rating = new Rating();
+                rating.setExamen_id(examenId);
+                rating.setUser_id(userIdInt);
+                rating.setStars(stars);
+                rating.setCreated_at(new Date());
+                
+                // Enregistrer l'évaluation dans la base de données
+                success = ratingService.ajouter(rating);
+            }
+            
+            if (success) {
+                System.out.println("Évaluation enregistrée avec succès pour l'examen #" + examenId + ": " + stars + " étoiles");
+                
+                // Rafraîchir les cartes de quiz pour afficher la nouvelle évaluation
+                Platform.runLater(() -> {
+                    loadQuizzes();
+                });
+                
+                showAlert(Alert.AlertType.INFORMATION, 
+                          "Évaluation enregistrée", 
+                          "Merci pour votre évaluation !");
+            } else {
+                System.err.println("Erreur lors de l'enregistrement de l'évaluation");
+                showAlert(Alert.AlertType.ERROR, 
+                          "Erreur", 
+                          "Une erreur est survenue lors de l'enregistrement de l'évaluation.");
+            }
+            
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, 
+                      "Erreur", 
+                      "Une erreur est survenue lors de la conversion de l'ID utilisateur: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, 
+                      "Erreur", 
+                      "Une erreur est survenue lors de l'envoi de l'évaluation: " + e.getMessage());
         }
     }
     
