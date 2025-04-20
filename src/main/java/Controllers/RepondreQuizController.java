@@ -148,7 +148,7 @@ public class RepondreQuizController implements Initializable {
         // Vérifie que l'ID est un nombre entier valide
         try {
             int userIdInt = Integer.parseInt(userId);
-            this.userId = userId;
+        this.userId = userId;
             System.out.println("ID utilisateur défini avec succès dans RepondreQuizController: " + userId);
         } catch (NumberFormatException e) {
             System.err.println("ERREUR: L'ID utilisateur n'est pas un nombre valide: " + userId);
@@ -405,7 +405,7 @@ public class RepondreQuizController implements Initializable {
             
             // Vérifier les réponses correctes
             for (Map.Entry<Integer, Integer> entry : reponsesEtudiant.entrySet()) {
-                int questionId = entry.getKey();
+            int questionId = entry.getKey();
                 int reponseId = entry.getValue();
                 
                 // Récupérer toutes les réponses pour cette question
