@@ -16,6 +16,10 @@ import service.ExamenService;
 import service.QuestionService;
 import service.ReponseService;
 import service.ResultatQuizService;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,6 +49,7 @@ public class RepondreQuizController implements Initializable {
     private static List<Question> demoQuestions = new ArrayList<>();
     private static List<Reponse> demoReponses = new ArrayList<>();
     private static boolean useDemo = false;
+    private boolean modeConsultation = false;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -510,5 +515,99 @@ public class RepondreQuizController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    /**
+     * Active ou désactive le mode consultation pour afficher les réponses correctes
+     * @param modeConsultation true pour activer le mode consultation, false sinon
+     */
+    public void setModeConsultation(boolean modeConsultation) {
+        this.modeConsultation = modeConsultation;
+        
+        // Si en mode consultation, afficher directement les réponses correctes
+        if (modeConsultation && questionToggleGroups != null && !questionToggleGroups.isEmpty()) {
+            // Désactiver les boutons de navigation et de validation
+            submitButton.setDisable(true);
+            
+            // Remplacer le texte du header
+            examenTitreLabel.setText("Réponses correctes du quiz");
+            examenDescriptionLabel.setText("Consultez les réponses correctes pour chaque question.");
+            
+            // Charger et afficher toutes les questions avec les réponses correctes
+            showAllQuestionsWithCorrectAnswers();
+        }
+    }
+    
+    /**
+     * Affiche toutes les questions avec leurs réponses correctes en mode consultation
+     */
+    private void showAllQuestionsWithCorrectAnswers() {
+        // Vider le conteneur des questions
+        questionsContainer.getChildren().clear();
+        
+        // Parcourir toutes les questions
+        for (Map.Entry<Integer, ToggleGroup> entry : questionToggleGroups.entrySet()) {
+            int questionId = entry.getKey();
+            ToggleGroup optionsGroup = entry.getValue();
+            
+            // Créer un conteneur pour chaque question
+            VBox questionBox = new VBox(10);
+            questionBox.setStyle("-fx-background-color: white; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2); -fx-padding: 15;");
+            questionBox.setMaxWidth(Double.MAX_VALUE);
+            
+            // Ajouter le numéro et le texte de la question
+            Label questionLabel = new Label("Question " + questionId + ": " + questionService.recupererParId(questionId).getQuestion());
+            questionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+            questionLabel.setWrapText(true);
+            
+            // Conteneur pour les options de réponse
+            VBox optionsBox = new VBox(8);
+            
+            // Ajouter les options de réponse
+            List<Reponse> reponses = allReponses.get(questionId);
+            if (reponses != null) {
+                for (Reponse reponse : reponses) {
+                    // Créer un élément pour chaque réponse
+                    HBox optionBox = new HBox(10);
+                    optionBox.setAlignment(Pos.CENTER_LEFT);
+                    
+                    // Indiquer si la réponse est correcte
+                    if (reponse.getEtat() == 1) {
+                        optionBox.setStyle("-fx-background-color: #e8f5e9; -fx-background-radius: 4; -fx-padding: 8;");
+                        
+                        Label checkIcon = new Label("✓");
+                        checkIcon.setStyle("-fx-text-fill: #4CAF50; -fx-font-weight: bold; -fx-font-size: 16px;");
+                        
+                        Label optionLabel = new Label(reponse.getReponse());
+                        optionLabel.setStyle("-fx-text-fill: #2E7D32; -fx-font-weight: bold;");
+                        optionLabel.setWrapText(true);
+                        
+                        optionBox.getChildren().addAll(checkIcon, optionLabel);
+                    } else {
+                        Label optionLabel = new Label(reponse.getReponse());
+                        optionLabel.setStyle("-fx-text-fill: #757575;");
+                        optionLabel.setWrapText(true);
+                        
+                        optionBox.getChildren().add(optionLabel);
+                    }
+                    
+                    optionsBox.getChildren().add(optionBox);
+                }
+            }
+            
+            // Ajouter les éléments au conteneur de question
+            questionBox.getChildren().addAll(questionLabel, optionsBox);
+            
+            // Ajouter un séparateur après chaque question (sauf la dernière)
+            if (questionToggleGroups.size() > 1) {
+                Separator separator = new Separator();
+                separator.setPadding(new Insets(10, 0, 10, 0));
+                VBox.setMargin(separator, new Insets(10, 0, 10, 0));
+                
+                questionsContainer.getChildren().addAll(questionBox, separator);
+            } else {
+                questionsContainer.getChildren().add(questionBox);
+            }
+        }
     }
 } 
