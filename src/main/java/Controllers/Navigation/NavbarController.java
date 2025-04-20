@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.image.Image;
 import java.io.IOException;
+import javafx.scene.control.Alert;
 
 public class NavbarController implements Initializable {
     @FXML
@@ -96,7 +97,44 @@ public class NavbarController implements Initializable {
     @FXML
     private void handleExamenNavigation() {
         navigationState.setCurrentView("Examen");
-        loadView("/view/LoginView.fxml");
+        
+        // Get current authenticated user
+        User user = LoginController.getAuthenticatedUser();
+        
+        if (user != null) {
+            String userType = user.getType();
+            System.out.println("Type d'utilisateur pour navigation exam: " + userType);
+            
+            // Navigate based on user type
+            if (userType != null) {
+                // Admin
+                if (userType.equalsIgnoreCase("admin") || userType.equalsIgnoreCase("administrateur") || userType.equals("2")) {
+                    loadView("/view/AdminPanel.fxml");
+                    return;
+                }
+                // Student
+                else if (userType.equalsIgnoreCase("Étudiant") || userType.equalsIgnoreCase("student") || userType.equals("0")) {
+                    loadViewWithUserID("/view/AccueilEtudiant.fxml", "Espace Étudiant", examenButton);
+                    return;
+                }
+                // Teacher
+                else if (userType.equalsIgnoreCase("Professeur") || userType.equalsIgnoreCase("teacher") ||
+                        userType.equalsIgnoreCase("prof") || userType.equals("1")) {
+                    loadView("/view/AccueilProfesseur.fxml");
+                    return;
+                }
+            }
+        }
+        
+        // If no authenticated user or user type not recognized, show an alert and navigate to Home
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Accès restreint");
+        alert.setHeaderText("Connexion requise");
+        alert.setContentText("Veuillez vous connecter pour accéder à cette fonctionnalité.");
+        alert.showAndWait();
+        
+        // Redirect to home page
+        loadView("/view/Home.fxml");
     }
 
     @FXML
@@ -150,6 +188,66 @@ public class NavbarController implements Initializable {
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Utility method to load a view and pass the current user ID to controllers that support it
+     * @param fxmlPath Path to the FXML file
+     * @param windowTitle Window title to set
+     * @param sourceButton Button that triggered the navigation (for getting the scene)
+     * @return true if successful, false otherwise
+     */
+    private boolean loadViewWithUserID(String fxmlPath, String windowTitle, Button sourceButton) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            
+            // Get the controller
+            Object controller = loader.getController();
+            
+            // If the controller has a setUserId method, call it
+            if (currentUser != null && controller != null) {
+                System.out.println("Attempting to pass user ID to " + controller.getClass().getSimpleName());
+                
+                // Try to call setUserId method if it exists
+                try {
+                    java.lang.reflect.Method setUserIdMethod = controller.getClass().getMethod("setUserId", String.class);
+                    setUserIdMethod.invoke(controller, String.valueOf(currentUser.getId()));
+                    System.out.println("Successfully passed user ID " + currentUser.getId() + " to " + controller.getClass().getSimpleName());
+                } catch (NoSuchMethodException e) {
+                    // Controller doesn't have setUserId method - this is okay
+                    System.out.println("Controller " + controller.getClass().getSimpleName() + " doesn't have setUserId method");
+                } catch (Exception e) {
+                    // Other reflection errors
+                    System.err.println("Error passing user ID to controller: " + e.getMessage());
+                }
+            }
+            
+            // Set the scene
+            Stage stage = (Stage) sourceButton.getScene().getWindow();
+            Scene scene = new Scene(root);
+            
+            // Add the stylesheet
+            String css = getClass().getResource("/styles/style.css").toExternalForm();
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(css);
+            
+            // Set icon if needed
+            Image icon = new Image(getClass().getResourceAsStream("/images/logo.png"));
+            stage.getIcons().clear();
+            stage.getIcons().add(icon);
+            
+            stage.setScene(scene);
+            if (windowTitle != null && !windowTitle.isEmpty()) {
+                stage.setTitle(windowTitle);
+            }
+            stage.show();
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 } 

@@ -3,6 +3,7 @@ package Controllers;
 import entite.Examen;
 import entite.Question;
 import entite.Reponse;
+import entite.ResultatQuiz;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,7 @@ import javafx.scene.layout.VBox;
 import service.ExamenService;
 import service.QuestionService;
 import service.ReponseService;
+import service.ResultatQuizService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,6 +32,7 @@ public class RepondreQuizController implements Initializable {
     private ExamenService examenService;
     private QuestionService questionService;
     private ReponseService reponseService;
+    private ResultatQuizService resultatQuizService;
     private Examen examen;
     private Map<Integer, ToggleGroup> questionToggleGroups = new HashMap<>();
     private Map<Integer, List<RadioButton>> questionOptions = new HashMap<>();
@@ -48,6 +51,10 @@ public class RepondreQuizController implements Initializable {
         examenService = new ExamenService();
         questionService = new QuestionService();
         reponseService = new ReponseService();
+        resultatQuizService = new ResultatQuizService();
+        
+        // Test de la connexion à la base de données
+        testDatabaseConnection();
         
         // Vider le conteneur d'exemples
         Platform.runLater(() -> {
@@ -57,6 +64,32 @@ public class RepondreQuizController implements Initializable {
                 loadQuestions();
             }
         });
+    }
+    
+    /**
+     * Teste la connexion à la base de données et vérifie que les tables nécessaires existent
+     */
+    private void testDatabaseConnection() {
+        try {
+            // Vérifier que la connexion fonctionne
+            boolean connexionOk = resultatQuizService.testerConnexion();
+            if (connexionOk) {
+                System.out.println("Connexion à la base de données réussie");
+            } else {
+                System.err.println("ERREUR: Impossible de se connecter à la base de données");
+            }
+            
+            // Vérifier ou créer la table resultat_quiz si nécessaire
+            boolean tableOk = resultatQuizService.verifierTableResultatQuiz();
+            if (tableOk) {
+                System.out.println("Table resultat_quiz vérifiée avec succès");
+            } else {
+                System.err.println("ERREUR: Problème avec la table resultat_quiz");
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur lors du test de la base de données: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -101,8 +134,20 @@ public class RepondreQuizController implements Initializable {
      * @param userId ID de l'utilisateur
      */
     public void setUserId(String userId) {
-        this.userId = userId;
-        System.out.println("ID utilisateur défini dans RepondreQuizController: " + userId);
+        if (userId == null || userId.isEmpty()) {
+            System.err.println("AVERTISSEMENT: Tentative de définir un ID utilisateur null ou vide");
+            // On ne modifie pas la valeur actuelle si elle est null ou vide
+            return;
+        }
+        
+        // Vérifie que l'ID est un nombre entier valide
+        try {
+            int userIdInt = Integer.parseInt(userId);
+            this.userId = userId;
+            System.out.println("ID utilisateur défini avec succès dans RepondreQuizController: " + userId);
+        } catch (NumberFormatException e) {
+            System.err.println("ERREUR: L'ID utilisateur n'est pas un nombre valide: " + userId);
+        }
     }
     
     private void loadExamenInfo() {
@@ -215,7 +260,15 @@ public class RepondreQuizController implements Initializable {
     private void handleBack() {
         try {
             // Revenir à la page d'accueil étudiant
-            Parent root = FXMLLoader.load(getClass().getResource("/view/AccueilEtudiant.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AccueilEtudiant.fxml"));
+            Parent root = loader.load();
+            
+            // Passer l'ID utilisateur au contrôleur
+            AccueilEtudiantController controller = loader.getController();
+            if (userId != null && !userId.isEmpty()) {
+                controller.setUserId(userId);
+            }
+            
             Scene scene = backButton.getScene();
             scene.setRoot(root);
         } catch (IOException e) {
@@ -226,6 +279,21 @@ public class RepondreQuizController implements Initializable {
     
     @FXML
     private void handleSubmit() {
+        // Debug information
+        System.out.println("handleSubmit called with userId: " + userId + ", examen: " + (examen != null ? examen.getId() : "null"));
+        
+        // Vérifier si l'utilisateur et l'examen sont définis
+        if (userId == null || userId.isEmpty()) {
+            // Ne pas continuer si l'utilisateur n'est pas identifié
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Vous devez être connecté pour soumettre un quiz.");
+            return;
+        }
+        
+        if (examen == null) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Aucun examen n'est chargé.");
+            return;
+        }
+        
         // Vérifier si toutes les questions ont une réponse
         List<Integer> questionsNonRepondues = new ArrayList<>();
         
@@ -261,7 +329,7 @@ public class RepondreQuizController implements Initializable {
         }
         
         // Enregistrer les réponses de l'utilisateur
-        if (sauvegarderReponses()) {
+        if (sauvegarderReponses(reponsesEtudiant)) {
             // Toutes les questions ont une réponse, naviguer vers la page de résultats
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ConsulterQuizView.fxml"));
@@ -296,30 +364,144 @@ public class RepondreQuizController implements Initializable {
     }
     
     /**
-     * Sauvegarde les réponses choisies par l'utilisateur
+     * Sauvegarde les réponses choisies par l'utilisateur et le résultat du quiz
+     * @param reponsesEtudiant Map des réponses choisies par l'étudiant (questionId -> reponseId)
      * @return true si les réponses ont été sauvegardées avec succès
      */
-    private boolean sauvegarderReponses() {
-        boolean success = true;
+    private boolean sauvegarderReponses(Map<Integer, Integer> reponsesEtudiant) {
+        System.out.println("sauvegarderReponses appelée avec userId: " + userId + ", examen: " + (examen != null ? examen.getId() : "null"));
         
-        // Dans une application réelle, on enregistrerait les réponses de l'utilisateur dans la base de données
-        // Pour cette démonstration, nous allons simplement simuler la sauvegarde
-        
-        for (Map.Entry<Integer, ToggleGroup> entry : questionToggleGroups.entrySet()) {
-            int questionId = entry.getKey();
-            ToggleGroup group = entry.getValue();
-            
-            if (group.getSelectedToggle() != null) {
-                // Récupérer la réponse choisie
-                int reponseId = (int) group.getSelectedToggle().getUserData();
-                System.out.println("Question " + questionId + " -> Réponse " + reponseId);
-                
-                // NOTE: Ici on pourrait sauvegarder dans la base de données
-                // Par exemple: responseService.enregistrerReponseUtilisateur(userId, questionId, reponseId);
-            }
+        if (userId == null || userId.isEmpty()) {
+            System.err.println("Erreur: userId null ou vide");
+            return false;
         }
         
-        return success;
+        if (examen == null) {
+            System.err.println("Erreur: examen null");
+            return false;
+        }
+        
+        try {
+            // Convertir l'ID utilisateur en entier
+            int userIdInt;
+            try {
+                userIdInt = Integer.parseInt(userId);
+                System.out.println("ID utilisateur converti: " + userIdInt);
+            } catch (NumberFormatException e) {
+                System.err.println("Erreur: L'ID utilisateur n'est pas un nombre valide: " + userId);
+                return false;
+            }
+            
+            // Calculer le score
+            int totalPoints = questionToggleGroups.size(); // 1 point par question
+            int score = 0;
+            
+            System.out.println("Nombre total de questions: " + totalPoints);
+            
+            // Vérifier les réponses correctes
+            for (Map.Entry<Integer, Integer> entry : reponsesEtudiant.entrySet()) {
+                int questionId = entry.getKey();
+                int reponseId = entry.getValue();
+                
+                // Récupérer toutes les réponses pour cette question
+                List<Reponse> reponses = allReponses.get(questionId);
+                if (reponses != null) {
+                    // Trouver la réponse sélectionnée
+                    boolean reponseFound = false;
+                    for (Reponse reponse : reponses) {
+                        if (reponse.getId() == reponseId) {
+                            reponseFound = true;
+                            // Si la réponse est correcte (etat = 1), ajouter un point
+                            if (reponse.getEtat() == 1) {
+                                score++;
+                                System.out.println("Question " + questionId + ": Réponse correcte! +1 point");
+                            } else {
+                                System.out.println("Question " + questionId + ": Réponse incorrecte");
+                            }
+                            break;
+                        }
+                    }
+                    
+                    if (!reponseFound) {
+                        System.out.println("Question " + questionId + ": Réponse " + reponseId + " non trouvée dans la liste des réponses possibles");
+                    }
+                } else {
+                    System.out.println("Question " + questionId + ": Aucune réponse associée trouvée");
+                }
+            }
+            
+            System.out.println("Score final: " + score + "/" + totalPoints);
+            
+            // Vérifier si un résultat existe déjà pour cet utilisateur et cet examen
+            ResultatQuiz resultatExistant = resultatQuizService.recupererParUtilisateurEtExamen(userIdInt, examen.getId());
+            
+            if (resultatExistant == null) {
+                // Premier essai - créer un nouveau résultat avec le nombre d'essais initial
+                int nbrEssaiInitial = examen.getNbrEssai() > 0 ? examen.getNbrEssai() - 1 : 0;
+                System.out.println("Premier essai - Nombre d'essais initial: " + nbrEssaiInitial);
+                
+                ResultatQuiz resultat = new ResultatQuiz();
+                resultat.setExamen_id(examen.getId());
+                resultat.setId_user_id(userIdInt);
+                resultat.setScore(score);
+                resultat.setTotalPoints(totalPoints);
+                resultat.setDatePassage(new Date()); // Date actuelle
+                resultat.setNbrEssai(nbrEssaiInitial); // définir le nombre d'essais restants
+                
+                System.out.println("Tentative d'enregistrement du résultat dans la BD avec " + nbrEssaiInitial + " essais restants");
+                
+                // Sauvegarder le résultat dans la base de données
+                boolean success = resultatQuizService.ajouter(resultat);
+                if (success) {
+                    System.out.println("Résultat enregistré avec succès: " + score + "/" + totalPoints + " pour l'utilisateur " + userId);
+                    System.out.println("Essais restants: " + nbrEssaiInitial);
+                    return true;
+                } else {
+                    System.err.println("Erreur lors de l'enregistrement du résultat du quiz");
+                    return false;
+                }
+            } else {
+                // Ce n'est pas le premier essai - vérifier s'il reste des essais
+                int essaisRestants = resultatExistant.getNbrEssai();
+                
+                if (essaisRestants > 0 || examen.getNbrEssai() <= 0) {
+                    // Il reste des essais ou essais illimités
+                    System.out.println("Essai supplémentaire - Essais restants avant cet essai: " + essaisRestants);
+                    
+                    // Mettre à jour le score si celui-ci est meilleur
+                    if (score > resultatExistant.getScore()) {
+                        resultatExistant.setScore(score);
+                        System.out.println("Nouveau meilleur score: " + score);
+                    }
+                    
+                    // Mettre à jour la date
+                    resultatExistant.setDatePassage(new Date());
+                    
+                    // Diminuer le nombre d'essais si limité
+                    if (examen.getNbrEssai() > 0) {
+                        resultatExistant.setNbrEssai(essaisRestants - 1);
+                        System.out.println("Essais restants après cet essai: " + (essaisRestants - 1));
+                    }
+                    
+                    // Mettre à jour le résultat
+                    boolean success = resultatQuizService.modifier(resultatExistant);
+                    if (success) {
+                        System.out.println("Résultat mis à jour avec succès");
+                        return true;
+                    } else {
+                        System.err.println("Erreur lors de la mise à jour du résultat");
+                        return false;
+                    }
+                } else {
+                    System.out.println("Plus d'essais disponibles pour l'utilisateur " + userId + " sur cet examen");
+                    return true; // On retourne true car ce n'est pas une erreur
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur inattendue lors de la sauvegarde des réponses: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
     
     private void showAlert(Alert.AlertType type, String title, String content) {

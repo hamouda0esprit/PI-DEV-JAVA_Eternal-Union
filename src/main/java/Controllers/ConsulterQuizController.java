@@ -3,6 +3,7 @@ package Controllers;
 import entite.Examen;
 import entite.Question;
 import entite.Reponse;
+import entite.ResultatQuiz;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import service.ExamenService;
 import service.QuestionService;
 import service.ReponseService;
+import service.ResultatQuizService;
 import service.UserService;
 import javafx.scene.Node;
 import javafx.geometry.Insets;
@@ -28,6 +30,7 @@ import java.util.ResourceBundle;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Date;
 
 public class ConsulterQuizController implements Initializable {
 
@@ -45,6 +48,7 @@ public class ConsulterQuizController implements Initializable {
     private QuestionService questionService;
     private ReponseService reponseService;
     private UserService userService;
+    private ResultatQuizService resultatQuizService;
     private Examen examen;
     private int examenId;
     private String examenTitre;
@@ -90,6 +94,7 @@ public class ConsulterQuizController implements Initializable {
         questionService = new QuestionService();
         reponseService = new ReponseService();
         userService = new UserService();
+        resultatQuizService = new ResultatQuizService();
         
         // Utiliser les données de démo si elles ont été définies par RepondreQuizController
         if (useDemo) {
@@ -277,9 +282,22 @@ public class ConsulterQuizController implements Initializable {
             
             if (isStudentMode) {
                 // Rediriger vers l'accueil étudiant
-                fxmlPath = "/view/AccueilEtudiant.fxml";
-                title = "Espace Étudiant";
-                System.out.println("Redirection vers l'accueil étudiant");
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AccueilEtudiant.fxml"));
+                Parent root = loader.load();
+                
+                // Passer l'ID utilisateur au contrôleur
+                AccueilEtudiantController controller = loader.getController();
+                if (userId != null && !userId.isEmpty()) {
+                    controller.setUserId(userId);
+                }
+                
+                Scene scene = backButton.getScene();
+                Stage stage = (Stage) scene.getWindow();
+                scene.setRoot(root);
+                stage.setTitle("Espace Étudiant");
+                
+                System.out.println("Redirection vers l'accueil étudiant avec userId: " + userId);
+                return;
             } else if (isAdminMode) {
                 // Rediriger vers le panneau d'administration
                 fxmlPath = "/view/AdminPanel.fxml";
@@ -292,7 +310,7 @@ public class ConsulterQuizController implements Initializable {
                 System.out.println("Redirection vers l'accueil professeur");
             }
             
-            // Charger la page correspondante
+            // Charger la page correspondante pour les modes admin et prof
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
             Scene scene = backButton.getScene();
             Stage stage = (Stage) scene.getWindow();
@@ -449,6 +467,37 @@ public class ConsulterQuizController implements Initializable {
                 if (Math.random() > 0.3) {  // 70% de chances de réussir pour la démo
                     pointsObtenus += question.getNbr_points();
                 }
+            }
+        }
+        
+        // Enregistrer le résultat dans la base de données si c'est un vrai quiz (pas une démo)
+        // et si l'utilisateur est un étudiant
+        if (!useDemo && examen != null && isStudentMode && userId != null && !userId.isEmpty()) {
+            try {
+                int userIdInt = Integer.parseInt(userId);
+                
+                // Vérifier si un résultat existe déjà pour cet étudiant et cet examen
+                if (!resultatQuizService.verifierExistenceResultat(userIdInt, examen.getId())) {
+                    // Créer un nouvel objet ResultatQuiz
+                    ResultatQuiz resultat = new ResultatQuiz();
+                    resultat.setExamen_id(examen.getId());
+                    resultat.setId_user_id(userIdInt);
+                    resultat.setScore(pointsObtenus);
+                    resultat.setTotalPoints(totalPoints);
+                    resultat.setDatePassage(new Date()); // Date actuelle
+                    
+                    // Ajouter le résultat à la base de données
+                    boolean success = resultatQuizService.ajouter(resultat);
+                    if (success) {
+                        System.out.println("Résultat enregistré pour l'utilisateur " + userId + " sur l'examen " + examen.getId());
+                    } else {
+                        System.err.println("Erreur lors de l'enregistrement du résultat");
+                    }
+                } else {
+                    System.out.println("L'utilisateur " + userId + " a déjà un résultat enregistré pour cet examen");
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Erreur lors de la conversion de l'ID utilisateur: " + e.getMessage());
             }
         }
         
