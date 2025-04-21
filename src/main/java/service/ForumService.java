@@ -2,7 +2,7 @@ package service;
 
 import entite.Forum;
 import entite.User;
-import util.DataSource;
+import utils.DataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class ForumService implements IService<Forum>{
     private ResultSet rs;
 
     public ForumService(){
-        cnx= DataSource.getInstance().getConncetion();
+        cnx = DataSource.getInstance().getConncetion();
     }
 
     public void createPst(Forum p){
@@ -27,7 +27,7 @@ public class ForumService implements IService<Forum>{
             pst.setString(2,p.getDescription());
             pst.setString(3,p.getMedia());
             pst.setString(4,p.getType_media());
-            pst.setDate(5, new java.sql.Date(p.getDate_time().getTime()));
+            pst.setTimestamp(5, new java.sql.Timestamp(p.getDate_time().getTime()));
             pst.setString(6,p.getSubject());
             pst.setInt(7,p.getUser().getId());
             pst.setString(8,p.getAiprompt_responce());
@@ -49,10 +49,31 @@ public class ForumService implements IService<Forum>{
     }
 
 
+    @Override
+    public void ajouter(Forum forum) throws SQLException {
+
+    }
+
+    @Override
+    public void modifier(Forum forum) throws SQLException {
+
+    }
+
+    @Override
+    public void sipprimer(int id) throws SQLException {
+
+    }
+
+    @Override
+    public List<Forum> recuperer() throws SQLException {
+        return List.of();
+    }
+
+
     //Not recommended because of SQL injections (Quoted by SOUSOU)
     @Override
     public void create(Forum forum) {
-        String requete="insert into forum (title,description,media,type_media,date_time,subject,id_user_id) values('"+forum.getTitle()+"','"+forum.getDescription()+"','"+forum.getDate_time()+"','"+forum.getMedia()+"','"+forum.getType_media()+"','"+forum.getDate_time()+"','"+forum.getSubject()+"','"+forum.getUser().getId()+"','"+forum.getAiprompt_responce()+"')";
+        String requete="insert into forum (title,description,media,type_media,date_time,subject,id_user_id,aiprompt_responce) values('"+forum.getTitle()+"','"+forum.getDescription()+"','"+forum.getMedia()+"','"+forum.getType_media()+"','"+forum.getDate_time()+"','"+forum.getSubject()+"','"+forum.getUser().getId()+"','"+forum.getAiprompt_responce()+"')";
         try {
             ste=cnx.createStatement();
             ste.executeUpdate(requete);
@@ -72,7 +93,7 @@ public class ForumService implements IService<Forum>{
             pst.setString(2,p.getDescription());
             pst.setString(3,p.getMedia());
             pst.setString(4,p.getType_media());
-            pst.setDate(5, new java.sql.Date(p.getDate_time().getTime()));
+            pst.setTimestamp(5, new java.sql.Timestamp(p.getDate_time().getTime()));
             pst.setString(6,p.getSubject());
             pst.setInt(7,p.getUser().getId());
             pst.setString(8,p.getAiprompt_responce());
@@ -97,7 +118,7 @@ public class ForumService implements IService<Forum>{
 
     @Override
     public List<Forum> readAll() {
-        String requete="select * from forum";
+        String requete="select * from forum ORDER BY date_time desc";
         List<Forum> list=new ArrayList<>();
         try {
             ste=cnx.createStatement();
@@ -118,7 +139,7 @@ public class ForumService implements IService<Forum>{
                         rs.getString("subject"),
                         rs.getString("aiprompt_responce")
                         ,u
-                        ));
+                ));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -139,7 +160,7 @@ public class ForumService implements IService<Forum>{
                 forum.setId(rs.getInt("id"));
                 forum.setTitle(rs.getString("title"));
                 forum.setDescription(rs.getString("description"));
-                forum.setDate_time(rs.getDate("date_time"));
+                forum.setDate_time(rs.getTimestamp("date_time"));
                 // Set other user properties as needed
                 return forum;
             }

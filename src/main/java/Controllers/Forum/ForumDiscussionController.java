@@ -6,12 +6,14 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import Controllers.LoginController;
 import entite.Forum;
 import entite.Responces;
 import entite.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,13 +21,22 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import service.ResponcesService;
 import service.ForumService;
 import service.UserService;
+import service.ProfanityFilterService;
+import utils.FileUtils;
 
-public class ForumDiscussionController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class ForumDiscussionController implements Initializable {
 
     @FXML
     private Button backButton;
@@ -35,6 +46,9 @@ public class ForumDiscussionController {
 
     @FXML
     private Label forumDescription;
+
+    @FXML
+    private ImageView forumImage;
 
     @FXML
     private Label authorName;
@@ -52,10 +66,31 @@ public class ForumDiscussionController {
     private Button submitButton;
 
     @FXML
+    private VBox MediaField;
+
+    @FXML
     private VBox commentsContainer;
 
     @FXML
     private ScrollPane commentsScrollPane; // Reference to the ScrollPane if you named it in FXML
+
+    @FXML
+    private MediaView forumVideo;
+
+    @FXML
+    private StackPane mediaContainer;
+
+    @FXML
+    private HBox videoControls;
+
+    @FXML
+    private Button playButton;
+
+    @FXML
+    private Button pauseButton;
+
+    @FXML
+    private Button stopButton;
 
     private Forum currentForum;
     private User currentUser;
@@ -63,22 +98,27 @@ public class ForumDiscussionController {
     private ResponcesService commentService;
     private UserService userService;
 
+    private ProfanityFilterService profanityFilterService;
+
+    private MediaPlayer mediaPlayer;
+
     public ForumDiscussionController() {
         forumService = new ForumService();
         commentService = new ResponcesService();
         userService = new UserService();
+        profanityFilterService = new ProfanityFilterService();
     }
 
-    @FXML
-    void initialize() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         try {
             // Initialize services
             forumService = new ForumService();
             commentService = new ResponcesService();
             userService = new UserService();
+            profanityFilterService = new ProfanityFilterService();
 
-            // Initialize current user - Get from session or use a default ID (2 in this case)
-            currentUser = userService.readById(2); // Replace with actual session user ID when available
+            currentUser = LoginController.getAuthenticatedUser();
 
             if (currentUser == null) {
                 System.err.println("Warning: Current user could not be loaded. Delete functionality may not work correctly.");
@@ -88,10 +128,32 @@ public class ForumDiscussionController {
             if (commentsScrollPane != null) {
                 commentsScrollPane.setFitToWidth(true);
             }
+
+            setupVideoControls();
         } catch (Exception e) {
             System.err.println("Error initializing controller: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void setupVideoControls() {
+        playButton.setOnAction(e -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.play();
+            }
+        });
+
+        pauseButton.setOnAction(e -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.pause();
+            }
+        });
+
+        stopButton.setOnAction(e -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+            }
+        });
     }
 
     public void setForum(Forum forum) {
@@ -114,11 +176,27 @@ public class ForumDiscussionController {
         try {
             // This is a placeholder. You may need to adjust based on your actual implementation
             if (author.getImg() != null && !author.getImg().isEmpty()) {
-                Image image = new Image(author.getImg());
-                authorPhoto.setImage(image);
+                Image img = new Image(getClass().getResourceAsStream("/images/ForumUser.jpg"));
+                authorPhoto.setImage(img);
             }
         } catch (Exception e) {
             System.err.println("Error loading user image: " + e.getMessage());
+        }
+
+
+        /*System.out.println("Media : "+forum.getMedia());
+        System.out.println("Media emp : "+forum.getMedia().isEmpty());
+        System.out.println("Media null : "+(forum.getMedia() == null));*/
+        // Handle media display
+        if (forum.getMedia() != null && !forum.getMedia().isEmpty()) {
+            try {
+                setMedia(forum.getMedia());
+            } catch (Exception e) {
+                System.err.println("Error loading media: " + e.getMessage());
+            }
+        }else if (forum.getMedia() == null || forum.getMedia().isEmpty()) {
+            forumImage.setFitHeight(0);
+            forumVideo.setFitHeight(0);
         }
 
         // Load comments for this forum
@@ -174,7 +252,10 @@ public class ForumDiscussionController {
 
         try {
             if (author.getImg() != null && !author.getImg().isEmpty()) {
-                Image img = new Image(author.getImg());
+                //Image img = new Image(author.getImg());
+
+                Image img = new Image(getClass().getResourceAsStream("/images/ForumUser.jpg"));
+
                 avatar.setImage(img);
             }
         } catch (Exception e) {
@@ -243,7 +324,7 @@ public class ForumDiscussionController {
     @FXML
     void handleBack(ActionEvent event) {
         try {
-            Parent forumView = FXMLLoader.load(getClass().getResource("/com/example/loe/Forum.fxml"));
+            Parent forumView = FXMLLoader.load(getClass().getResource("/view/Forum.fxml"));
             Scene scene = new Scene(forumView);
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);
@@ -266,7 +347,8 @@ public class ForumDiscussionController {
         try {
             // Create new comment
             Responces comment = new Responces();
-            comment.setComment(commentText);
+            String filteredComment = profanityFilterService.filterText(commentText);
+            comment.setComment(filteredComment);
             comment.setDate_time(Timestamp.valueOf(LocalDateTime.now()));
             comment.setForum(currentForum);
             comment.setUser(currentUser);  // Use the currentUser that was initialized in initialize()
@@ -293,5 +375,90 @@ public class ForumDiscussionController {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    public void setMedia(String mediaPath) {
+        if (mediaPath == null || mediaPath.isEmpty()) {
+            forumImage.setVisible(false);
+            forumVideo.setVisible(false);
+            videoControls.setVisible(false);
+            mediaContainer.setVisible(false);
+            MediaField.setVisible(false);
+            return;
+        }
+
+        // Clean up previous media player if exists
+        if (mediaPlayer != null) {
+            mediaPlayer.dispose();
+            mediaPlayer = null;
+        }
+
+        String mediaUrl = FileUtils.getForumMediaUrl(mediaPath);
+        if (mediaUrl == null) {
+            System.err.println("Error: Could not get media URL for path: " + mediaPath);
+            return;
+        }
+
+        // Ensure the URL is properly formatted
+        if (!mediaUrl.startsWith("http://") && !mediaUrl.startsWith("https://") && !mediaUrl.startsWith("file:/")) {
+            mediaUrl = "file:/" + mediaUrl;
+        }
+
+        String extension = mediaPath.substring(mediaPath.lastIndexOf('.') + 1).toLowerCase();
+        
+        if (extension.matches("jpg|jpeg|png|gif")) {
+            // Handle image
+            forumImage.setVisible(true);
+            forumVideo.setVisible(false);
+            videoControls.setVisible(false);
+            try {
+                Image image = new Image(mediaUrl);
+                forumImage.setImage(image);
+            } catch (Exception e) {
+                System.err.println("Error loading image: " + e.getMessage());
+                forumImage.setVisible(false);
+            }
+        } else if (extension.matches("mp4|avi|mov|wmv")) {
+            // Handle video
+            forumImage.setVisible(false);
+            forumVideo.setVisible(true);
+            videoControls.setVisible(true);
+            
+            try {
+                Media media = new Media(mediaUrl);
+                mediaPlayer = new MediaPlayer(media);
+                forumVideo.setMediaPlayer(mediaPlayer);
+                
+                // Set up media player event handlers
+                mediaPlayer.setOnEndOfMedia(() -> {
+                    mediaPlayer.stop();
+                });
+                
+                mediaPlayer.setOnError(() -> {
+                    System.err.println("Media error occurred: " + mediaPlayer.getError());
+                    showAlert("Media Error", "Could not play the video", mediaPlayer.getError().getMessage());
+                    forumVideo.setVisible(false);
+                    videoControls.setVisible(false);
+                });
+
+                // Add ready handler to catch initialization errors
+                mediaPlayer.setOnReady(() -> {
+                    System.out.println("Media player is ready");
+                });
+
+            } catch (Exception e) {
+                System.err.println("Error initializing media player: " + e.getMessage());
+                e.printStackTrace();
+                forumVideo.setVisible(false);
+                videoControls.setVisible(false);
+                showAlert("Media Error", "Could not initialize video player", e.getMessage());
+            }
+        } else {
+            System.err.println("Unsupported media type: " + extension);
+            forumImage.setVisible(false);
+            forumVideo.setVisible(false);
+            videoControls.setVisible(false);
+            mediaContainer.setVisible(false);
+        }
     }
 }

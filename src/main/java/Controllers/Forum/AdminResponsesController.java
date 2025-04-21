@@ -1,5 +1,6 @@
 package Controllers.Forum;
 
+import Controllers.LoginController;
 import entite.Forum;
 import entite.Responces;
 import entite.User;
@@ -59,9 +60,7 @@ public class AdminResponsesController implements Initializable {
         closeButton.setOnAction(e -> closeDialog());
 
         // For testing purposes, create a mock user (this should be replaced with actual login logic)
-        currentUser = new User();
-        currentUser.setId(2);
-        currentUser.setName("Admin");
+        currentUser = LoginController.getAuthenticatedUser();;
     }
 
     public void setForum(Forum forum) {

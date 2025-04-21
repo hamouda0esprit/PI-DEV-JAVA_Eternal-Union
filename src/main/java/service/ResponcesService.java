@@ -3,7 +3,7 @@ package service;
 import entite.Forum;
 import entite.Responces;
 import entite.User;
-import util.DataSource;
+import utils.DataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -45,6 +45,26 @@ public class ResponcesService implements IService<Responces>{
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void ajouter(Responces responces) throws SQLException {
+
+    }
+
+    @Override
+    public void modifier(Responces responces) throws SQLException {
+
+    }
+
+    @Override
+    public void sipprimer(int id) throws SQLException {
+
+    }
+
+    @Override
+    public List<Responces> recuperer() throws SQLException {
+        return List.of();
     }
 
     @Override

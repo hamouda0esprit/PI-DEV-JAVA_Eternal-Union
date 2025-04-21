@@ -5,6 +5,10 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import entite.Forum;
 import entite.User;
@@ -22,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import service.ForumService;
 import service.UserService;
+import Controllers.LoginController;
 
 public class ForumViewController {
 
@@ -62,20 +67,33 @@ public class ForumViewController {
         forumService = new ForumService();
         userService = new UserService();
 
-        // Set current user (for demo purposes, you might get this from a session or other mechanism)
-        currentUser = userService.readById(2); // Assuming user ID 2 is the current user
+        // Get the current logged in user
+        currentUser = LoginController.getAuthenticatedUser();
+        System.out.println(currentUser.getName());
+        if (currentUser == null) {
+            // If no user is logged in, redirect to login page
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Login.fxml"));
+                Parent loginRoot = loader.load();
+                Stage stage = (Stage) discussionsContainer.getScene().getWindow();
+                stage.setScene(new Scene(loginRoot));
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         // Load forum discussions
-        loadDiscussions();
+        loadDiscussions(currentUser);
     }
 
-    private void loadDiscussions() {
+    private void loadDiscussions(User currentUser) {
         try {
             // Clear existing discussions
             discussionsContainer.getChildren().clear();
 
             // Get discussions for the current user
-            List<Forum> userForums = forumService.readByUserId(2);
+            List<Forum> userForums = forumService.readByUserId(currentUser.getId());
 
             // If no discussions, show a message
             if (userForums.isEmpty()) {
@@ -157,30 +175,28 @@ public class ForumViewController {
 
     @FXML
     void handleEvenements(ActionEvent event) {
-        navigateTo("/com/example/loe/Evenements.fxml", event);
+        navigateTo("/view/Evenement.fxml", event);
     }
 
     @FXML
     void handleForum(ActionEvent event) {
-        navigateTo("/com/example/loe/Forum.fxml", event);
+        navigateTo("/view/Forum.fxml", event);
     }
 
     @FXML
     void handleReturn(ActionEvent event) {
-        navigateTo("/com/example/loe/Forum.fxml", event);
+        navigateTo("/view/Forum.fxml", event);
     }
-
-    // Update the handleModify method in ForumViewController.java
 
     private void handleModify(Forum forum) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/loe/ModifyForum.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ModifyForum.fxml"));
             Parent root = loader.load();
 
             // Get the controller and pass the forum to edit
             ForumModifyController controller = loader.getController();
             controller.setForumToModify(forum);
-
+            
             Scene scene = new Scene(root);
             Stage stage = (Stage) discussionsContainer.getScene().getWindow();
             stage.setScene(scene);
@@ -199,8 +215,28 @@ public class ForumViewController {
 
         if (confirmAlert.showAndWait().get() == ButtonType.OK) {
             try {
+                // Delete associated media file if it exists
+                if (forum.getMedia() != null && !forum.getMedia().isEmpty()) {
+                    try {
+                        // Get the user's documents folder
+                        String documentsPath = System.getProperty("user.home") + "\\Documents";
+                        // Construct the full path to the media file
+                        String fullMediaPath = documentsPath + forum.getMedia();
+                        
+                        // Delete the media file
+                        Path mediaPath = Paths.get(fullMediaPath);
+                        if (Files.exists(mediaPath)) {
+                            Files.delete(mediaPath);
+                        }
+                    } catch (IOException e) {
+                        // Log the error but continue with forum deletion
+                        System.err.println("Error deleting media file: " + e.getMessage());
+                    }
+                }
+
+                // Delete the forum from the database
                 forumService.delete(forum);
-                loadDiscussions(); // Refresh the list
+                loadDiscussions(currentUser); // Refresh the list
                 showAlert("Succès", "Discussion supprimée avec succès.", null);
             } catch (Exception e) {
                 showAlert("Erreur", "Impossible de supprimer la discussion.", e.getMessage());

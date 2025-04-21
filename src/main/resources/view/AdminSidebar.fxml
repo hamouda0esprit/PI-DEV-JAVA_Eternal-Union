@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox styleClass="admin-sidebar" prefWidth="280" spacing="15" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.AdminSidebarController">
+    <padding>
+        <Insets top="25" right="20" bottom="25" left="20"/>
+    </padding>
+    
+    <!-- Logo and Title -->
+    <HBox alignment="CENTER_LEFT" spacing="15" prefHeight="80">
+        <ImageView fitHeight="45" fitWidth="45" preserveRatio="true">
+            <Image url="@../images/logo.png" />
+        </ImageView>
+        <VBox spacing="5">
+            <Label text="Panneau" styleClass="sidebar-title">
+                <font>
+                    <Font name="System Bold" size="20"/>
+                </font>
+            </Label>
+            <Label text="d'administration" styleClass="sidebar-subtitle">
+                <font>
+                    <Font size="14"/>
+                </font>
+            </Label>
+        </VBox>
+    </HBox>
+
+    <Separator/>
+    
+    <!-- Navigation Buttons -->
+    <VBox spacing="10">
+        <Button fx:id="dashboardButton" styleClass="admin-button" text="🏠  Tableau de bord"/>
+        <Button fx:id="usersButton" styleClass="admin-button" text="👥  Utilisateurs"/>
+        <Button fx:id="forumsButton" styleClass="admin-button" text="💬  Forums"/>
+        <Button fx:id="coursesButton" styleClass="admin-button" text="📚  Cours"/>
+        <Button fx:id="examsButton" styleClass="admin-button" text="📝  Examens"/>
+        <Button fx:id="eventsButton" styleClass="admin-button" text="📅  Événements"/>
+    </VBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+    <Separator/>
+    <Button fx:id="backButton" styleClass="admin-button" text="↩  Retour au site"/>
+</VBox> 

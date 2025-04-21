@@ -4,88 +4,152 @@ import entite.Forum;
 import entite.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import service.ForumService;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import service.UserService;
+import utils.FileUtils;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ForumListController {
 
     @FXML
     private Button AddForumButton;
-
-    @FXML
-    void HandleAddForum(ActionEvent event) {
-        try {
-            Parent ajoutForumView = FXMLLoader.load(getClass().getResource("/com/example/loe/AddForum.fxml"));
-            Scene scene = new Scene(ajoutForumView );
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @FXML
     private Button ViewForumButton;
-
-
     @FXML
-    void HandleViewForum(ActionEvent event) {
-        try {
-            Parent ajoutForumView = FXMLLoader.load(getClass().getResource("/com/example/loe/ListForum.fxml"));
-            Scene scene = new Scene(ajoutForumView );
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    private VBox forumPostsContainer;
     @FXML
-    private VBox forumPostsContainer; // This will hold all our forum posts
+    private TextField searchField;
+    @FXML
+    private Button prevPageButton;
+    @FXML
+    private Button nextPageButton;
+    @FXML
+    private Label pageInfoLabel;
+
+    private List<Forum> allForums;
+    private List<Forum> filteredForums;
+    private int currentPage = 1;
+    private static final int ITEMS_PER_PAGE = 5;
 
     @FXML
     void initialize() throws SQLException {
+        loadForums();
+        updatePaginationControls();
+    }
+
+    private void loadForums() throws SQLException {
         ForumService service = new ForumService();
-        List<Forum> forums = service.readAll();
+        allForums = service.readAll();
+        filteredForums = allForums;
 
         UserService userService = new UserService();
 
-        for (Forum forum : forums) {
-            // Load the complete user data for this forum
+        for (Forum forum : allForums) {
             if (forum.getUser() != null && forum.getUser().getId() > 0) {
-                // Assuming you have a readById method in UserService
                 User completeUser = userService.readById(forum.getUser().getId());
                 if (completeUser != null) {
                     forum.setUser(completeUser);
                 }
             }
+        }
 
-            // Create a VBox for each forum post (ticket)
-            VBox ticket = createForumTicket(forum);
+        displayCurrentPage();
+    }
+
+    @FXML
+    void handleSearch() {
+        String searchText = searchField.getText().toLowerCase();
+        if (searchText.isEmpty()) {
+            filteredForums = allForums;
+        } else {
+            filteredForums = allForums.stream()
+                    .filter(forum -> forum.getTitle().toLowerCase().contains(searchText) ||
+                            forum.getDescription().toLowerCase().contains(searchText))
+                    .collect(Collectors.toList());
+        }
+        currentPage = 1;
+        displayCurrentPage();
+        updatePaginationControls();
+    }
+
+    @FXML
+    void handlePreviousPage(ActionEvent event) {
+        if (currentPage > 1) {
+            currentPage--;
+            displayCurrentPage();
+            updatePaginationControls();
+        }
+    }
+
+    @FXML
+    void handleNextPage(ActionEvent event) {
+        int totalPages = (int) Math.ceil((double) filteredForums.size() / ITEMS_PER_PAGE);
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayCurrentPage();
+            updatePaginationControls();
+        }
+    }
+
+    private void displayCurrentPage() {
+        forumPostsContainer.getChildren().clear();
+        int startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredForums.size());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            VBox ticket = createForumTicket(filteredForums.get(i));
             forumPostsContainer.getChildren().add(ticket);
+        }
+    }
+
+    private void updatePaginationControls() {
+        int totalPages = (int) Math.ceil((double) filteredForums.size() / ITEMS_PER_PAGE);
+        pageInfoLabel.setText("Page " + currentPage + " of " + totalPages);
+        prevPageButton.setDisable(currentPage <= 1);
+        nextPageButton.setDisable(currentPage >= totalPages);
+    }
+
+    @FXML
+    void HandleAddForum(ActionEvent event) {
+        try {
+            Parent ajoutForumView = FXMLLoader.load(getClass().getResource("/view/AddForum.fxml"));
+            Scene scene = new Scene(ajoutForumView );
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void HandleViewForum(ActionEvent event) {
+        try {
+            Parent ajoutForumView = FXMLLoader.load(getClass().getResource("/view/ListForum.fxml"));
+            Scene scene = new Scene(ajoutForumView );
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -110,7 +174,7 @@ public class ForumListController {
         // Set the user image if available
         if (forum.getUser() != null && forum.getUser().getImg() != null) {
             try {
-                Image img = new Image(forum.getUser().getImg());
+                Image img = new Image(getClass().getResourceAsStream("/images/ForumUser.jpg"));
                 userImage.setImage(img);
             } catch (Exception e) {
                 System.out.println("Could not load user image: " + e.getMessage());
@@ -119,20 +183,8 @@ public class ForumListController {
 
         // User info
         VBox userInfo = new VBox();
-        // Username handling with better null checks
         Label username = new Label((forum.getUser() != null && forum.getUser().getName() != null) ?
                 forum.getUser().getName() : "Unknown user");
-
-        // Same for images
-        if (forum.getUser() != null && forum.getUser().getImg() != null && !forum.getUser().getImg().isEmpty()) {
-            try {
-                Image img = new Image(forum.getUser().getImg());
-                userImage.setImage(img);
-            } catch (Exception e) {
-                System.out.println("Could not load user image: " + e.getMessage());
-                // Set a default image here
-            }
-        }
         username.setPrefHeight(40.0);
         username.setPrefWidth(100.0);
         username.setStyle("-fx-font-weight: bold;-fx-text-fill: black;");
@@ -157,16 +209,66 @@ public class ForumListController {
         description.setWrapText(true);
         description.setStyle("-fx-font-weight: bold;-fx-text-fill: black;");
 
-        // Media (if available)
+        // Add header, title, and description first
+        ticket.getChildren().addAll(header, title, description);
+
         if (forum.getMedia() != null && !forum.getMedia().isEmpty()) {
-            ImageView mediaView = new ImageView();
-            mediaView.setFitWidth(600);
-            mediaView.setPreserveRatio(true);
             try {
                 if ("image".equals(forum.getType_media())) {
-                    Image mediaImg = new Image(forum.getMedia());
+                    ImageView mediaView = new ImageView();
+                    mediaView.setFitWidth(600);
+                    mediaView.setPreserveRatio(true);
+
+                    String fileUrl = FileUtils.getForumMediaUrl(forum.getMedia());
+                    Image mediaImg = new Image(fileUrl);
                     mediaView.setImage(mediaImg);
-                    ticket.getChildren().add(mediaView);
+
+                    HBox mediaContainer = new HBox(mediaView);
+                    mediaContainer.setAlignment(Pos.CENTER);
+                    mediaContainer.setPadding(new Insets(10, 0, 10, 0));
+
+                    ticket.getChildren().add(mediaContainer);
+                } else if ("video".equals(forum.getType_media())) {
+                    MediaView mediaView = new MediaView();
+                    mediaView.setFitWidth(600);
+                    mediaView.setPreserveRatio(true);
+
+                    String fileUrl = FileUtils.getForumMediaUrl(forum.getMedia());
+                    Media media = new Media(fileUrl);
+                    MediaPlayer mediaPlayer = new MediaPlayer(media);
+                    mediaView.setMediaPlayer(mediaPlayer);
+                    mediaPlayer.setAutoPlay(false);
+                    mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+
+                    // Add video controls
+                    HBox controls = new HBox();
+                    controls.setAlignment(Pos.CENTER);
+                    controls.setSpacing(10);
+                    controls.setStyle("-fx-background-color: transparent; -fx-padding: 10; -fx-background-radius: 5;");
+
+                    // Create styled buttons
+                    Button playButton = new Button("▶");
+                    playButton.setStyle("-fx-background-color: #42a5f5; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 5 15; -fx-font-weight: bold;");
+
+                    Button pauseButton = new Button("⏸");
+                    pauseButton.setStyle("-fx-background-color: #42a5f5; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 5 15; -fx-font-weight: bold;");
+
+                    Button stopButton = new Button("⏹");
+                    stopButton.setStyle("-fx-background-color: #42a5f5; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 5 15; -fx-font-weight: bold;");
+
+                    // Add actions
+                    playButton.setOnAction(e -> mediaPlayer.play());
+                    pauseButton.setOnAction(e -> mediaPlayer.pause());
+                    stopButton.setOnAction(e -> mediaPlayer.stop());
+
+                    // Add buttons to controls
+                    controls.getChildren().addAll(playButton, pauseButton, stopButton);
+
+                    VBox videoContainer = new VBox(mediaView, controls);
+                    videoContainer.setAlignment(Pos.CENTER);
+                    videoContainer.setPadding(new Insets(10, 0, 10, 0));
+
+                    ticket.getChildren().add(videoContainer);
                 }
             } catch (Exception e) {
                 System.out.println("Could not load media: " + e.getMessage());
@@ -195,7 +297,7 @@ public class ForumListController {
         discussButton.setOnAction(event -> {
             try {
                 // Load the FXML file
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/loe/ForumDiscussion.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ForumDiscussion.fxml"));
                 Parent discussionView = loader.load();
 
                 // Get the controller and pass the forum data
@@ -213,13 +315,9 @@ public class ForumListController {
             }
         });
 
-        // Add all components to the ticket
-        ticket.getChildren().addAll(header, title, description);
-
         // Add discuss button at the bottom
         ticket.getChildren().add(discussButton);
 
         return ticket;
     }
-
 }

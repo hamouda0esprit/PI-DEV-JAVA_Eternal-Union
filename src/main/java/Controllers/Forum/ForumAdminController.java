@@ -85,7 +85,7 @@ public class ForumAdminController implements Initializable {
 
     private void returnToMainSite() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/loe/Forum.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Forum.fxml"));
             Scene scene = forumTable.getScene();
             scene.setRoot(loader.load());
         } catch (IOException e) {
@@ -189,8 +189,6 @@ public class ForumAdminController implements Initializable {
             dialogStage.setTitle("Ajouter un forum");
 
             Scene scene = new Scene(dialogContent);
-            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-
             dialogStage.setScene(scene);
 
             AddForumDialogController controller = loader.getController();
@@ -231,7 +229,7 @@ public class ForumAdminController implements Initializable {
         if (forum != null) {
             try {
                 // Check if resource exists first
-                URL fxmlUrl = getClass().getResource("/com/example/loe/AddForumDialog.fxml");
+                URL fxmlUrl = getClass().getResource("/view/AddForumDialog.fxml");
                 if (fxmlUrl == null) {
                     showError("Erreur", "Le fichier FXML n'a pas été trouvé");
                     return;
@@ -273,7 +271,7 @@ public class ForumAdminController implements Initializable {
     private void handleResponses(Forum forum) {
         if (forum != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/loe/AdminResponces.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AdminResponces.fxml"));
                 VBox dialogContent = loader.load();
 
                 AdminResponsesController controller = loader.getController();

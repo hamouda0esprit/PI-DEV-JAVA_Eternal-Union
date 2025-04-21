@@ -1,5 +1,6 @@
 package Controllers.Forum;
 
+import Controllers.LoginController;
 import entite.Forum;
 import entite.User;
 import javafx.fxml.FXML;
@@ -89,7 +90,6 @@ public class AddForumDialogController implements Initializable {
                 // Create new forum
                 forum = new Forum();
                 forum.setUser(currentUser);
-                forum.setDate_time(getCurrentDateTime());
             }
 
             // Update forum data from form
@@ -97,12 +97,11 @@ public class AddForumDialogController implements Initializable {
             forum.setSubject(subjectField.getText());
             forum.setDescription(descriptionArea.getText());
 
-            forum.setMedia("test");
-            forum.setType_media("test");
+            forum.setDate_time(getCurrentDateTime());
 
             // Save to database
             if (forum.getId() == 0) {
-                forumService.create(forum);
+                forumService.createPst(forum);
             } else {
                 forumService.update(forum);
             }
@@ -163,11 +162,12 @@ public class AddForumDialogController implements Initializable {
     private User getCurrentUser() {
         // In a real application, you would get the currently logged-in user
         // For this example, we'll get the first user from the database or create a dummy one
-        User user = userService.readAll().stream().findFirst().orElse(null);
+        User user = LoginController.getAuthenticatedUser();
 
         if (user == null) {
             // Create a dummy user if no users exist
             user = new User();
+            user.setId(2);
             user.setName("Admin");
             user.setImg("admin.png");
             // Set other required user properties
