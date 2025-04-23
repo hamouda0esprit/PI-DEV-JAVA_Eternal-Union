@@ -25,6 +25,18 @@ public class Main extends Application {
             Image icon = new Image(Main.class.getResourceAsStream("/images/logo.png"));
             primaryStage.getIcons().add(icon);
             
+            // Set initial window size and position
+            primaryStage.setWidth(1200);
+            primaryStage.setHeight(800);
+            primaryStage.setMinWidth(1200);
+            primaryStage.setMinHeight(800);
+            
+            // Center the window on the screen
+            primaryStage.centerOnScreen();
+            
+            // Make the window maximized
+            primaryStage.setMaximized(true);
+            
             primaryStage.setTitle("Event Management System");
             primaryStage.setScene(scene);
             primaryStage.show();

@@ -1,46 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700" prefWidth="1000" style="-fx-background-color: #42a5f5;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddEventDialogController">
+<AnchorPane prefHeight="700" prefWidth="1000" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddEventDialogController">
    <children>
-      <fx:include source="Navbar.fxml"/>
       
       <!-- En-tête avec le titre -->
       <VBox alignment="TOP_CENTER" layoutX="50" layoutY="20" prefWidth="900" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0">
         <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
+            <Insets bottom="20" left="20" right="20" top="20" />
         </padding>
         
-        <Label text="Add New Event" styleClass="dialog-title" fx:id="dialogTitle"/>
+        <Label fx:id="dialogTitle" styleClass="dialog-title" text="Ajouter un Evenement">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+            <effect>
+                <DropShadow color="#42a5f5" radius="3" spread="0.2" />
+            </effect>
+        </Label>
         
-        <GridPane hgap="10" vgap="10">
-            <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <GridPane hgap="20" style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 20;" vgap="20">
+            <effect>
+                <DropShadow color="#00000026" radius="5" spread="0.1" />
+            </effect>
             
-            <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <TextArea fx:id="descriptionArea" prefRowCount="3" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Titre:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="nameField" style="-fx-background-radius: 5; -fx-padding: 8;" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <effect>
+                    <DropShadow color="#0000001a" radius="3" spread="0.1" />
+                </effect>
+            </TextField>
             
-            <Label text="Time:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <TextField fx:id="timeField" promptText="HH:mm" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextArea fx:id="descriptionArea" prefRowCount="3" style="-fx-background-radius: 5; -fx-padding: 8;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <effect>
+                    <DropShadow color="#0000001a" radius="3" spread="0.1" />
+                </effect>
+            </TextArea>
             
-            <Label text="Location:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <TextField fx:id="locationField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Temps: " GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <TextField fx:id="timeField" promptText="HH:mm" style="-fx-background-radius: 5; -fx-padding: 8;" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <effect>
+                    <DropShadow color="#0000001a" radius="3" spread="0.1" />
+                </effect>
+            </TextField>
             
-            <Label text="Photo:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-            <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
-                <TextField fx:id="photoField" HBox.hgrow="ALWAYS"/>
-                <Button text="Browse" onAction="#handleBrowsePhoto"/>
-            </HBox>
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Location:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3" VBox.vgrow="ALWAYS">
+                <TextArea fx:id="locationField" style="-fx-background-radius: 5; -fx-padding: 8;" prefRowCount="1">
+                    <effect>
+                        <DropShadow color="#0000001a" radius="3" spread="0.1" />
+                    </effect>
+                </TextArea>
+                <ListView fx:id="locationSuggestions" maxHeight="100" style="-fx-background-radius: 5;" visible="false">
+                    <effect>
+                        <DropShadow color="#0000001a" radius="3" spread="0.1" />
+                    </effect>
+                </ListView>
+            </VBox>
+            
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Photo:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <VBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <StackPane minHeight="250" minWidth="250" onMouseClicked="#handleBrowsePhoto" style="-fx-background-color: #f0f0f0; -fx-background-radius: 5; -fx-border-color: #42a5f5; -fx-border-radius: 5; -fx-border-width: 2; -fx-border-style: dashed;">
+                    <ImageView fx:id="imageView" fitHeight="230" fitWidth="230" pickOnBounds="true" preserveRatio="true">
+                        <StackPane.margin>
+                            <Insets bottom="10" left="10" right="10" top="10" />
+                        </StackPane.margin>
+                    </ImageView>
+                    <Label fx:id="placeholderLabel" style="-fx-text-fill: #42a5f5; -fx-font-weight: bold; -fx-font-size: 16;" text="Selectionner une photo" />
+                    <Button fx:id="removePhotoButton" onAction="#handleRemovePhoto" style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-background-radius: 15; -fx-padding: 5 10; -fx-font-weight: bold;" text="X" visible="false">
+                        <StackPane.margin>
+                            <Insets right="10" top="10" />
+                        </StackPane.margin>
+                    </Button>
+                </StackPane>
+                <TextField fx:id="photoField" visible="false" />
+            </VBox>
+            <columnConstraints>
+               <ColumnConstraints />
+               <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints />
+               <RowConstraints />
+               <RowConstraints />
+               <RowConstraints />
+               <RowConstraints />
+            </rowConstraints>
         </GridPane>
         
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <Button text="Cancel" onAction="#handleCancel" styleClass="dialog-button"/>
-            <Button text="Save" onAction="#handleSave" styleClass="dialog-button, save-button"/>
+        <HBox alignment="CENTER_RIGHT" spacing="20" style="-fx-padding: 20;">
+            <Button onAction="#handleSave" style="-fx-background-radius: 5; -fx-padding: 8 15; -fx-background-color: #42a5f5; -fx-text-fill: white;" text="Enregistrer">
+                <effect>
+                    <DropShadow color="#0000001a" radius="3" spread="0.1" />
+                </effect>
+            </Button>
+            <Button onAction="#handleCancel" style="-fx-background-radius: 5; -fx-padding: 8 15; -fx-background-color: #f44336; -fx-text-fill: white;" text="Annuler">
+                <effect>
+                    <DropShadow color="#0000001a" radius="3" spread="0.1" />
+                </effect>
+            </Button>
         </HBox>
       </VBox>
    </children>
-</AnchorPane> 
+</AnchorPane>

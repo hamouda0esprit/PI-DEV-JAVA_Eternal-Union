@@ -38,6 +38,7 @@ public class EvenementController implements Initializable {
     private YearMonth currentYearMonth;
     private Map<LocalDate, List<Evenement>> eventsByDate;
     private User currentUser;
+    private boolean isProfessor;
     
     public EvenementController() {
         this.evenementService = new EvenementService();
@@ -47,6 +48,27 @@ public class EvenementController implements Initializable {
     
     public void setCurrentUser(User user) {
         this.currentUser = user;
+        // Check if user is a professor
+        this.isProfessor = user != null && 
+            (user.getType().equalsIgnoreCase("teacher") || 
+             user.getType().equals("1"));
+        
+        // Display user type information
+        if (user != null) {
+            System.out.println("Current User Information:");
+            System.out.println("Name: " + user.getName());
+            System.out.println("Type: " + user.getType());
+            System.out.println("Is Professor: " + isProfessor);
+            
+            // Show alert with user type
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("User Information");
+            alert.setHeaderText("Logged in as: " + user.getName());
+            alert.setContentText("User Type: " + user.getType() + 
+                               "\nRole: " + (isProfessor ? "Professor" : "Student"));
+            alert.showAndWait();
+        }
+        
         loadEvents();
         updateCalendar();
         updateUpcomingEvents();
@@ -54,16 +76,9 @@ public class EvenementController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        loadEvents();
+        // Initialize the calendar and views
         updateCalendar();
-        updateUpcomingEvents();
-        
-        // Set initial view state
-        calendarViewBtn.getStyleClass().add("active");
-        eventsListView.setVisible(false);
-        
-        // Load events list
-        loadEventsList();
+        showCalendarView();
     }
     
     private void loadEvents() {
@@ -106,19 +121,21 @@ public class EvenementController implements Initializable {
         Label locationLabel = new Label(event.getLocation());
         locationLabel.getStyleClass().add("event-details");
         
-        // Action buttons
+        // Action buttons - only show for professors
         HBox actions = new HBox(5);
         actions.getStyleClass().add("event-actions");
         
-        Button updateBtn = new Button("Update");
-        updateBtn.getStyleClass().add("update-button");
-        updateBtn.setOnAction(e -> showUpdateEventDialog(event));
-        
-        Button deleteBtn = new Button("Delete");
-        deleteBtn.getStyleClass().add("delete-button");
-        deleteBtn.setOnAction(e -> handleDeleteEvent(event));
-        
-        actions.getChildren().addAll(updateBtn, deleteBtn);
+        if (isProfessor) {
+            Button updateBtn = new Button("Update");
+            updateBtn.getStyleClass().add("update-button");
+            updateBtn.setOnAction(e -> showUpdateEventDialog(event));
+            
+            Button deleteBtn = new Button("Delete");
+            deleteBtn.getStyleClass().add("delete-button");
+            deleteBtn.setOnAction(e -> handleDeleteEvent(event));
+            
+            actions.getChildren().addAll(updateBtn, deleteBtn);
+        }
         
         card.getChildren().addAll(titleLabel, dateLabel, locationLabel, actions);
         return card;
@@ -132,39 +149,68 @@ public class EvenementController implements Initializable {
     }
     
     private void showUpdateEventDialog(Evenement event) {
+        if (!isProfessor) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Access Denied");
+            alert.setHeaderText("Permission Required");
+            alert.setContentText("Only professors can modify events.");
+            alert.showAndWait();
+            return;
+        }
+        
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AddEventDialog.fxml"));
-            VBox dialogContent = loader.load();
+            AnchorPane dialogPane = loader.load();
             
             AddEventDialogController controller = loader.getController();
-            controller.setEvent(event); // Add this method to AddEventDialogController
+            controller.setEvent(event);
             
+            // Create the dialog Stage
             Stage dialogStage = new Stage();
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setTitle("Update Event");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(calendarView.getScene().getWindow());
             
-            Scene scene = new Scene(dialogContent);
-            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-            
+            Scene scene = new Scene(dialogPane);
             dialogStage.setScene(scene);
+            
+            // Set the dialog stage in the controller
             controller.setDialogStage(dialogStage);
             
+            // Show the dialog and wait for the user response
             dialogStage.showAndWait();
             
-            if (controller.isSaveClicked()) {
-                evenementService.update(controller.getEvent());
-                loadEvents();
-                updateCalendar();
-                updateUpcomingEvents();
+            if (controller.isSaved()) {
+                // Update the event in the database
+                Evenement updatedEvent = controller.getEvent();
+                if (updatedEvent != null) {
+                    evenementService.update(updatedEvent);
+                    // Refresh the views
+                    loadEvents();
+                    updateCalendar();
+                    updateUpcomingEvents();
+                }
             }
-            
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not load dialog: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not load the dialog");
+            alert.setContentText("An error occurred while loading the update event dialog.");
+            alert.showAndWait();
         }
     }
     
     private void handleDeleteEvent(Evenement event) {
+        if (!isProfessor) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Access Denied");
+            alert.setHeaderText("Permission Required");
+            alert.setContentText("Only professors can delete events.");
+            alert.showAndWait();
+            return;
+        }
+        
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Event");
         alert.setHeaderText("Delete Event: " + event.getName());
@@ -231,8 +277,25 @@ public class EvenementController implements Initializable {
             cell.getStyleClass().add("calendar-cell-today");
         }
         
-        // Add click handler
-        cell.setOnMouseClicked(e -> showAddEventDialog(date));
+        // Add click handler only for professors
+        if (isProfessor) {
+            cell.setOnMouseClicked(e -> showAddEventDialog(date));
+        } else {
+            // For students, just show a tooltip with event details if clicked
+            if (events != null && !events.isEmpty()) {
+                StringBuilder tooltipText = new StringBuilder();
+                for (Evenement event : events) {
+                    tooltipText.append(event.getName())
+                             .append("\n")
+                             .append(formatEventDateTime(event))
+                             .append("\n")
+                             .append(event.getLocation())
+                             .append("\n\n");
+                }
+                Tooltip tooltip = new Tooltip(tooltipText.toString().trim());
+                Tooltip.install(cell, tooltip);
+            }
+        }
         
         return cell;
     }
@@ -250,35 +313,56 @@ public class EvenementController implements Initializable {
     }
     
     private void showAddEventDialog(LocalDate date) {
+        if (!isProfessor) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Access Denied");
+            alert.setHeaderText("Permission Required");
+            alert.setContentText("Only professors can add events.");
+            alert.showAndWait();
+            return;
+        }
+        
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AddEventDialog.fxml"));
-            VBox dialogContent = loader.load();
+            AnchorPane dialogPane = loader.load();
             
             AddEventDialogController controller = loader.getController();
-            
-            Stage dialogStage = new Stage();
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.setTitle("Add Event");
-            
-            Scene scene = new Scene(dialogContent);
-            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-            
-            dialogStage.setScene(scene);
-            controller.setDialogStage(dialogStage);
+            controller.setDialogStage(new Stage());
             controller.setSelectedDate(date);
             
+            // Create the dialog Stage
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Add New Event");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(calendarView.getScene().getWindow());
+            
+            Scene scene = new Scene(dialogPane);
+            dialogStage.setScene(scene);
+            
+            // Set the dialog stage in the controller
+            controller.setDialogStage(dialogStage);
+            
+            // Show the dialog and wait for the user response
             dialogStage.showAndWait();
             
-            if (controller.isSaveClicked()) {
-                evenementService.add(controller.getEvent());
-                loadEvents();
-                updateCalendar();
-                updateUpcomingEvents();
+            if (controller.isSaved()) {
+                // Save the event to the database
+                Evenement event = controller.getEvent();
+                if (event != null) {
+                    evenementService.add(event);
+                    // Refresh the calendar view
+                    loadEvents();
+                    updateCalendar();
+                    updateUpcomingEvents();
+                }
             }
-            
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not load dialog: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not load the dialog");
+            alert.setContentText("An error occurred while loading the add event dialog.");
+            alert.showAndWait();
         }
     }
     
@@ -306,6 +390,8 @@ public class EvenementController implements Initializable {
         eventsListView.setManaged(true);
         listViewBtn.getStyleClass().add("active");
         calendarViewBtn.getStyleClass().remove("active");
+        calendarViewBtn.getStyleClass().remove("view-toggle-button");
+        calendarViewBtn.getStyleClass().add("view-toggle-button");
         loadEventsList();
     }
     

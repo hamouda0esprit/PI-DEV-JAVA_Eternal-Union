@@ -2,6 +2,8 @@ package Controllers.Navigation;
 
 import Controllers.ProfileController;
 import Controllers.LoginController;
+import Controllers.EvenementController;
+import Controllers.EvenementStudentController;
 import entite.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +16,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.image.Image;
 import java.io.IOException;
+import javafx.scene.control.Alert;
 
 public class NavbarController implements Initializable {
     @FXML
@@ -36,6 +39,12 @@ public class NavbarController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         navigationState = NavigationStateManager.getInstance();
         currentUser = LoginController.getAuthenticatedUser();
+        
+        if (currentUser == null) {
+            System.out.println("Warning: No authenticated user found in NavbarController");
+        } else {
+            System.out.println("NavbarController initialized with user: " + currentUser.getName());
+        }
         
         // Listen for changes in the current view
         navigationState.currentViewProperty().addListener((observable, oldValue, newValue) -> {
@@ -100,9 +109,59 @@ public class NavbarController implements Initializable {
     }
 
     @FXML
-    private void handleEvenementsNavigation() {
-        navigationState.setCurrentView("Evenement");
-        loadView("/view/Evenement.fxml");
+    private void handleEvenementsClick() {
+        if (currentUser == null) {
+            System.out.println("No user logged in");
+            return;
+        }
+
+        try {
+            // Determine which FXML file to load based on user type
+            String fxmlPath = currentUser.getType().equalsIgnoreCase("teacher") || currentUser.getType().equals("1")
+                ? "/view/Evenement.fxml"
+                : "/view/EvenementStudent.fxml";
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent eventRoot = loader.load();
+            
+            // Get the appropriate controller and set the current user
+            Object controller = loader.getController();
+            if (controller instanceof EvenementController) {
+                ((EvenementController) controller).setCurrentUser(currentUser);
+            } else if (controller instanceof EvenementStudentController) {
+                ((EvenementStudentController) controller).setCurrentUser(currentUser);
+            }
+            
+            // Get the current stage
+            Stage stage = (Stage) evenementsButton.getScene().getWindow();
+            
+            // Set minimum window size
+            stage.setMinWidth(1200);
+            stage.setMinHeight(800);
+            
+            // If current size is smaller than minimum, set to minimum
+            if (stage.getWidth() < 1200) stage.setWidth(1200);
+            if (stage.getHeight() < 800) stage.setHeight(800);
+            
+            // Create new scene with current dimensions
+            Scene eventScene = new Scene(eventRoot, stage.getWidth(), stage.getHeight());
+            stage.setTitle("LOE - Événements");
+            stage.setScene(eventScene);
+            eventScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+            
+            System.out.println("Successfully navigated to events page for user: " + currentUser.getName() + 
+                             " (Type: " + currentUser.getType() + ")");
+        } catch (IOException e) {
+            System.out.println("Error loading events page: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Show error alert
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not load events page");
+            alert.setContentText("An error occurred: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
 
     @FXML

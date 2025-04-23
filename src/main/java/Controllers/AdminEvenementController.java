@@ -157,7 +157,7 @@ public class AdminEvenementController implements Initializable {
             
             dialogStage.showAndWait();
             
-            if (controller.isSaveClicked()) {
+            if (controller.isSaved()) {
                 loadEvents();
             }
         } catch (IOException e) {
@@ -195,7 +195,7 @@ public class AdminEvenementController implements Initializable {
                 
                 dialogStage.showAndWait();
                 
-                if (controller.isSaveClicked()) {
+                if (controller.isSaved()) {
                     loadEvents();
                 }
             } catch (IOException e) {

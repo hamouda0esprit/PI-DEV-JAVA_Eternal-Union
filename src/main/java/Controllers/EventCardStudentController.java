@@ -1,6 +1,7 @@
 package Controllers;
 
 import entite.Evenement;
+import entite.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
@@ -13,15 +14,13 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
-import service.EvenementService;
-import service.IEvenementService;
+import service.ParticipationService;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.io.File;
 import java.io.IOException;
-import javafx.scene.layout.AnchorPane;
 
-public class EventCardController {
+public class EventCardStudentController {
     @FXML
     private Label titleLabel;
     
@@ -41,21 +40,23 @@ public class EventCardController {
     private Button discussionButton;
     
     @FXML
-    private Button updateButton;
-    
-    @FXML
-    private Button deleteButton;
+    private Button participateButton;
 
     private Evenement currentEvent;
-    private IEvenementService evenementService;
-    private EvenementController mainController;
+    private User currentUser;
+    private ParticipationService participationService;
+    private EvenementStudentController mainController;
 
-    public EventCardController() {
-        this.evenementService = new EvenementService();
+    public EventCardStudentController() {
+        this.participationService = new ParticipationService();
     }
 
-    public void setMainController(EvenementController controller) {
+    public void setMainController(EvenementStudentController controller) {
         this.mainController = controller;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
     }
 
     public void setEventData(Evenement event) {
@@ -96,15 +97,59 @@ public class EventCardController {
         } else {
             setDefaultImage();
         }
+
+        // Update participate button state
+        updateParticipateButton();
     }
 
-    private void setDefaultImage() {
-        try {
-            Image defaultImage = new Image("https://via.placeholder.com/300x200?text=Event");
-            eventImage.setImage(defaultImage);
-        } catch (Exception e) {
-            System.err.println("Error loading default image: " + e.getMessage());
+    private void updateParticipateButton() {
+        if (currentUser != null && currentEvent != null) {
+            boolean isParticipating = participationService.isParticipating(currentEvent.getId(), currentUser.getId());
+            if (isParticipating) {
+                participateButton.setText("Cancel Participation");
+                participateButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;");
+            } else {
+                participateButton.setText("Participate");
+                participateButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;");
+            }
         }
+    }
+
+    @FXML
+    private void handleParticipateClick() {
+        if (currentUser == null || currentEvent == null) {
+            showAlert(Alert.AlertType.WARNING, "Error", "Please log in to participate in events.");
+            return;
+        }
+
+        boolean isParticipating = participationService.isParticipating(currentEvent.getId(), currentUser.getId());
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        
+        if (isParticipating) {
+            confirmation.setTitle("Cancel Participation");
+            confirmation.setHeaderText("Cancel participation in: " + currentEvent.getName());
+            confirmation.setContentText("Are you sure you want to cancel your participation in this event?");
+        } else {
+            confirmation.setTitle("Participate in Event");
+            confirmation.setHeaderText("Participate in: " + currentEvent.getName());
+            confirmation.setContentText("Would you like to participate in this event?");
+        }
+
+        confirmation.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                if (isParticipating) {
+                    participationService.removeParticipation(currentEvent.getId(), currentUser.getId());
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "You have cancelled your participation.");
+                } else {
+                    participationService.addParticipation(currentEvent.getId(), currentUser.getId());
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "You are now participating in this event!");
+                }
+                updateParticipateButton();
+                if (mainController != null) {
+                    mainController.refreshEvents();
+                }
+            }
+        });
     }
 
     @FXML
@@ -131,74 +176,13 @@ public class EventCardController {
         }
     }
 
-    @FXML
-    private void handleUpdateClick() {
+    private void setDefaultImage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AddEventDialog.fxml"));
-            AnchorPane dialogPane = loader.load();
-            
-            AddEventDialogController controller = loader.getController();
-            controller.setEvent(currentEvent);
-            
-            // Create the dialog Stage
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Update Event");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(updateButton.getScene().getWindow());
-            
-            Scene scene = new Scene(dialogPane);
-            dialogStage.setScene(scene);
-            
-            // Set the dialog stage in the controller
-            controller.setDialogStage(dialogStage);
-            
-            // Show the dialog and wait for the user response
-            dialogStage.showAndWait();
-            
-            if (controller.isSaved()) {
-                // Update the event in the database
-                Evenement updatedEvent = controller.getEvent();
-                if (updatedEvent != null) {
-                    evenementService.update(updatedEvent);
-                    // Refresh the views through the main controller
-                    if (mainController != null) {
-                        mainController.refreshViews();
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Could not load the dialog");
-            alert.setContentText("An error occurred while loading the update event dialog.");
-            alert.showAndWait();
+            Image defaultImage = new Image("https://via.placeholder.com/300x200?text=Event");
+            eventImage.setImage(defaultImage);
+        } catch (Exception e) {
+            System.err.println("Error loading default image: " + e.getMessage());
         }
-    }
-
-    @FXML
-    private void handleDeleteClick() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete Event");
-        alert.setHeaderText("Delete Event: " + currentEvent.getName());
-        alert.setContentText("Are you sure you want to delete this event?");
-        
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                evenementService.delete(currentEvent.getId());
-                if (mainController != null) {
-                    mainController.refreshViews();
-                }
-            }
-        });
-    }
-
-    public Button getUpdateButton() {
-        return updateButton;
-    }
-
-    public Button getDeleteButton() {
-        return deleteButton;
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {
