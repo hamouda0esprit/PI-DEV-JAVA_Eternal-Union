@@ -69,6 +69,9 @@ public class ForumDiscussionController implements Initializable {
     private VBox MediaField;
 
     @FXML
+    private Label AiContainer;
+
+    @FXML
     private VBox commentsContainer;
 
     @FXML
@@ -197,6 +200,9 @@ public class ForumDiscussionController implements Initializable {
         }else if (forum.getMedia() == null || forum.getMedia().isEmpty()) {
             forumImage.setFitHeight(0);
             forumVideo.setFitHeight(0);
+        }
+        if (forum.getAiprompt_responce() != null) {
+            AiContainer.setText(forum.getAiprompt_responce());
         }
 
         // Load comments for this forum

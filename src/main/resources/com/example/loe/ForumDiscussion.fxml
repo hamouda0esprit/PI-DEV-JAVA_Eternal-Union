@@ -153,6 +153,7 @@
 
                         <!-- Comments container with ScrollPane -->
                         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" maxHeight="300">
+                            <Label fx:id="AiContainer" style="-fx-text-fill: black;"></Label>
                             <VBox fx:id="commentsContainer" spacing="10">
                                 <VBox.margin>
                                     <Insets top="10" />

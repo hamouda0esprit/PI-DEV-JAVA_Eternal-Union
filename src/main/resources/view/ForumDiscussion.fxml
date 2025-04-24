@@ -96,18 +96,17 @@
                             </HBox>
                         </VBox>
 
-                        <!-- Comments container -->
-                        <!-- Add this to your ForumDiscussion.fxml file, replacing the current VBox commentsContainer -->
-                        <!-- Inside the forum content panel, after the comment input area -->
-
                         <!-- Comments container with ScrollPane -->
-                        <ScrollPane fitToWidth="true" maxHeight="300" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-                            <VBox fx:id="commentsContainer" spacing="10">
-                                <VBox.margin>
-                                    <Insets top="10" />
-                                </VBox.margin>
-                                <!-- Comments will be added here dynamically -->
-                                <Label style="-fx-font-size: 14px; -fx-text-fill: #757575;" text="Soyez le premier à commenter cette discussion !" />
+                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" maxHeight="300">
+                            <VBox spacing="10">
+                                <Label fx:id="AiContainer" style="-fx-text-fill: black; -fx-padding: 10;"/>
+                                <VBox fx:id="commentsContainer" spacing="10">
+                                    <VBox.margin>
+                                        <Insets top="10" />
+                                    </VBox.margin>
+                                    <!-- Comments will be added here dynamically -->
+                                    <Label style="-fx-font-size: 14px; -fx-text-fill: #757575;" text="Soyez le premier à commenter cette discussion !" />
+                                </VBox>
                             </VBox>
                         </ScrollPane>
                     </VBox>

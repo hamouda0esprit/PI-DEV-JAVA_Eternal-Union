@@ -21,12 +21,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import service.AI21Service;
 import service.ForumService;
 import service.UserService;
 import utils.FileUtils;
@@ -56,15 +57,35 @@ public class ForumAddController {
     private MediaView videoPreview;
 
     @FXML
-    private VBox mediaPreviewContainer;
+    private StackPane mediaPreviewContainer;
 
     private File selectedMediaFile;
     private String mediaType;
     private MediaPlayer mediaPlayer;
     private final ProfanityFilterService profanityFilterService;
+    public final AI21Service ai21Service;
 
     public ForumAddController() {
+        this.ai21Service = new AI21Service();
         this.profanityFilterService = new ProfanityFilterService();
+    }
+
+    private String formatMathematicalSymbols(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        
+        // Replace mathematical symbols
+        return text.replaceAll("×", "*")
+                  .replaceAll("÷", "/")
+                  .replaceAll("−", "-")
+                  .replaceAll("\\$", "")  // Remove $ symbols
+                  .replaceAll("\\{", "")  // Remove { symbols
+                  .replaceAll("\\}", "")  // Remove } symbols
+                  .replaceAll("\\[", "")  // Remove [ symbols
+                  .replaceAll("\\]", "")  // Remove ] symbols
+                  .replaceAll("\\(", "")  // Remove ( symbols
+                  .replaceAll("\\)", ""); // Remove ) symbols
     }
 
     private boolean isInputValid() {
@@ -183,6 +204,9 @@ public class ForumAddController {
                     forum.setMedia("");
                     forum.setType_media("");
                 }
+
+                String aiResponse = AI21Service.getInstance().generateText(filteredDescription);
+                forum.setAiprompt_responce(formatMathematicalSymbols(aiResponse));
 
                 forum.setUser(LoginController.getAuthenticatedUser());
                 forumService.createPst(forum);

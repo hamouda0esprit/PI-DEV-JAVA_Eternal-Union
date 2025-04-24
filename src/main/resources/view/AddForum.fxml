@@ -66,10 +66,10 @@
                         </Button>
 
                         <!-- Media Preview Container -->
-                        <VBox fx:id="mediaPreviewContainer" alignment="CENTER" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-padding: 10;">
+                        <StackPane fx:id="mediaPreviewContainer" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-padding: 10;">
                             <ImageView fx:id="imagePreview" fitWidth="400" preserveRatio="true" visible="false"/>
                             <MediaView fx:id="videoPreview" fitWidth="400" preserveRatio="true" visible="false"/>
-                        </VBox>
+                        </StackPane>
                     </VBox>
 
                     <Button fx:id="addButton" onAction="#add" text="Create Forum" style="-fx-background-color: #54a2e0; -fx-text-fill: white; -fx-background-radius: 5;">

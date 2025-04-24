@@ -283,9 +283,8 @@ public class ForumListController {
         discussButtonContent.setAlignment(javafx.geometry.Pos.CENTER);
         discussButtonContent.setSpacing(5);
 
-        ImageView commentIcon = new ImageView();
-        commentIcon.setFitHeight(16);
-        commentIcon.setFitWidth(16);
+        Label commentIcon = new Label("🗨️");
+        commentIcon.setStyle("-fx-text-fill: black;");
 
         Label discussLabel = new Label("Discuter");
         discussLabel.setStyle("-fx-text-fill: #54a2e0;-fx-text-fill: black;");

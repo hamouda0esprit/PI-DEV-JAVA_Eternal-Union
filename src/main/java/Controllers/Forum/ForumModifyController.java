@@ -23,13 +23,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import service.AI21Service;
 import service.ForumService;
+import service.ProfanityFilterService;
 import service.UserService;
 import utils.FileUtils;
 
@@ -57,7 +59,7 @@ public class ForumModifyController {
     private MediaView videoPreview;
 
     @FXML
-    private VBox mediaPreviewContainer;
+    private StackPane mediaPreviewContainer;
 
     private Forum forumToModify;
     private ForumService forumService;
@@ -65,9 +67,11 @@ public class ForumModifyController {
     private String mediaType;
     private MediaPlayer mediaPlayer;
     private boolean isMediaLoading = false;
+    private final ProfanityFilterService profanityFilterService;
 
     public ForumModifyController() {
         forumService = new ForumService();
+        this.profanityFilterService = new ProfanityFilterService();
     }
 
     private boolean isInputValid() {
@@ -244,6 +248,24 @@ public class ForumModifyController {
         });
     }
 
+    private String formatMathematicalSymbols(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+
+        // Replace mathematical symbols
+        return text.replaceAll("×", "*")
+                .replaceAll("÷", "/")
+                .replaceAll("−", "-")
+                .replaceAll("\\$", "")  // Remove $ symbols
+                .replaceAll("\\{", "")  // Remove { symbols
+                .replaceAll("\\}", "")  // Remove } symbols
+                .replaceAll("\\[", "")  // Remove [ symbols
+                .replaceAll("\\]", "")  // Remove ] symbols
+                .replaceAll("\\(", "")  // Remove ( symbols
+                .replaceAll("\\)", ""); // Remove ) symbols
+    }
+
     @FXML
     void handleMediaUpload(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -342,12 +364,24 @@ public class ForumModifyController {
 
     @FXML
     void handleModify(ActionEvent event) {
+
+        String OldMedia = forumToModify.getMedia();
+
+        System.out.println(OldMedia);
+
         if (isInputValid()) {
             try {
                 // Update forum object with form data
-                forumToModify.setTitle(Title.getText());
-                forumToModify.setDescription(Description.getText());
                 forumToModify.setSubject(Subject.getValue());
+
+                String filteredTitle = profanityFilterService.filterText(Title.getText());
+                String filteredDescription = profanityFilterService.filterText(Description.getText());
+
+                forumToModify.setTitle(filteredTitle);
+                forumToModify.setDescription(filteredDescription);
+
+                String aiResponse = AI21Service.getInstance().generateText(Description.getText());
+                forumToModify.setAiprompt_responce(formatMathematicalSymbols(aiResponse));
 
                 // Handle media
                 if (selectedMediaFile != null) {
@@ -360,6 +394,25 @@ public class ForumModifyController {
                         showMediaError("Erreur lors de la sauvegarde du média: " + e.getMessage());
                         return;
                     }
+
+                    if (OldMedia != null && !OldMedia.isEmpty()) {
+                        try {
+                            // Get the user's documents folder
+                            String documentsPath = System.getProperty("user.home") + "\\Documents";
+                            // Construct the full path to the media file
+                            String fullMediaPath = documentsPath + OldMedia;
+
+                            // Delete the media file
+                            Path mediaPath = Paths.get(fullMediaPath);
+                            if (Files.exists(mediaPath)) {
+                                Files.delete(mediaPath);
+                            }
+                        } catch (IOException e) {
+                            // Log the error but continue with forum deletion
+                            System.err.println("Error deleting media file: " + e.getMessage());
+                        }
+                    }
+
                 }
 
                 // Update in database
