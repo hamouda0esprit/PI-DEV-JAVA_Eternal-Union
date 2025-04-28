@@ -12,7 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import Controllers.LoginController;
 import entite.Forum;
+import entite.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -68,6 +70,8 @@ public class ForumModifyController {
     private MediaPlayer mediaPlayer;
     private boolean isMediaLoading = false;
     private final ProfanityFilterService profanityFilterService;
+    private UserService userService;
+    private User currentUser;
 
     public ForumModifyController() {
         forumService = new ForumService();
@@ -325,6 +329,8 @@ public class ForumModifyController {
         assert imagePreview != null : "fx:id=\"imagePreview\" was not injected: check your FXML file.";
         assert videoPreview != null : "fx:id=\"videoPreview\" was not injected: check your FXML file.";
         assert mediaPreviewContainer != null : "fx:id=\"mediaPreviewContainer\" was not injected: check your FXML file.";
+
+        currentUser = LoginController.getAuthenticatedUser();
     }
 
     public void setForumToModify(Forum forum) {
@@ -376,6 +382,18 @@ public class ForumModifyController {
 
                 String filteredTitle = profanityFilterService.filterText(Title.getText());
                 String filteredDescription = profanityFilterService.filterText(Description.getText());
+
+                if (!filteredTitle.equals(Title.getText())){
+                    currentUser.setWarnings(currentUser.getWarnings()+1);
+
+                    userService.updateUser(currentUser);
+                }
+
+                if (!filteredDescription.equals(Description.getText())){
+                    currentUser.setWarnings(currentUser.getWarnings()+1);
+
+                    userService.updateUser(currentUser);
+                }
 
                 forumToModify.setTitle(filteredTitle);
                 forumToModify.setDescription(filteredDescription);

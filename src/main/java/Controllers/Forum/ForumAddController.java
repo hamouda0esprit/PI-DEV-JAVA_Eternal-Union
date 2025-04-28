@@ -65,6 +65,9 @@ public class ForumAddController {
     private final ProfanityFilterService profanityFilterService;
     public final AI21Service ai21Service;
 
+    private User currentUser;
+    private UserService userService;
+
     public ForumAddController() {
         this.ai21Service = new AI21Service();
         this.profanityFilterService = new ProfanityFilterService();
@@ -168,7 +171,6 @@ public class ForumAddController {
             ForumService forumService = new ForumService();
             Forum forum = new Forum();
             UserService userService = new UserService();
-
             try {
                 // Filter title and description for profanity
                 String titleText = Title.getText().trim();
@@ -180,6 +182,18 @@ public class ForumAddController {
 
                 String filteredTitle = profanityFilterService.filterText(titleText);
                 String filteredDescription = profanityFilterService.filterText(descriptionText);
+
+                if (!filteredTitle.equals(titleText)){
+                    currentUser.setWarnings(currentUser.getWarnings()+1);
+
+                    userService.updateUser(currentUser);
+                }
+
+                if (!filteredDescription.equals(descriptionText)){
+                    currentUser.setWarnings(currentUser.getWarnings()+1);
+
+                    userService.updateUser(currentUser);
+                }
 
                 // Additional validation after filtering
                 if (filteredTitle == null || filteredTitle.isEmpty()) {
@@ -267,6 +281,8 @@ public class ForumAddController {
         assert imagePreview != null : "fx:id=\"imagePreview\" was not injected: check your FXML file.";
         assert videoPreview != null : "fx:id=\"videoPreview\" was not injected: check your FXML file.";
         assert mediaPreviewContainer != null : "fx:id=\"mediaPreviewContainer\" was not injected: check your FXML file.";
+
+        currentUser = LoginController.getAuthenticatedUser();
         
         // Initialize media previews
         imagePreview.setVisible(false);

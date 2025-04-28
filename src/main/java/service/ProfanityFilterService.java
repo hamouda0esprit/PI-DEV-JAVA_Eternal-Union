@@ -8,8 +8,8 @@ import java.net.http.HttpResponse;
 import java.util.Map;
 
 public class ProfanityFilterService {
-    private static final String API_KEY = "";
-    //private static final String API_KEY = "XmxRXGY6S1LgnEco4pQetQ==GBVAmTcFIGr1flRa";
+    //private static final String API_KEY = "";
+    private static final String API_KEY = "XmxRXGY6S1LgnEco4pQetQ==GBVAmTcFIGr1flRa";
     private static final String API_URL = "https://api.api-ninjas.com/v1/profanityfilter";
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;

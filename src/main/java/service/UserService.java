@@ -175,7 +175,7 @@ public class UserService implements IService<User>{
 
     // Update user with full profile editing capabilities
     public void updateUser(User user) throws SQLException {
-        String query = "UPDATE user SET name = ?, email = ?, password = ?, img = ?, bio = ? WHERE id = ?";
+        String query = "UPDATE user SET name = ?, email = ?, password = ?, img = ?, bio = ?, warnings = ? WHERE id = ?";
 
         System.out.println("Updating user with ID: " + user.getId());
         System.out.println("- Name: " + user.getName());
@@ -183,6 +183,7 @@ public class UserService implements IService<User>{
         System.out.println("- Password: [SECURE]");
         System.out.println("- Image: " + user.getImg());
         System.out.println("- Bio: " + user.getBio());
+        System.out.println("- Warnings: " + user.getBio());
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, user.getName());
@@ -190,7 +191,8 @@ public class UserService implements IService<User>{
             preparedStatement.setString(3, user.getPassword());
             preparedStatement.setString(4, user.getImg());
             preparedStatement.setString(5, user.getBio());
-            preparedStatement.setInt(6, user.getId());
+            preparedStatement.setInt(6, user.getWarnings());
+            preparedStatement.setInt(7, user.getId());
 
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println("User update completed. Rows affected: " + rowsAffected);

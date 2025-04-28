@@ -14,6 +14,7 @@ public class User {
     private String password;
     private String img;
     private int score;
+    private int warnings;
     private String bio;
     private boolean verified;
     private String google_id;
@@ -23,7 +24,7 @@ public class User {
 
     public User(String name, String email, int phone, String type,
                 Date date_of_birth, String password, String img, int score,
-                String bio, boolean verified, String google_id,double rate) {
+                String bio, boolean verified, String google_id,double rate, int warnings) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -36,6 +37,7 @@ public class User {
         this.bio = bio;
         this.verified = verified;
         this.google_id = google_id;
+        this.warnings = warnings;
     }
 
     public User(int id, String name, String email, int phone, String type,
@@ -54,6 +56,7 @@ public class User {
         this.bio = bio;
         this.verified = verified;
         this.google_id = google_id;
+        this.warnings = warnings;
     }
 
     // Getters and Setters
@@ -64,6 +67,10 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
+
+    public int getWarnings() {return warnings;}
+
+    public void setWarnings(int warnings) {this.warnings = warnings;}
 
     public String getName() {
         return name;
@@ -168,6 +175,7 @@ public class User {
                 ", bio='" + bio + '\'' +
                 ", verified=" + verified +
                 ", google_id='" + google_id + '\'' +
+                ", warnings='" + warnings + '\'' +
                 '}';
     }
 

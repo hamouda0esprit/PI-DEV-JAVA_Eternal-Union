@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import Controllers.LoginController;
@@ -216,6 +218,7 @@ public class ForumDiscussionController implements Initializable {
 
             // Get comments for current forum
             List<Responces> comments = commentService.readByForumId(currentForum.getId());
+            Collections.reverse(comments);
 
             if (comments.isEmpty()) {
                 Label emptyLabel = new Label("Soyez le premier à commenter cette discussion !");
@@ -354,6 +357,13 @@ public class ForumDiscussionController implements Initializable {
             // Create new comment
             Responces comment = new Responces();
             String filteredComment = profanityFilterService.filterText(commentText);
+
+            if (!filteredComment.equals(commentText)){
+                currentUser.setWarnings(currentUser.getWarnings()+1);
+
+                userService.updateUser(currentUser);
+            }
+
             comment.setComment(filteredComment);
             comment.setDate_time(Timestamp.valueOf(LocalDateTime.now()));
             comment.setForum(currentForum);
@@ -364,6 +374,8 @@ public class ForumDiscussionController implements Initializable {
 
             // Clear text area
             commentTextArea.clear();
+
+
 
             // Reload comments
             loadComments();

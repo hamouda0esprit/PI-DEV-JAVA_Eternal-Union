@@ -146,7 +146,7 @@ public class ResponcesService implements IService<Responces>{
 
     public List<Responces> readByForumId(int id) {
         List<Responces> userResponces = new ArrayList<>();
-        String query = "SELECT * FROM responces WHERE id_forum_id = ? ORDER BY date_time DESC";
+        String query = "SELECT * FROM responces WHERE id_forum_id = ? ORDER BY date_time DESC ";
 
         try {
             pst = cnx.prepareStatement(query);
