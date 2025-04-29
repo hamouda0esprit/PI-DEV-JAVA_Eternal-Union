@@ -344,6 +344,19 @@ public class ForumDiscussionController implements Initializable {
         }
     }
 
+    void logout(ActionEvent event) {
+        try {
+            Parent forumView = FXMLLoader.load(getClass().getResource("/view/Login.fxml"));
+            Scene scene = new Scene(forumView);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible de revenir à la page précédente.", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     void handleSubmitComment(ActionEvent event) {
         String commentText = commentTextArea.getText().trim();
@@ -362,6 +375,10 @@ public class ForumDiscussionController implements Initializable {
                 currentUser.setWarnings(currentUser.getWarnings()+1);
 
                 userService.updateUser(currentUser);
+
+                if (currentUser.getWarnings()>=3){
+                    logout(event);
+                }
             }
 
             comment.setComment(filteredComment);

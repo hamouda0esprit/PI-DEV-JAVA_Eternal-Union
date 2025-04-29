@@ -165,6 +165,18 @@ public class ForumAddController {
         }
     }
 
+    void logout(ActionEvent event) {
+        try {
+            Parent forumView = FXMLLoader.load(getClass().getResource("/view/Login.fxml"));
+            Scene scene = new Scene(forumView);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     void add(ActionEvent event) {
         if (isInputValid()) {
@@ -187,12 +199,20 @@ public class ForumAddController {
                     currentUser.setWarnings(currentUser.getWarnings()+1);
 
                     userService.updateUser(currentUser);
+
+                    if (currentUser.getWarnings()>=3){
+                        logout(event);
+                    }
                 }
 
                 if (!filteredDescription.equals(descriptionText)){
                     currentUser.setWarnings(currentUser.getWarnings()+1);
 
                     userService.updateUser(currentUser);
+
+                    if (currentUser.getWarnings()>=3){
+                        logout(event);
+                    }
                 }
 
                 // Additional validation after filtering

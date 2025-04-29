@@ -33,12 +33,12 @@
                     </padding>
 
                     <!-- Back button -->
-                    <Button fx:id="backButton" onAction="#handleBack" prefHeight="32.0" prefWidth="33.0" style="-fx-background-color: white; -fx-background-radius: 50;" text="⬅" />
+                    <Button fx:id="backButton" onAction="#handleBack" prefHeight="0.0" prefWidth="33.0" style="-fx-background-color: white; -fx-background-radius: 50;" text="⬅" />
 
                     <!-- Forum content panel -->
                     <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10;">
                         <!-- Author info with avatar -->
-                        <HBox alignment="CENTER_LEFT" spacing="10">
+                        <HBox alignment="CENTER_LEFT" prefWidth="700.0" spacing="10">
                             <ImageView fx:id="authorPhoto" fitHeight="50" fitWidth="50" preserveRatio="true" style="-fx-background-color: #e0e0e0; -fx-background-radius: 25;">
                                 <!--<Image url="@Images/photo.png" />-->
                             </ImageView>
@@ -85,21 +85,15 @@
                         <!-- Comment box -->
                         <VBox spacing="10" style="-fx-background-color: #f9f9f9; -fx-background-radius: 5; -fx-padding: 10;">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <ImageView fitHeight="30" fitWidth="30">
-                                    <!--<Image url="@Images/photo.png" />-->
-                                </ImageView>
-                                <TextArea fx:id="commentTextArea" prefHeight="80" promptText="Écrivez un commentaire..." wrapText="true" />
-                            </HBox>
-
-                            <HBox alignment="CENTER_RIGHT">
+                                <TextArea fx:id="commentTextArea" prefHeight="38.0" prefWidth="589.0" promptText="Écrivez un commentaire..." wrapText="true" />
                                 <Button fx:id="submitButton" onAction="#handleSubmitComment" style="-fx-background-color: #42a5f5; -fx-text-fill: white;" text="Soumettre" />
                             </HBox>
                         </VBox>
 
                         <!-- Comments container with ScrollPane -->
-                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS" maxHeight="300">
+                        <ScrollPane fitToWidth="true" maxHeight="300" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
                             <VBox spacing="10">
-                                <Label fx:id="AiContainer" style="-fx-text-fill: black; -fx-padding: 10;"/>
+                                <Label fx:id="AiContainer" style="-fx-text-fill: black; -fx-padding: 10;" />
                                 <VBox fx:id="commentsContainer" spacing="10">
                                     <VBox.margin>
                                         <Insets top="10" />

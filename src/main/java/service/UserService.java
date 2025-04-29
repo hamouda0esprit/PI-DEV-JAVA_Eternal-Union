@@ -183,7 +183,7 @@ public class UserService implements IService<User>{
         System.out.println("- Password: [SECURE]");
         System.out.println("- Image: " + user.getImg());
         System.out.println("- Bio: " + user.getBio());
-        System.out.println("- Warnings: " + user.getBio());
+        System.out.println("- Warnings: " + user.getWarnings());
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, user.getName());

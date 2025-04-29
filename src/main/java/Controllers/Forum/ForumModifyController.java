@@ -367,6 +367,17 @@ public class ForumModifyController {
             }
         }
     }
+    void logout(ActionEvent event) {
+        try {
+            Parent forumView = FXMLLoader.load(getClass().getResource("/view/Login.fxml"));
+            Scene scene = new Scene(forumView);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     void handleModify(ActionEvent event) {
@@ -387,12 +398,21 @@ public class ForumModifyController {
                     currentUser.setWarnings(currentUser.getWarnings()+1);
 
                     userService.updateUser(currentUser);
+
+                    if (currentUser.getWarnings()>=3){
+                        logout(event);
+                    }
                 }
 
                 if (!filteredDescription.equals(Description.getText())){
                     currentUser.setWarnings(currentUser.getWarnings()+1);
 
                     userService.updateUser(currentUser);
+
+                    if (currentUser.getWarnings()>=3){
+                        logout(event);
+                    }
+
                 }
 
                 forumToModify.setTitle(filteredTitle);
