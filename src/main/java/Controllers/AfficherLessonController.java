@@ -94,6 +94,12 @@ public class AfficherLessonController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterLessons.fxml"));
             Parent root = loader.load();
+
+            // Get the controller and set the current course ID
+            AjouterLessonController ajouterController = loader.getController();
+            ajouterController.setCurrentCourseId(currentCourseId); // Assuming currentCourseId is defined in this controller
+
+            // Replace the current view
             mainPane.getChildren().setAll(root);
         } catch (IOException e) {
             System.out.println("Error loading AjouterLesson.fxml: " + e.getMessage());
@@ -135,12 +141,17 @@ public class AfficherLessonController implements Initializable {
 
             if (currentCourseId == -1) {
                 lessons = service.recuperer(); // All lessons
+                System.out.println("Fetching all lessons.");
             } else {
                 lessons = service.getLessonsByCourse(currentCourseId); // Filtered
+                System.out.println("Fetching lessons for Course ID: " + currentCourseId);
             }
 
             ObservableList<Lesson> obs = FXCollections.observableList(lessons);
             tableview.setItems(obs);
+
+            // Debugging output to check the number of lessons loaded
+            System.out.println("Number of lessons loaded: " + obs.size());
         } catch (SQLException e) {
             e.printStackTrace();
             // Show error to user (optional)
@@ -183,30 +194,46 @@ public class AfficherLessonController implements Initializable {
 
 
     @FXML
-    public void handleShowItemsEleve(ActionEvent event) {
-        Lesson selectedLesson = tableview.getSelectionModel().getSelectedItem();
-        if (selectedLesson != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherItemEleve.fxml"));
-                Parent root = loader.load();
+   public void handleShowItemsEleve(ActionEvent event) {
+       Lesson selectedLesson = tableview.getSelectionModel().getSelectedItem();
+       if (selectedLesson != null) {
+           try {
+               FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherItemEleve.fxml"));
+               Parent root = loader.load();
 
-                // Get controller
-                AfficherItemController itemController = loader.getController();
+               // Get controller
+               AfficherItemStudentController itemController = loader.getController();
 
-                // Pass lesson id to item controller
-                itemController.showForLesson(selectedLesson.getId());
+               // Pass lesson id to item controller
+               itemController.showForLesson(selectedLesson.getId());
 
-                // Set scene
-                mainPane.getChildren().setAll(root);
+               // Set scene
+               mainPane.getChildren().setAll(root);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Erreur de chargement du fichier FXML");
-            }
-        } else {
-            System.out.println("Veuillez sélectionner une leçon.");
+           } catch (IOException e) {
+               e.printStackTrace();
+               System.out.println("Erreur de chargement du fichier FXML");
+           }
+       } else {
+           System.out.println("Veuillez sélectionner une leçon.");
+       }
+   }
+
+    @FXML
+    void returnToAfficherLesson() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherLesson.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller and set the current course ID
+            AfficherLessonController afficherController = loader.getController();
+            afficherController.setCourseIdFilter(currentCourseId); // Set the current course ID
+
+            // Replace the current view
+            mainPane.getChildren().setAll(root);
+        } catch (IOException e) {
+            System.out.println("Error loading AfficherLesson.fxml: " + e.getMessage());
         }
     }
-
 
 }

@@ -9,35 +9,23 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import models.Item;
 import services.ItemService;
-import javafx.scene.Parent;
-import java.io.IOException;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert.AlertType;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
-
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
-
-import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 public class AfficherItemController implements Initializable {
 
@@ -60,17 +48,14 @@ public class AfficherItemController implements Initializable {
     private TableColumn<Item, String> contentCol;
 
     private final ItemService itemService = new ItemService();
-
-
-
+    private int currentLessonId = -1;  // <-- this will store the lessonId for use in Add Form
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            List<Item> itemList = itemService.getAll(); // ❗ appel correct
+            List<Item> itemList = itemService.getAll();
             ObservableList<Item> observableItems = FXCollections.observableArrayList(itemList);
 
-            // Liaison des colonnes avec les propriétés du modèle
             idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
             lessonIdCol.setCellValueFactory(new PropertyValueFactory<>("lessonId"));
             typeCol.setCellValueFactory(new PropertyValueFactory<>("typeItem"));
@@ -80,10 +65,10 @@ public class AfficherItemController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     public void showForLesson(int lessonId) {
+        this.currentLessonId = lessonId; // <-- store it for use in add form
         try {
             List<Item> items = itemService.getItemsByLessonId(lessonId);
             ObservableList<Item> observableList = FXCollections.observableArrayList(items);
@@ -96,12 +81,12 @@ public class AfficherItemController implements Initializable {
     @FXML
     public void showAddForm() {
         try {
-            // Load the new FXML
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AjouterItem.fxml"));
             AnchorPane addItemPane = loader.load();
 
-            // Replace current root with the new content
-            // Assumes addButton is inside an AnchorPane (the root layout of your main view)
+            AjouterItemController controller = loader.getController();
+            controller.setLessonId(currentLessonId); // Pass the lesson ID
+
             AnchorPane currentRoot = (AnchorPane) addButton.getScene().getRoot();
             currentRoot.getChildren().setAll(addItemPane);
 
@@ -110,22 +95,17 @@ public class AfficherItemController implements Initializable {
         }
     }
 
-    // Handle the Update button click
     @FXML
     private void handleUpdate(ActionEvent event) {
-        // Handle the update functionality
         Item selectedItem = tableview.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             try {
-                // Load the update item form
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/UpdateItem.fxml"));
                 Parent root = loader.load();
 
-                // Get the controller of the update item form
                 UpdateItemController controller = loader.getController();
-                controller.setItem(selectedItem);  // Pass selected item to the update form
+                controller.setItem(selectedItem);
 
-                // Switch to the update item form
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.show();
@@ -138,7 +118,6 @@ public class AfficherItemController implements Initializable {
         }
     }
 
-    // Show an alert message
     private void showAlert(String title, String message) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle(title);
@@ -152,7 +131,6 @@ public class AfficherItemController implements Initializable {
         Item selectedItem = tableview.getSelectionModel().getSelectedItem();
 
         if (selectedItem != null) {
-            // Optional confirmation
             Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
             confirmAlert.setTitle("Delete Confirmation");
             confirmAlert.setHeaderText(null);
@@ -161,12 +139,8 @@ public class AfficherItemController implements Initializable {
             confirmAlert.showAndWait().ifPresent(response -> {
                 if (response == javafx.scene.control.ButtonType.OK) {
                     try {
-                        // Delete from DB
                         itemService.delete(selectedItem.getId());
-
-                        // Remove from TableView
                         tableview.getItems().remove(selectedItem);
-
                         showAlert("Success", "Item deleted successfully.");
                     } catch (SQLException e) {
                         showAlert("Error", "Failed to delete item.");
@@ -179,6 +153,4 @@ public class AfficherItemController implements Initializable {
             showAlert("Selection Error", "Please select an item to delete.");
         }
     }
-
-
 }

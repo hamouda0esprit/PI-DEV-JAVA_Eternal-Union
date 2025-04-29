@@ -5,20 +5,30 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.collections.FXCollections?>
 
 <AnchorPane prefHeight="568.0" prefWidth="870.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AjouterItemController">
    <children>
-      <TextField fx:id="txtLessonId" layoutX="361.0" layoutY="157.0" />
-      <TextField fx:id="txtType" layoutX="361.0" layoutY="193.0" />
-      <TextField fx:id="txtContent" layoutX="361.0" layoutY="232.0" />
       <Text fill="#40a1e1" layoutX="340.0" layoutY="85.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ADD ITEM" textAlignment="CENTER">
          <font>
             <Font name="Arial Black" size="35.0" />
          </font>
       </Text>
-      <Button layoutX="361.0" layoutY="266.0" mnemonicParsing="false" onAction="#Ajouter" prefHeight="49.0" prefWidth="149.0" style="-fx-background-color: transparent; -fx-border-radius: 10px; -fx-border-color: #40a1e1;" text="Add Course" textFill="#40a1e1" />
-      <Text fill="#40a1e1" layoutX="361.0" layoutY="153.0" strokeType="OUTSIDE" strokeWidth="0.0" text="id Lesson" />
-      <Text fill="#40a1e1" layoutX="361.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" text="type" />
-      <Text fill="#40a1e1" layoutX="361.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="content" />
+
+      <!-- Lesson ID -->
+      <Text fill="#40a1e1" layoutX="340.0" layoutY="150.0" opacity="0"  strokeType="OUTSIDE" strokeWidth="0.0" text="Lesson ID:" />
+      <TextField fx:id="txtLessonId" layoutX="0.0" layoutY="0.0" opacity="0" prefHeight="0.0" prefWidth="0.0" />
+
+      <!-- Type ComboBox -->
+      <Text fill="#40a1e1" layoutX="340.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Type:" />
+      <ComboBox fx:id="comboType" layoutX="361.0" layoutY="150.0" prefWidth="200.0" />
+
+      <!-- Content -->
+      <Text fill="#40a1e1" layoutX="340.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Content:" />
+      <TextField fx:id="txtContent" layoutX="361.0" layoutY="232.0" />
+
+      <!-- Button -->
+      <Button layoutX="361.0" layoutY="266.0" mnemonicParsing="false" onAction="#Ajouter" prefHeight="49.0" prefWidth="149.0" style="-fx-background-color: transparent; -fx-border-radius: 10px; -fx-border-color: #40a1e1;" text="Add Item" textFill="#40a1e1" />
    </children>
 </AnchorPane>

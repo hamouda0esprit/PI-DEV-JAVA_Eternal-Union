@@ -14,14 +14,11 @@
          </font>
       </Text>
 
-      <Text fill="#40a1e1" layoutX="290.0" layoutY="180.0" text="Course ID:" />
-      <TextField fx:id="txtCourseId" layoutX="400.0" layoutY="160.0" />
+      <Text fill="#40a1e1" layoutX="290.0" layoutY="180.0" text="Title:" />
+      <TextField fx:id="txtTitle" layoutX="400.0" layoutY="160.0" />
 
-      <Text fill="#40a1e1" layoutX="290.0" layoutY="230.0" text="Title:" />
-      <TextField fx:id="txtTitle" layoutX="400.0" layoutY="210.0" />
-
-      <Text fill="#40a1e1" layoutX="290.0" layoutY="280.0" text="Description:" />
-      <TextField fx:id="txtDescription" layoutX="400.0" layoutY="260.0" />
+      <Text fill="#40a1e1" layoutX="290.0" layoutY="230.0" text="Description:" />
+      <TextField fx:id="txtDescription" layoutX="400.0" layoutY="210.0" />
 
       <Button layoutX="400.0" layoutY="320.0" mnemonicParsing="false" onAction="#Ajouter" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: transparent; -fx-border-color: #40a1e1; -fx-border-radius: 10px;" text="Add Lesson" textFill="#40a1e1" />
    </children>

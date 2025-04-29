@@ -20,9 +20,6 @@ public class UpdateLessonController {
     private AnchorPane mainPane;  // Reference to the parent pane
 
     @FXML
-    private TextField txtCourseId;
-
-    @FXML
     private TextField txtTitle;
 
     @FXML
@@ -32,7 +29,6 @@ public class UpdateLessonController {
 
     public void setLessonToEdit(Lesson lesson) {
         this.lessonToEdit = lesson;
-        txtCourseId.setText(String.valueOf(lesson.getCourseId()));
         txtTitle.setText(lesson.getTitle());
         txtDescription.setText(lesson.getDescription());
     }
@@ -40,7 +36,6 @@ public class UpdateLessonController {
     @FXML
     void handleSaveUpdate() {
         if (lessonToEdit != null) {
-            lessonToEdit.setCourseId(Integer.parseInt(txtCourseId.getText()));
             lessonToEdit.setTitle(txtTitle.getText());
             lessonToEdit.setDescription(txtDescription.getText());
 

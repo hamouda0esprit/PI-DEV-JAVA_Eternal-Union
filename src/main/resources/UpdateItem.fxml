@@ -13,8 +13,6 @@
                 <Font name="Arial Black" size="35.0" />
             </font>
         </Text>
-        <Text fill="#40a1e1" layoutX="290.0" layoutY="180.0" text="Lesson ID:" />
-        <TextField fx:id="txtLessonId" layoutX="400.0" layoutY="160.0" />
         <Text fill="#40a1e1" layoutX="290.0" layoutY="230.0" text="Type Item:" />
         <TextField fx:id="txtType" layoutX="400.0" layoutY="210.0" />
         <Text fill="#40a1e1" layoutX="290.0" layoutY="280.0" text="Content" />

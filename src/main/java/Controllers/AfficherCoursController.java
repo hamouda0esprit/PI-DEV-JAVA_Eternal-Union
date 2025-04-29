@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import models.Cours;
 import services.CoursService;
 import Controllers.UpdateCourseController;
+import javafx.scene.control.ComboBox;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -24,6 +25,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class AfficherCoursController {
+
+    @FXML
+    private ComboBox<String> filterSubjectComboBox;
+
+    @FXML
+    private ComboBox<String> filterRateComboBox;
 
     @FXML
     private TableView<Cours> tableview;
@@ -47,7 +54,8 @@ public class AfficherCoursController {
     private TableColumn<Cours, Integer> rateCol;
 
     @FXML
-    private TableColumn<Cours, LocalDateTime> lastUpdateCol;
+    private TableColumn<Cours, String> lastUpdateCol;
+
 
     @FXML
     void initialize() throws SQLException {
@@ -85,6 +93,21 @@ public class AfficherCoursController {
         subjectCol.setCellValueFactory(new PropertyValueFactory<>("subject"));
         rateCol.setCellValueFactory(new PropertyValueFactory<>("rate"));
         lastUpdateCol.setCellValueFactory(new PropertyValueFactory<>("lastUpdate"));
+
+        // Subject filter with "Any" option
+        ObservableList<String> subjects = FXCollections.observableArrayList(
+                "Any", "IT", "Robotics", "Math", "History", "Sport", "Business"
+        );
+        filterSubjectComboBox.setItems(subjects);
+        filterSubjectComboBox.setValue("Any"); // Default to "Any"
+
+// Rate filter with "Any" option
+        ObservableList<String> rates = FXCollections.observableArrayList(
+                "Any", "1", "2", "3", "4", "5"
+        );
+        filterRateComboBox.setItems(rates);
+        filterRateComboBox.setValue("Any"); // Default to "Any"
+
     }
 
     @FXML
@@ -215,6 +238,22 @@ public class AfficherCoursController {
             System.err.println("Erreur chargement AfficherLessonEleve.fxml : " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void filterCourses() throws SQLException {
+        CoursService service = new CoursService();
+        List<Cours> allCourses = service.recuperer();
+
+        String selectedSubject = filterSubjectComboBox.getValue();
+        String selectedRate = filterRateComboBox.getValue();
+
+        List<Cours> filteredCourses = allCourses.stream()
+                .filter(cours -> ("Any".equals(selectedSubject) || cours.getSubject().equals(selectedSubject)))
+                .filter(cours -> ("Any".equals(selectedRate) || String.valueOf(cours.getRate()).equals(selectedRate)))
+                .toList();
+
+        tableview.setItems(FXCollections.observableArrayList(filteredCourses));
     }
 
 

@@ -1,12 +1,13 @@
 package Controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TextField;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.event.ActionEvent;
+import javafx.scene.layout.AnchorPane;
 import models.Lesson;
 import services.LessonService;
 
@@ -21,36 +22,40 @@ public class AjouterLessonController {
     @FXML
     private TextField txtDescription;
 
-    @FXML
-    private TextField txtCourseId;
+    private int currentCourseId; // <-- IMPORTANT
+
+    public void setCurrentCourseId(int courseId) {
+        this.currentCourseId = courseId;
+    }
+
+    
 
     @FXML
     void Ajouter(ActionEvent event) {
-        String title = txtTitle.getText();
-        String description = txtDescription.getText();
-        int courseId;
-
         try {
-            courseId = Integer.parseInt(txtCourseId.getText());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid Course ID");
-            return;
-        }
+            LessonService service = new LessonService();
+            Lesson lesson = new Lesson(currentCourseId, txtTitle.getText(), txtDescription.getText());
 
-        Lesson lesson = new Lesson(courseId, title, description);
-        LessonService service = new LessonService();
-
-        try {
             service.ajouter(lesson);
-            System.out.println("Lesson added!");
 
-            // Optionally return to AfficherLesson
+            System.out.println("Lesson ajouté !");
+
+            // Après ajout : Revenir à AfficherLesson.fxml et passer le courseId
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherLesson.fxml"));
             Parent root = loader.load();
+
+            // Récupérer le controller
+            AfficherLessonController controller = loader.getController();
+            controller.setCourseIdFilter(currentCourseId); // <-- Voilà !
+
+            // Changer la scène
             Stage stage = (Stage) txtTitle.getScene().getWindow();
             stage.setScene(new Scene(root));
+            stage.setTitle("Lessons for Course ID: " + currentCourseId);
+            stage.show();
+
         } catch (SQLException | IOException e) {
-            System.out.println("Error adding lesson: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

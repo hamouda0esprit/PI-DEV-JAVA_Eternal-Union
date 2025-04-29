@@ -5,14 +5,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.collections.FXCollections?>
 <AnchorPane prefHeight="568.0" prefWidth="870.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AjouterCoursController">
    <children>
-      <TextField fx:id="txtUserId" layoutX="361.0" layoutY="157.0" />
       <TextField fx:id="txtTitle" layoutX="361.0" layoutY="193.0" />
       <TextField fx:id="txtImage" layoutX="361.0" layoutY="232.0" />
-      <TextField fx:id="txtSubject" layoutX="361.0" layoutY="272.0" />
-      <TextField fx:id="txtRate" layoutX="361.0" layoutY="311.0" />
+      
+      <!-- ComboBox for subject selection -->
+      <ComboBox fx:id="comboSubject" layoutX="361.0" layoutY="272.0" />
 
       <Text fill="#40a1e1" layoutX="307.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ADD COURSE" textAlignment="CENTER">
          <font>
@@ -22,10 +23,8 @@
 
       <Button layoutX="361.0" layoutY="348.0" mnemonicParsing="false" onAction="#Ajouter" prefHeight="49.0" prefWidth="149.0" style="-fx-background-color: transparent; -fx-border-color: #40a1e1; -fx-border-radius: 10px;" text="Add Course" textFill="#40a1e1" />
 
-      <Text fill="#40a1e1" layoutX="361.0" layoutY="153.0" strokeType="OUTSIDE" strokeWidth="0.0" text="id professor" />
       <Text fill="#40a1e1" layoutX="361.0" layoutY="191.0" strokeType="OUTSIDE" strokeWidth="0.0" text="title" />
       <Text fill="#40a1e1" layoutX="361.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="image" />
       <Text fill="#40a1e1" layoutX="361.0" layoutY="270.0" strokeType="OUTSIDE" strokeWidth="0.0" text="subject" />
-      <Text fill="#40a1e1" layoutX="362.0" layoutY="307.0" strokeType="OUTSIDE" strokeWidth="0.0" text="rate" />
    </children>
 </AnchorPane>

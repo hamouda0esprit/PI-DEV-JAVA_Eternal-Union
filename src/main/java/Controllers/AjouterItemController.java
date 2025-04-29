@@ -2,18 +2,20 @@ package Controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import models.Item;
 import services.ItemService;
+
 import java.util.List;
 import java.sql.SQLException;
+
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.event.ActionEvent;
 
 public class AjouterItemController {
 
@@ -21,51 +23,59 @@ public class AjouterItemController {
     private TextField txtLessonId;
 
     @FXML
-    private TextField txtType;
+    private ComboBox<String> comboType;
 
     @FXML
     private TextField txtContent;
 
-    private List<Item> items; // You might want to use an ObservableList<Item> to dynamically update UI.
+    private List<Item> items;
 
-    // This method will be triggered by the "Add Course" button
+    private int lessonId;
+
+    public void setLessonId(int lessonId) {
+        this.lessonId = lessonId;
+        System.out.println("Lesson ID set to: " + lessonId);
+    }
+
     @FXML
-    private void Ajouter() {
+    public void initialize() {
+        comboType.getItems().addAll("paragraphe", "title", "image");
+    }
+
+    @FXML
+    private void Ajouter(ActionEvent event) {
+        String typeText = comboType.getValue();
+        String contentText = txtContent.getText();
+
+        if (typeText == null || contentText.isEmpty()) {
+            showAlert("Input Error", "All fields must be filled!");
+            return;
+        }
+
+        System.out.println("Current Lesson ID: " + lessonId);
+
+        Item newItem = new Item(lessonId, typeText, contentText);
+        ItemService itemService = new ItemService();
+
         try {
-            String lessonIdText = txtLessonId.getText();
-            String typeText = txtType.getText();
-            String contentText = txtContent.getText();
-
-            if (lessonIdText.isEmpty() || typeText.isEmpty() || contentText.isEmpty()) {
-                showAlert("Input Error", "All fields must be filled!");
-                return;
-            }
-
-            int lessonId = Integer.parseInt(lessonIdText);
-            Item newItem = new Item(0, lessonId, typeText, contentText);
-
-            ItemService itemService = new ItemService();
             itemService.ajouter(newItem);
-
             showAlert("Success", "Item added successfully!");
 
-            // ✅ Charger la page AfficherItem.fxml
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherItems.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) txtLessonId.getScene().getWindow();
+            Stage stage = (Stage) txtContent.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
 
-        } catch (NumberFormatException e) {
-            showAlert("Input Error", "Lesson ID must be a valid number.");
+        } catch (SQLException e) {
+            showAlert("Database Error", "An error occurred while adding the item.");
+            e.printStackTrace();
         } catch (Exception e) {
             showAlert("Error", "An error occurred while adding the item.");
             e.printStackTrace();
         }
     }
 
-
-    // Show an alert message
     private void showAlert(String title, String message) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle(title);
@@ -74,7 +84,6 @@ public class AjouterItemController {
         alert.showAndWait();
     }
 
-    // Setter for the items list (or use dependency injection, etc.)
     public void setItems(List<Item> items) {
         this.items = items;
     }
