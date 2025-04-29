@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.AddYoutubePopupController" prefWidth="300" prefHeight="200">
+    <children>
+        <Label layoutX="20" layoutY="20" text="YouTube Link:"/>
+        <TextField fx:id="youtubeLinkField" layoutX="20" layoutY="45" prefWidth="260"/>
+
+        <Button layoutX="20" layoutY="100" text="Submit" onAction="#handleSubmit"/>
+    </children>
+</AnchorPane>

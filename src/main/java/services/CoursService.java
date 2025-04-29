@@ -10,73 +10,87 @@ import java.util.List;
 
 public class CoursService implements IService<Cours> {
 
-    private Connection connection;
+    private final Connection connection;
 
     public CoursService() {
-        connection = MyDabase.getInstance().getConnection();
+        this.connection = MyDabase.getInstance().getConnection();
     }
 
     @Override
     public void ajouter(Cours cours) throws SQLException {
         String sql = "INSERT INTO course (user_id, title, image, subject, rate, last_update) VALUES (?, ?, ?, ?, ?, ?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, cours.getUserId());
-        preparedStatement.setString(2, cours.getTitle());
-        preparedStatement.setString(3, cours.getImage());
-        preparedStatement.setString(4, cours.getSubject());
-        preparedStatement.setInt(5, cours.getRate());
-        preparedStatement.setTimestamp(6, Timestamp.valueOf(cours.getLastUpdate()));
 
-        preparedStatement.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, cours.getUserId());
+            ps.setString(2, cours.getTitle());
+            ps.setString(3, cours.getImage());
+            ps.setString(4, cours.getSubject());
+            ps.setInt(5, cours.getRate());
+            if (cours.getLastUpdate() != null) {
+                ps.setTimestamp(6, Timestamp.valueOf(cours.getLastUpdate()));
+            } else {
+                ps.setNull(6, Types.TIMESTAMP);
+            }
+
+            ps.executeUpdate();
+        }
     }
 
     @Override
     public void modifier(Cours cours) throws SQLException {
         String sql = "UPDATE course SET user_id = ?, title = ?, image = ?, subject = ?, rate = ?, last_update = ? WHERE id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, cours.getUserId());
-        preparedStatement.setString(2, cours.getTitle());
-        preparedStatement.setString(3, cours.getImage());
-        preparedStatement.setString(4, cours.getSubject());
-        preparedStatement.setInt(5, cours.getRate());
-        preparedStatement.setTimestamp(6, Timestamp.valueOf(cours.getLastUpdate()));
-        preparedStatement.setInt(7, cours.getId());
 
-        preparedStatement.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, cours.getUserId());
+            ps.setString(2, cours.getTitle());
+            ps.setString(3, cours.getImage());
+            ps.setString(4, cours.getSubject());
+            ps.setInt(5, cours.getRate());
+            if (cours.getLastUpdate() != null) {
+                ps.setTimestamp(6, Timestamp.valueOf(cours.getLastUpdate()));
+            } else {
+                ps.setNull(6, Types.TIMESTAMP);
+            }
+            ps.setInt(7, cours.getId());
+
+            ps.executeUpdate();
+        }
     }
 
     @Override
     public void sipprimer(int id) throws SQLException {
         String sql = "DELETE FROM course WHERE id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, id);
-        preparedStatement.executeUpdate();
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
     }
 
     @Override
     public List<Cours> recuperer() throws SQLException {
         String sql = "SELECT * FROM course";
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery(sql);
         List<Cours> coursList = new ArrayList<>();
 
-        while (rs.next()) {
-            Cours cours = new Cours();
-            cours.setId(rs.getInt("id"));
-            cours.setUserId(rs.getInt("user_id"));
-            cours.setTitle(rs.getString("title"));
-            cours.setImage(rs.getString("image"));
-            cours.setSubject(rs.getString("subject"));
-            cours.setRate(rs.getInt("rate"));
-            Timestamp timestamp = rs.getTimestamp("last_update");
-            if (timestamp != null) {
-                cours.setLastUpdate(timestamp.toLocalDateTime());
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Cours cours = new Cours();
+                cours.setId(rs.getInt("id"));
+                cours.setUserId(rs.getInt("user_id"));
+                cours.setTitle(rs.getString("title"));
+                cours.setImage(rs.getString("image"));
+                cours.setSubject(rs.getString("subject"));
+                cours.setRate(rs.getInt("rate"));
+
+                Timestamp ts = rs.getTimestamp("last_update");
+                cours.setLastUpdate(ts != null ? ts.toLocalDateTime() : null);
+
+                coursList.add(cours);
             }
-            coursList.add(cours);
         }
 
         return coursList;
     }
 }
-
-

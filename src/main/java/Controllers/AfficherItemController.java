@@ -153,4 +153,28 @@ public class AfficherItemController implements Initializable {
             showAlert("Selection Error", "Please select an item to delete.");
         }
     }
+
+    @FXML
+    private void handleAddYoutubeVideo() {
+        if (currentLessonId != -1) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/AddYoutubePopup.fxml"));
+                Scene scene = new Scene(fxmlLoader.load());
+
+                AddYoutubePopupController controller = fxmlLoader.getController();
+                controller.setLessonId(currentLessonId);
+
+                Stage stage = new Stage();
+                stage.setTitle("Add YouTube Video");
+                stage.setScene(scene);
+                stage.show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            showAlert("No Lesson", "No lesson selected. Please select a lesson first.");
+        }
+    }
+
 }

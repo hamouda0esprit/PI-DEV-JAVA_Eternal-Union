@@ -23,9 +23,10 @@
          </font>
       </Text>
       <Button fx:id="addButton" layoutX="751.0" layoutY="95.0" mnemonicParsing="false" onAction="#showAddForm" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="ADD" textFill="#40a1e1" />
-      <Button layoutX="751.0" layoutY="142.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="UPDATE" textFill="#40a1e1" />
-      <Button layoutX="751.0" layoutY="189.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="DELETE" textFill="#40a1e1" />
-      <Button layoutX="751.0" layoutY="236.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="PDF" textFill="#40a1e1" />
-      <Button layoutX="751.0" layoutY="284.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="EXCEL" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="190.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="UPDATE" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="237.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="DELETE" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="284.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="PDF" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="332.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="EXCEL" textFill="#40a1e1" />
+      <Button fx:id="addButton1" layoutX="751.0" layoutY="143.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" onAction="#handleAddYoutubeVideo" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="ADD YOUTUBE VIDEO" textFill="#40a1e1" />
    </children>
 </AnchorPane>

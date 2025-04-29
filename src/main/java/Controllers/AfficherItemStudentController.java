@@ -9,6 +9,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import models.Item;
 import services.ItemService;
+import services.GeminiAIService;
 import javafx.scene.Parent;
 import java.io.IOException;
 
@@ -44,6 +45,9 @@ import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+
+
+
 
 public class AfficherItemStudentController implements Initializable {
 
@@ -100,8 +104,18 @@ public class AfficherItemStudentController implements Initializable {
         titleText.getStyleClass().add("title");
         textFlow.getChildren().add(titleText);
     } else if ("paragraphe".equals(item.getTypeItem())) {
-        Text paragraphText = new Text("Paragraph: " + item.getContent() + "\n");
+        String paragraphContent = item.getContent();
+
+        Text paragraphText = new Text(paragraphContent + "\n");
+        paragraphText.setStyle("-fx-font-size: 14px;");
+
+        Button explainButton = new Button("Explain with AI");
+        explainButton.setOnAction(e -> showExplanationPopup(paragraphContent));
+
+        // Add both paragraph and button to the text flow
         textFlow.getChildren().add(paragraphText);
+        textFlow.getChildren().add(explainButton);
+        textFlow.getChildren().add(new Text("\n"));  // spacing
     } else if ("image".equals(item.getTypeItem())) {
         try {
             Image image = new Image(item.getContent());
@@ -167,5 +181,46 @@ public class AfficherItemStudentController implements Initializable {
             showAlert("Selection Error", "Please select an item to delete.");
         }
     }
+
+    private void showExplanationPopup(String paragraph) {
+        Stage popupStage = new Stage();
+        popupStage.setTitle("AI Explanation");
+
+        TextFlow explanationFlow = new TextFlow();
+        explanationFlow.setPrefWidth(400);
+        explanationFlow.setLineSpacing(5);
+
+        Text loading = new Text("Asking AI for explanation...");
+        explanationFlow.getChildren().add(loading);
+
+        StackPane root = new StackPane(explanationFlow);
+        Scene scene = new Scene(root, 500, 300);
+        popupStage.setScene(scene);
+        popupStage.show();
+
+        // Call Gemini in a background thread to avoid freezing UI
+        new Thread(() -> {
+            try {
+                String aiResponse = GeminiAIService.explainText(paragraph);
+                Text explanation = new Text(aiResponse);
+                explanation.setWrappingWidth(480);
+
+                // Update UI on JavaFX Application Thread
+                javafx.application.Platform.runLater(() -> {
+                    explanationFlow.getChildren().clear();
+                    explanationFlow.getChildren().add(explanation);
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() -> {
+                    explanationFlow.getChildren().clear();
+                    explanationFlow.getChildren().add(new Text("Failed to get explanation from AI."));
+                });
+            }
+        }).start();
+    }
+
+
 }
    

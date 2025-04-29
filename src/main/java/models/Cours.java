@@ -23,7 +23,7 @@ public class Cours {
         this.lastUpdate = lastUpdate;
     }
 
-    public Cours( int userId, String title, String image, String subject, int rate, LocalDateTime lastUpdate) {
+    public Cours(int userId, String title, String image, String subject, int rate, LocalDateTime lastUpdate) {
         this.userId = userId;
         this.title = title;
         this.image = image;

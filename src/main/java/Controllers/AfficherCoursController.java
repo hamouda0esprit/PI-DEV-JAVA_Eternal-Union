@@ -256,5 +256,30 @@ public class AfficherCoursController {
         tableview.setItems(FXCollections.observableArrayList(filteredCourses));
     }
 
+    @FXML
+    public void rateCoursePopup(ActionEvent event) {
+        Cours selectedCourse = tableview.getSelectionModel().getSelectedItem();
+        if (selectedCourse == null) {
+            System.out.println("Veuillez sélectionner un cours.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/rate_course.fxml"));
+            Parent root = loader.load();
+
+            RateCourseController controller = loader.getController();
+            controller.setCourse(selectedCourse, 1); // Replace `1` with logged-in user ID
+
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Rate Course");
+            popupStage.setScene(new Scene(root));
+            popupStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
