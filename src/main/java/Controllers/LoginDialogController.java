@@ -72,8 +72,8 @@ public class LoginDialogController implements Initializable {
         try {
             // Verify credentials against database
             authenticatedUser = authenticateUser(email, password);
-            
-            if (authenticatedUser != null) {
+            System.out.println(authenticatedUser.getWarnings());
+            if (authenticatedUser != null && authenticatedUser.getWarnings()<3) {
                 // Show success message
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Login Successful");
@@ -84,12 +84,21 @@ public class LoginDialogController implements Initializable {
                 loginSuccessful = true;
                 closeDialog();
             } else {
-                // Show error message for invalid credentials
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Login Failed");
-                alert.setHeaderText("Authentication Error");
-                alert.setContentText("Invalid email or password. Please try again.");
-                alert.showAndWait();
+                if (authenticatedUser.getWarnings()>=3) {
+                    alert.setTitle("Login Failed");
+                    alert.setHeaderText("Account locked");
+                    alert.setContentText("Your account has been locked.");
+                    alert.showAndWait();
+                }else{
+                    // Show error message for invalid credentials
+
+                    alert.setTitle("Login Failed");
+                    alert.setHeaderText("Authentication Error");
+                    alert.setContentText("Invalid email or password. Please try again.");
+                    alert.showAndWait();
+                }
+
             }
         } catch (Exception e) {
             // Show error message for database errors
@@ -130,7 +139,8 @@ public class LoginDialogController implements Initializable {
                 user.setImg(rs.getString("img"));
                 user.setScore(rs.getInt("score"));
                 user.setBio(rs.getString("bio"));
-                
+                user.setWarnings(rs.getInt("warnings"));
+
                 System.out.println("Authentication successful for user: " + user.getName());
                 
                 return user;
