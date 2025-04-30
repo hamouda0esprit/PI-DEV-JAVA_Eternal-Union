@@ -373,12 +373,12 @@ public class ForumDiscussionController implements Initializable {
 
             if (!filteredComment.equals(commentText)){
                 currentUser.setWarnings(currentUser.getWarnings()+1);
-
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("WARNING !");
+                alert.setHeaderText("Warnings : " + currentUser.getWarnings());
+                alert.setContentText("Your have been warned for typing an innapropriate comment !");
+                alert.showAndWait();
                 userService.updateUser(currentUser);
-
-                if (currentUser.getWarnings()>=3){
-                    logout(event);
-                }
             }
 
             comment.setComment(filteredComment);
@@ -392,12 +392,19 @@ public class ForumDiscussionController implements Initializable {
             // Clear text area
             commentTextArea.clear();
 
-
-
             // Reload comments
             loadComments();
 
             showAlert("Succès", "Commentaire ajouté avec succès.", null);
+
+            if (currentUser.getWarnings()>=3){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Terminating session");
+                alert.setHeaderText("Locking account");
+                alert.setContentText("You have been logged out due to reaching 3 or more warnings.");
+                alert.showAndWait();
+                logout(event);
+            }
         } catch (Exception e) {
             showAlert("Erreur", "Impossible d'ajouter le commentaire.", e.getMessage());
             e.printStackTrace();

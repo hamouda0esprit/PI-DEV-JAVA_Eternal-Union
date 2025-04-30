@@ -50,7 +50,7 @@
                         </HBox>
 
                         <!-- Forum title and content -->
-                        <Label fx:id="forumTitle" style="-fx-font-size: 24; -fx-font-weight: bold;" text="Python" />
+                        <Label fx:id="forumTitle" style="-fx-font-size: 24; -fx-font-weight: bold;" text="Python" wrapText="true" />
 
                         <Label fx:id="forumDescription" style="-fx-font-size: 14;" text="No text here ?" wrapText="true" />
 
@@ -93,13 +93,13 @@
                         <!-- Comments container with ScrollPane -->
                         <ScrollPane fitToWidth="true" maxHeight="300" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
                             <VBox spacing="10">
-                                <Label fx:id="AiContainer" style="-fx-text-fill: black; -fx-padding: 10;" />
+                                <Label fx:id="AiContainer" style="-fx-text-fill: black; -fx-padding: 10;" wrapText="true"  />
                                 <VBox fx:id="commentsContainer" spacing="10">
                                     <VBox.margin>
                                         <Insets top="10" />
                                     </VBox.margin>
                                     <!-- Comments will be added here dynamically -->
-                                    <Label style="-fx-font-size: 14px; -fx-text-fill: #757575;" text="Soyez le premier à commenter cette discussion !" />
+                                    <Label style="-fx-font-size: 14px; -fx-text-fill: #757575;" text="Soyez le premier à commenter cette discussion !" wrapText="true" />
                                 </VBox>
                             </VBox>
                         </ScrollPane>

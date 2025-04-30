@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.List;
 
 public class AI21Service {
-    //private static final String API_KEY = "h7GGimFtDFLSl7t4LGPsyAiHAk8NouzM";
-    private static final String API_KEY = "";
+    private static final String API_KEY = "h7GGimFtDFLSl7t4LGPsyAiHAk8NouzM";
+    //private static final String API_KEY = "";
     private static final String API_URL = "https://api.ai21.com/studio/v1/chat/completions";
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;

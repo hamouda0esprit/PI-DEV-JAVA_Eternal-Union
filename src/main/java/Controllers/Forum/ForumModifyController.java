@@ -384,6 +384,8 @@ public class ForumModifyController {
 
         String OldMedia = forumToModify.getMedia();
 
+        UserService userService = new UserService();
+
         System.out.println(OldMedia);
 
         if (isInputValid()) {
@@ -397,23 +399,28 @@ public class ForumModifyController {
                 if (!filteredTitle.equals(Title.getText())){
                     currentUser.setWarnings(currentUser.getWarnings()+1);
 
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("WARNING !");
+                    alert.setHeaderText("Warnings : " + currentUser.getWarnings());
+                    alert.setContentText("Your have been warned for typing an innapropriate title !");
+                    alert.showAndWait();
+
                     userService.updateUser(currentUser);
 
-                    if (currentUser.getWarnings()>=3){
-                        logout(event);
-                    }
                 }
 
                 if (!filteredDescription.equals(Description.getText())){
                     currentUser.setWarnings(currentUser.getWarnings()+1);
 
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("WARNING !");
+                    alert.setHeaderText("Warnings : " + currentUser.getWarnings());
+                    alert.setContentText("Your have been warned for typing an innapropriate description !");
+                    alert.showAndWait();
+
                     userService.updateUser(currentUser);
-
-                    if (currentUser.getWarnings()>=3){
-                        logout(event);
-                    }
-
                 }
+
 
                 forumToModify.setTitle(filteredTitle);
                 forumToModify.setDescription(filteredDescription);
@@ -463,8 +470,16 @@ public class ForumModifyController {
                 alert.setContentText("Discussion modifiée avec succès!");
                 alert.showAndWait();
 
-                // Return to the forum view page
-                navigateToForumView(event);
+                if (currentUser.getWarnings()>=3){
+                    alert.setTitle("Terminating session");
+                    alert.setHeaderText("Locking account");
+                    alert.setContentText("You have been logged out due to reaching 3 or more warnings.");
+                    alert.showAndWait();
+                    logout(event);
+                }else{
+                    // Return to the forum view page
+                    navigateToForumView(event);
+                }
 
             } catch (Exception e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -198,21 +198,25 @@ public class ForumAddController {
                 if (!filteredTitle.equals(titleText)){
                     currentUser.setWarnings(currentUser.getWarnings()+1);
 
-                    userService.updateUser(currentUser);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("WARNING !");
+                    alert.setHeaderText("Warnings : " + currentUser.getWarnings());
+                    alert.setContentText("Your have been warned for typing an innapropriate title !");
+                    alert.showAndWait();
 
-                    if (currentUser.getWarnings()>=3){
-                        logout(event);
-                    }
+                    userService.updateUser(currentUser);
                 }
 
                 if (!filteredDescription.equals(descriptionText)){
                     currentUser.setWarnings(currentUser.getWarnings()+1);
 
-                    userService.updateUser(currentUser);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("WARNING !");
+                    alert.setHeaderText("Warnings : " + currentUser.getWarnings());
+                    alert.setContentText("Your have been warned for typing an innapropriate description !");
+                    alert.showAndWait();
 
-                    if (currentUser.getWarnings()>=3){
-                        logout(event);
-                    }
+                    userService.updateUser(currentUser);
                 }
 
                 // Additional validation after filtering
@@ -256,7 +260,16 @@ public class ForumAddController {
                 alert.setContentText("Forum added successfully!");
                 alert.showAndWait();
 
-                navigateToForumView(event);
+                if (currentUser.getWarnings()>=3){
+                    alert.setTitle("Terminating session");
+                    alert.setHeaderText("Locking account");
+                    alert.setContentText("You have been logged out due to reaching 3 or more warnings.");
+                    alert.showAndWait();
+                    logout(event);
+                }else{
+                    navigateToForumView(event);
+                }
+
             } catch (IllegalArgumentException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Validation Error");
