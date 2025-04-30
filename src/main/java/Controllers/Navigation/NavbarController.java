@@ -17,6 +17,7 @@ import java.util.ResourceBundle;
 import javafx.scene.image.Image;
 import java.io.IOException;
 import javafx.scene.control.Alert;
+import javafx.scene.layout.AnchorPane;
 
 public class NavbarController implements Initializable {
     @FXML
@@ -31,6 +32,10 @@ public class NavbarController implements Initializable {
     private Button forumButton;
     @FXML
     private Button userProfileButton;
+    @FXML
+    private Button codeEditorButton;
+    @FXML
+    private AnchorPane contentArea;
 
     private NavigationStateManager navigationState;
     private User currentUser;
@@ -69,6 +74,7 @@ public class NavbarController implements Initializable {
         examenButton.getStyleClass().remove("active");
         evenementsButton.getStyleClass().remove("active");
         forumButton.getStyleClass().remove("active");
+        codeEditorButton.getStyleClass().remove("active");
 
         // Add active class to the appropriate button
         switch (view) {
@@ -86,6 +92,9 @@ public class NavbarController implements Initializable {
                 break;
             case "Forum":
                 forumButton.getStyleClass().add("active");
+                break;
+            case "CodeEditor":
+                codeEditorButton.getStyleClass().add("active");
                 break;
         }
     }
@@ -110,57 +119,52 @@ public class NavbarController implements Initializable {
 
     @FXML
     private void handleEvenementsClick() {
-        if (currentUser == null) {
-            System.out.println("No user logged in");
-            return;
-        }
-
         try {
-            // Determine which FXML file to load based on user type
-            String fxmlPath = currentUser.getType().equalsIgnoreCase("teacher") || currentUser.getType().equals("1")
-                ? "/view/Evenement.fxml"
-                : "/view/EvenementStudent.fxml";
+            navigationState.setCurrentView("Evenement");
             
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent eventRoot = loader.load();
-            
-            // Get the appropriate controller and set the current user
-            Object controller = loader.getController();
-            if (controller instanceof EvenementController) {
-                ((EvenementController) controller).setCurrentUser(currentUser);
-            } else if (controller instanceof EvenementStudentController) {
-                ((EvenementStudentController) controller).setCurrentUser(currentUser);
+            // Get current user
+            User currentUser = LoginController.getAuthenticatedUser();
+            if (currentUser == null) {
+                showAlert(Alert.AlertType.WARNING, "Authentication Required", "Please log in to view events.");
+                return;
             }
             
-            // Get the current stage
-            Stage stage = (Stage) evenementsButton.getScene().getWindow();
+            // Determine which events view to show based on user type
+            String fxmlPath;
+            if (currentUser.getType().equalsIgnoreCase("teacher") || 
+                currentUser.getType().equalsIgnoreCase("professeur") ||
+                currentUser.getType().equalsIgnoreCase("prof") ||
+                currentUser.getType().equals("1")) {
+                fxmlPath = "/view/Evenement.fxml";
+            } else {
+                fxmlPath = "/view/EvenementStudent.fxml";
+            }
             
-            // Set minimum window size
-            stage.setMinWidth(1200);
-            stage.setMinHeight(800);
+            // Load the view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
             
-            // If current size is smaller than minimum, set to minimum
-            if (stage.getWidth() < 1200) stage.setWidth(1200);
-            if (stage.getHeight() < 800) stage.setHeight(800);
+            // Set the user in the controller
+            if (currentUser.getType().equalsIgnoreCase("teacher") || 
+                currentUser.getType().equalsIgnoreCase("professeur") ||
+                currentUser.getType().equalsIgnoreCase("prof") ||
+                currentUser.getType().equals("1")) {
+                EvenementController controller = loader.getController();
+                controller.setCurrentUser(currentUser);
+            } else {
+                EvenementStudentController controller = loader.getController();
+                controller.setCurrentUser(currentUser);
+            }
             
-            // Create new scene with current dimensions
-            Scene eventScene = new Scene(eventRoot, stage.getWidth(), stage.getHeight());
-            stage.setTitle("LOE - Événements");
-            stage.setScene(eventScene);
-            eventScene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+            // Update the view
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(root);
             
-            System.out.println("Successfully navigated to events page for user: " + currentUser.getName() + 
-                             " (Type: " + currentUser.getType() + ")");
+            System.out.println("Successfully navigated to events view for user: " + currentUser.getName() + " (Type: " + currentUser.getType() + ")");
+            
         } catch (IOException e) {
-            System.out.println("Error loading events page: " + e.getMessage());
             e.printStackTrace();
-            
-            // Show error alert
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Could not load events page");
-            alert.setContentText("An error occurred: " + e.getMessage());
-            alert.showAndWait();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load the events view.");
         }
     }
 
@@ -168,6 +172,12 @@ public class NavbarController implements Initializable {
     private void handleForumNavigation() {
         navigationState.setCurrentView("Forum");
         loadView("/view/Forum.fxml");
+    }
+
+    @FXML
+    private void handleCodeEditorNavigation() {
+        navigationState.setCurrentView("CodeEditor");
+        loadView("/view/CodeEditor.fxml");
     }
 
     @FXML
@@ -210,5 +220,13 @@ public class NavbarController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 } 

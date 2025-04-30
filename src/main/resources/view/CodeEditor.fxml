@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="Controllers.CodeEditorController"
+      spacing="10">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Code Editor" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+        <Button fx:id="runButton" text="Run Code" style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+    </HBox>
+
+    <TextArea fx:id="codeEditor" 
+              style="-fx-font-family: 'Consolas', monospace; -fx-font-size: 14px;"
+              prefRowCount="20"
+              prefColumnCount="80"/>
+
+    <Label text="Output" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+    <TextArea fx:id="outputArea" 
+              style="-fx-font-family: 'Consolas', monospace; -fx-font-size: 14px;"
+              prefRowCount="10"
+              prefColumnCount="80"
+              editable="false"/>
+
+</VBox> 

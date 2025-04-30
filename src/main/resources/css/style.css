@@ -1,0 +1,67 @@
+.search-container {
+    -fx-background-color: #f5f5f5;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+}
+
+.search-button {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+    -fx-cursor: hand;
+}
+
+.search-button:hover {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 5;
+}
+
+.search-button .image-view {
+    -fx-fit-width: 20;
+    -fx-fit-height: 20;
+}
+
+.calendar-scroll {
+    -fx-fit-to-width: true;
+    -fx-fit-to-height: true;
+    -fx-hbar-policy: NEVER;
+    -fx-vbar-policy: AS_NEEDED;
+    -fx-background-color: transparent;
+}
+
+.calendar-grid {
+    -fx-background-color: white;
+    -fx-padding: 10;
+}
+
+.sidebar {
+    -fx-background-color: #f5f5f5;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+}
+
+.sidebar-title {
+    -fx-text-fill: #333333;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-search {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+    -fx-margin: 5 0 5 0;
+}
+
+.sidebar-scroll {
+    -fx-fit-to-width: true;
+    -fx-hbar-policy: NEVER;
+    -fx-vbar-policy: AS_NEEDED;
+    -fx-background-color: transparent;
+}
+
+.upcoming-events-list {
+    -fx-spacing: 10;
+    -fx-padding: 5;
+}
+
+/* ... existing styles ... */ 

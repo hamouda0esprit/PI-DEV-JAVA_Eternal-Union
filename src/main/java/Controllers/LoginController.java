@@ -274,39 +274,13 @@ public class LoginController implements Initializable {
                 
                 authenticatedUser = controller.getAuthenticatedUser();
                 if (authenticatedUser != null) {
-                    // Load the events page
-                    try {
-                        FXMLLoader eventLoader = new FXMLLoader(getClass().getResource("/view/Evenement.fxml"));
-                        Parent eventRoot = eventLoader.load();
-
-                        // Get the event controller and set the authenticated user
-                        EvenementController eventController = eventLoader.getController();
-                        eventController.setCurrentUser(authenticatedUser);
-
-                        // Replace the current scene with the events page
-                        Scene eventScene = new Scene(eventRoot);
-                        stage.setTitle("LOE - Événements");
-                        stage.setScene(eventScene);
-                        eventScene.getStylesheets().add(Main.class.getResource("/styles/style.css").toExternalForm());
-
-                        System.out.println("Successfully redirected to events page for user: " + authenticatedUser.getName());
-                    } catch (IOException e) {
-                        System.out.println("Error loading events page: " + e.getMessage());
-                        e.printStackTrace();
-
-                        // Show error alert
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Error");
-                        alert.setHeaderText("Could not load events page");
-                        alert.setContentText("An error occurred: " + e.getMessage());
-                        alert.showAndWait();
-                    }
+                    handleLoginSuccess(authenticatedUser);
                 } else {
-                    // Fallback if user is null (should not happen)
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Login Successful");
-                    alert.setHeaderText("Welcome back!");
-                    alert.setContentText("You are now connected to your account.");
+                    // Show error if user is null
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Authentication Error");
+                    alert.setContentText("Could not retrieve user information after login.");
                     alert.showAndWait();
                 }
             }
@@ -315,5 +289,58 @@ public class LoginController implements Initializable {
             System.out.println("Could not load login dialog: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    
+    private void handleLoginSuccess(User user) {
+        try {
+            authenticatedUser = user;
+            
+            // Determine which view to load based on user type
+            String fxmlPath;
+            if (user.getType().equalsIgnoreCase("teacher") || 
+                user.getType().equalsIgnoreCase("professeur") ||
+                user.getType().equalsIgnoreCase("prof") ||
+                user.getType().equals("1")) {
+                fxmlPath = "/view/Evenement.fxml";
+            } else {
+                fxmlPath = "/view/EvenementStudent.fxml";
+            }
+            
+            // Load the appropriate view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+            
+            // Set the user in the controller
+            if (user.getType().equalsIgnoreCase("teacher") || 
+                user.getType().equalsIgnoreCase("professeur") ||
+                user.getType().equalsIgnoreCase("prof") ||
+                user.getType().equals("1")) {
+                EvenementController controller = loader.getController();
+                controller.setCurrentUser(user);
+            } else {
+                EvenementStudentController controller = loader.getController();
+                controller.setCurrentUser(user);
+            }
+            
+            // Create and show the new scene
+            Stage stage = (Stage) connectButton.getScene().getWindow();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+            stage.setScene(scene);
+            stage.show();
+            
+            System.out.println("Successfully logged in as: " + user.getName() + " (Type: " + user.getType() + ")");
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load the events view.");
+        }
+    }
+    
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 } 

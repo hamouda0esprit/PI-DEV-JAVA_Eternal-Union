@@ -31,6 +31,7 @@ public class AddEventDialogController implements Initializable {
     @FXML private TextField timeField;
     @FXML private TextArea locationField;
     @FXML private TextField photoField;
+    @FXML private TextField capaciteField;
     @FXML private ImageView imageView;
     @FXML private Label placeholderLabel;
     @FXML private Button removePhotoButton;
@@ -66,6 +67,7 @@ public class AddEventDialogController implements Initializable {
             locationField.setText(event.getLocation());
             timeField.setText(event.getTime().toString());
             photoField.setText(event.getPhoto());
+            capaciteField.setText(String.valueOf(event.getCapacite()));
             selectedDate = event.getDateevent().toLocalDate();
             
             // Load and display the image if it exists
@@ -111,6 +113,7 @@ public class AddEventDialogController implements Initializable {
                 event.setTime(Time.valueOf(LocalTime.parse(timeField.getText())));
                 event.setIduser(1); // You might want to get this from logged in user
                 event.setPhoto(photoField.getText());
+                event.setCapacite(Integer.parseInt(capaciteField.getText()));
                 
                 saveClicked = true;
                 saved = true;
@@ -178,6 +181,19 @@ public class AddEventDialogController implements Initializable {
         
         if (locationField.getText() == null || locationField.getText().trim().isEmpty()) {
             errorMessage += "Location is required!\n";
+        }
+
+        if (capaciteField.getText() == null || capaciteField.getText().trim().isEmpty()) {
+            errorMessage += "Capacity is required!\n";
+        } else {
+            try {
+                int capacite = Integer.parseInt(capaciteField.getText());
+                if (capacite <= 0) {
+                    errorMessage += "Capacity must be a positive number!\n";
+                }
+            } catch (NumberFormatException e) {
+                errorMessage += "Capacity must be a valid number!\n";
+            }
         }
         
         if (errorMessage.length() == 0) {

@@ -27,6 +27,10 @@ public class EvenementStudentController implements Initializable {
     @FXML private HBox calendarView;
     @FXML private ScrollPane eventsListView;
     @FXML private FlowPane eventsGrid;
+    @FXML private TextField searchField;
+    @FXML private Button searchButton;
+    @FXML private TextField listSearchField;
+    @FXML private Button listSearchButton;
     
     private IEvenementService evenementService;
     private ParticipationService participationService;
@@ -50,11 +54,20 @@ public class EvenementStudentController implements Initializable {
             System.out.println("Name: " + user.getName());
             System.out.println("Type: " + user.getType());
             
+            // Determine role based on type
+            String role = "Student";
+            if (user.getType().equalsIgnoreCase("teacher") || 
+                user.getType().equalsIgnoreCase("professeur") ||
+                user.getType().equalsIgnoreCase("prof") ||
+                user.getType().equals("1")) {
+                role = "Teacher";
+            }
+            
             // Show alert with user type
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("User Information");
             alert.setHeaderText("Logged in as: " + user.getName());
-            alert.setContentText("User Type: " + user.getType() + "\nRole: Student");
+            alert.setContentText("User Type: " + user.getType() + "\nRole: " + role);
             alert.showAndWait();
         }
         
@@ -65,9 +78,32 @@ public class EvenementStudentController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Initialize the calendar and views
-        updateCalendar();
-        showCalendarView();
+        currentUser = LoginController.getAuthenticatedUser();
+        if (currentUser != null) {
+            System.out.println("Initializing EvenementStudentController with user: " + currentUser.getName());
+            
+            // Initialize search functionality for both views
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                filterEvents(newValue);
+            });
+            
+            listSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                filterEvents(newValue);
+            });
+            
+            // Load events and update views
+            loadEvents();
+            updateCalendar();
+            updateUpcomingEvents();
+            showCalendarView();
+        } else {
+            System.out.println("Warning: No user is logged in!");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Authentication Required");
+            alert.setHeaderText(null);
+            alert.setContentText("Please log in to view events.");
+            alert.showAndWait();
+        }
     }
     
     private void loadEvents() {
@@ -80,13 +116,21 @@ public class EvenementStudentController implements Initializable {
     }
     
     private void updateUpcomingEvents() {
+        System.out.println("Updating upcoming events...");
         upcomingEventsList.getChildren().clear();
+        
+        if (currentUser == null) {
+            System.out.println("No user logged in, skipping upcoming events update");
+            return;
+        }
         
         // Get all events and sort them by date
         List<Evenement> upcomingEvents = evenementService.getAll().stream()
             .filter(e -> !e.getDateevent().toLocalDate().isBefore(LocalDate.now()))
             .sorted(Comparator.comparing(Evenement::getDateevent))
             .collect(Collectors.toList());
+        
+        System.out.println("Found " + upcomingEvents.size() + " upcoming events");
         
         // Create event cards
         for (Evenement event : upcomingEvents) {
@@ -206,11 +250,28 @@ public class EvenementStudentController implements Initializable {
         eventsListView.setManaged(true);
         listViewBtn.getStyleClass().add("active");
         calendarViewBtn.getStyleClass().remove("active");
-        loadEventsList();
+        
+        if (currentUser != null) {
+            loadEventsList();
+        } else {
+            // Show a message to the user
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("User Not Logged In");
+            alert.setHeaderText(null);
+            alert.setContentText("Please log in to view your events.");
+            alert.showAndWait();
+            
+            // Clear the events grid
+            eventsGrid.getChildren().clear();
+        }
     }
     
     private void loadEventsList() {
         eventsGrid.getChildren().clear();
+        
+        if (currentUser == null) {
+            return;
+        }
         
         // Get only participating events for the current user
         List<Evenement> events = participationService.getParticipatingEvents(currentUser.getId());
@@ -232,11 +293,103 @@ public class EvenementStudentController implements Initializable {
     }
 
     public void refreshEvents() {
-        loadEvents();
-        updateCalendar();
-        updateUpcomingEvents();
-        if (eventsListView.isVisible()) {
-            loadEventsList();
+        if (currentUser != null) {
+            loadEvents();
+            updateCalendar();
+            updateUpcomingEvents();
+            if (eventsListView.isVisible()) {
+                loadEventsList();
+            }
         }
+    }
+    
+    public void filterEvents(String searchText) {
+        if (eventsListView.isVisible()) {
+            // Filter events in list view
+            eventsGrid.getChildren().clear();
+            List<Evenement> events = evenementService.getAll().stream()
+                .filter(event -> matchesSearch(event, searchText))
+                .collect(Collectors.toList());
+                
+            for (Evenement event : events) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EventCardStudent.fxml"));
+                    Node eventCard = loader.load();
+                    EventCardStudentController controller = loader.getController();
+                    controller.setMainController(this);
+                    controller.setEventData(event);
+                    eventsGrid.getChildren().add(eventCard);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            // Filter events in calendar view
+            loadEvents();
+            if (!searchText.isEmpty()) {
+                eventsByDate.entrySet().removeIf(entry -> 
+                    entry.getValue().stream().noneMatch(event -> matchesSearch(event, searchText))
+                );
+            }
+            updateCalendar();
+            updateUpcomingEvents(searchText);
+        }
+    }
+    
+    private void updateUpcomingEvents(String searchText) {
+        upcomingEventsList.getChildren().clear();
+        
+        // Get all events and sort them by date
+        List<Evenement> upcomingEvents = evenementService.getAll().stream()
+            .filter(e -> !e.getDateevent().toLocalDate().isBefore(LocalDate.now()))
+            .filter(e -> searchText.isEmpty() || matchesSearch(e, searchText))
+            .sorted(Comparator.comparing(Evenement::getDateevent))
+            .collect(Collectors.toList());
+        
+        // Create event cards
+        for (Evenement event : upcomingEvents) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EventCardStudent.fxml"));
+                Node eventCard = loader.load();
+                EventCardStudentController controller = loader.getController();
+                controller.setMainController(this);
+                controller.setCurrentUser(currentUser);
+                controller.setEventData(event);
+                upcomingEventsList.getChildren().add(eventCard);
+            } catch (IOException e) {
+                System.err.println("Error creating event card: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private boolean matchesSearch(Evenement event, String searchText) {
+        if (searchText == null || searchText.isEmpty()) {
+            return true;
+        }
+        searchText = searchText.toLowerCase();
+        return event.getName().toLowerCase().contains(searchText) ||
+               event.getDescription().toLowerCase().contains(searchText) ||
+               event.getLocation().toLowerCase().contains(searchText);
+    }
+    
+    @FXML
+    private void toggleSearch() {
+        boolean isVisible = searchField.isVisible();
+        searchField.setVisible(!isVisible);
+        searchField.setManaged(!isVisible);
+        
+        if (!isVisible) {
+            searchField.requestFocus();
+        } else {
+            searchField.clear();
+            filterEvents("");
+        }
+    }
+
+    @FXML
+    private void handleListSearch() {
+        String searchText = listSearchField.getText();
+        filterEvents(searchText);
     }
 } 

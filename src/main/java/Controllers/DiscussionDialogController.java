@@ -1,6 +1,8 @@
 package Controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -10,7 +12,9 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import entite.Discussion;
 import service.DiscussionService;
+import service.GiphyService.GiphyResult;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,9 +22,9 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 
 public class DiscussionDialogController {
-    @FXML private TextArea descriptionArea;
-    @FXML private ImageView uploadedImage;
-    @FXML private VBox uploadPrompt;
+    @FXML public TextArea descriptionArea;
+    @FXML public ImageView uploadedImage;
+    @FXML public VBox uploadPrompt;
     @FXML private VBox photoUploadBox;
     @FXML private Button choosePhotoButton;
     @FXML private Button saveButton;
@@ -28,7 +32,8 @@ public class DiscussionDialogController {
 
     private Window dialogStage;
     private boolean saveClicked = false;
-    private String selectedPhotoPath;
+    public String selectedPhotoPath;
+    public String selectedGifUrl;
     private int eventId;
     private DiscussionService discussionService;
 
@@ -56,6 +61,49 @@ public class DiscussionDialogController {
             event.setDropCompleted(success);
             event.consume();
         });
+    }
+
+    @FXML
+    private void handleChooseGif() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/GifPickerDialog.fxml"));
+            VBox dialogContent = loader.load();
+            
+            Dialog<ButtonType> dialog = new Dialog<>();
+            DialogPane dialogPane = new DialogPane();
+            dialogPane.setContent(dialogContent);
+            dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+            
+            // Hide the default buttons since we have custom ones
+            dialogPane.lookupButton(ButtonType.OK).setVisible(false);
+            dialogPane.lookupButton(ButtonType.CANCEL).setVisible(false);
+            
+            dialog.setDialogPane(dialogPane);
+            dialog.setTitle("Choose a GIF");
+            
+            // Get the controller and set up the dialog
+            GifPickerController controller = loader.getController();
+            controller.setDialogStage(dialog.getDialogPane().getScene().getWindow());
+            
+            dialog.showAndWait().ifPresent(buttonType -> {
+                if (buttonType == ButtonType.OK) {
+                    GiphyResult selectedGif = controller.getSelectedGif();
+                    if (selectedGif != null) {
+                        selectedGifUrl = selectedGif.getOriginalUrl();
+                        selectedPhotoPath = null; // Clear any selected photo
+                        
+                        // Show the GIF preview
+                        uploadedImage.setImage(new Image(selectedGif.getPreviewUrl()));
+                        uploadedImage.setVisible(true);
+                        uploadPrompt.setVisible(false);
+                    }
+                }
+            });
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to open GIF picker");
+        }
     }
 
     public void setDialogStage(Window dialogStage) {
@@ -91,6 +139,7 @@ public class DiscussionDialogController {
             // Copy the file to our uploads directory
             Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
             selectedPhotoPath = targetPath.toString();
+            selectedGifUrl = null; // Clear any selected GIF
 
             // Display the image
             Image image = new Image(file.toURI().toString());
@@ -99,7 +148,6 @@ public class DiscussionDialogController {
             uploadPrompt.setVisible(false);
         } catch (Exception e) {
             e.printStackTrace();
-            // Show error alert
             showAlert("Error", "Failed to upload photo: " + e.getMessage());
         }
     }
@@ -109,14 +157,23 @@ public class DiscussionDialogController {
         if (isInputValid()) {
             Discussion discussion = new Discussion();
             discussion.setEventId(eventId);
-            discussion.setDescription(descriptionArea.getText());
-            discussion.setPhotoPath(selectedPhotoPath);
+            discussion.setCaption(descriptionArea.getText());
+            discussion.setMedia(selectedGifUrl != null ? selectedGifUrl : selectedPhotoPath);
             discussion.setCreatedAt(LocalDateTime.now());
             
             try {
                 discussionService.addDiscussion(discussion);
                 saveClicked = true;
-                if (dialogStage instanceof Stage) {
+                
+                // Find the dialog pane
+                Scene scene = dialogStage.getScene();
+                if (scene != null && scene.getRoot() instanceof DialogPane) {
+                    DialogPane dialogPane = (DialogPane) scene.getRoot();
+                    Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+                    if (okButton != null) {
+                        okButton.fire();
+                    }
+                } else if (dialogStage instanceof Stage) {
                     ((Stage) dialogStage).close();
                 }
             } catch (Exception e) {
@@ -128,7 +185,15 @@ public class DiscussionDialogController {
 
     @FXML
     private void handleCancel() {
-        if (dialogStage instanceof Stage) {
+        // Find the dialog pane
+        Scene scene = dialogStage.getScene();
+        if (scene != null && scene.getRoot() instanceof DialogPane) {
+            DialogPane dialogPane = (DialogPane) scene.getRoot();
+            Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+            if (cancelButton != null) {
+                cancelButton.fire();
+            }
+        } else if (dialogStage instanceof Stage) {
             ((Stage) dialogStage).close();
         }
     }
@@ -164,5 +229,17 @@ public class DiscussionDialogController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    public Discussion getDiscussion() {
+        if (!saveClicked) {
+            return null;
+        }
+        Discussion discussion = new Discussion();
+        discussion.setEventId(eventId);
+        discussion.setCaption(descriptionArea.getText());
+        discussion.setMedia(selectedGifUrl != null ? selectedGifUrl : selectedPhotoPath);
+        discussion.setCreatedAt(LocalDateTime.now());
+        return discussion;
     }
 } 

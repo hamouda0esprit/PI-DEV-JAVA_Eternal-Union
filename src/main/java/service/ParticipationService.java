@@ -76,4 +76,18 @@ public class ParticipationService {
         }
         return events;
     }
+
+    public int getParticipantCount(int evenementId) {
+        String query = "SELECT COUNT(*) as count FROM evenement_user WHERE evenement_id = ?";
+        try (PreparedStatement pst = conn.prepareStatement(query)) {
+            pst.setInt(1, evenementId);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error getting participant count: " + ex.getMessage());
+        }
+        return 0;
+    }
 } 

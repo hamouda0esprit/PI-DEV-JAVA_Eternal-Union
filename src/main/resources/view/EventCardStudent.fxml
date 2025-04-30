@@ -8,43 +8,108 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="Controllers.EventCardStudentController"
       styleClass="event-card" 
-      style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0); -fx-background-radius: 8; -fx-min-width: 300; -fx-max-width: 300;">
+      style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0); -fx-background-radius: 15; -fx-min-width: 320; -fx-max-width: 320;">
+    
+    <!-- Search Container -->
+    <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="search-container" AnchorPane.topAnchor="10.0" AnchorPane.rightAnchor="10.0">
+        <Button fx:id="searchButton" styleClass="search-button" onAction="#toggleSearch"
+                style="-fx-background-color: transparent; -fx-cursor: hand;">
+            <graphic>
+                <ImageView fitHeight="20" fitWidth="20">
+                    <Image url="@../Images/search.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+        <TextField fx:id="searchField" promptText="Search events..." 
+                  style="-fx-background-radius: 20; -fx-padding: 8;"
+                  visible="false" managed="false" HBox.hgrow="ALWAYS"/>
+    </HBox>
     
     <!-- Event Image -->
-    <ImageView fx:id="eventImage" fitWidth="300" fitHeight="200" preserveRatio="true" 
-               style="-fx-background-color: #f0f0f0; -fx-background-radius: 8 8 0 0;"/>
+    <ImageView fx:id="eventImage" fitWidth="320" fitHeight="180" preserveRatio="true" 
+               AnchorPane.topAnchor="0.0"
+               style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);"/>
     
     <!-- Content Container -->
-    <VBox spacing="10" style="-fx-padding: 15;">
+    <VBox spacing="12" AnchorPane.topAnchor="190.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+          style="-fx-padding: 20;">
+        
         <!-- Event Title -->
         <Label fx:id="titleLabel" styleClass="event-title" 
-               style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"
+               wrapText="true"/>
         
         <!-- Event Date -->
-        <Label fx:id="dateLabel" styleClass="event-date" 
-               style="-fx-text-fill: #666666; -fx-font-size: 14px;"/>
+        <Label fx:id="dateLabel" styleClass="event-date">
+            <graphic>
+                <Label text="📅" style="-fx-font-size: 16px;"/>
+            </graphic>
+            <style>
+                -fx-font-size: 14px;
+                -fx-text-fill: #3498db;
+            </style>
+        </Label>
         
         <!-- Event Location -->
-        <Label fx:id="locationLabel" styleClass="event-location" 
-               style="-fx-text-fill: #666666; -fx-font-size: 14px;"/>
+        <Label fx:id="locationLabel" styleClass="event-location">
+            <style>
+                -fx-font-size: 14px;
+                -fx-text-fill: #7f8c8d;
+            </style>
+        </Label>
+        
+        <!-- Event Weather -->
+        <Label fx:id="weatherLabel" styleClass="event-weather">
+            <style>
+                -fx-font-size: 14px;
+                -fx-text-fill: #2196F3;
+                -fx-font-weight: bold;
+            </style>
+        </Label>
+        
+        <!-- Event Capacity -->
+        <Label fx:id="capacityLabel" styleClass="event-capacity">
+            <style>
+                -fx-font-size: 14px;
+                -fx-font-weight: bold;
+            </style>
+        </Label>
         
         <!-- Event Description -->
         <Label fx:id="descriptionLabel" styleClass="event-description" 
-               style="-fx-text-fill: #666666; -fx-font-size: 14px;" 
-               wrapText="true"/>
+               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-opacity: 0.9;" 
+               wrapText="true" maxWidth="280"/>
+        
+        <!-- Spacer -->
+        <Region VBox.vgrow="ALWAYS" minHeight="10"/>
         
         <!-- Action Buttons -->
-        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-            <Button fx:id="participateButton" text="Participate" 
-                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;"
-                    onAction="#handleParticipateClick"/>
+        <HBox spacing="12" alignment="CENTER">
+            <Button fx:id="participateButton" text="Participer" 
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold;
+                           -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;
+                           -fx-effect: dropshadow(three-pass-box, rgba(33,150,243,0.4), 10, 0, 0, 2);"
+                    onAction="#handleParticipateClick">
+                <graphic>
+                    <Label text="👋" style="-fx-font-size: 16px;"/>
+                </graphic>
+            </Button>
             <Button fx:id="discussionButton" text="Discussion" 
-                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;"
-                    onAction="#handleDiscussionClick"/>
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;
+                           -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;
+                           -fx-effect: dropshadow(three-pass-box, rgba(76,175,80,0.4), 10, 0, 0, 2);"
+                    onAction="#handleDiscussionClick">
+                <graphic>
+                    <Label text="💬" style="-fx-font-size: 16px;"/>
+                </graphic>
+            </Button>
         </HBox>
     </VBox>
-</VBox> 
+</AnchorPane> 

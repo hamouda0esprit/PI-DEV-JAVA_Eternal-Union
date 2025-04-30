@@ -20,8 +20,12 @@ import java.util.Locale;
 import java.io.File;
 import java.io.IOException;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.TextField;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
 
-public class EventCardController {
+public class EventCardController implements Initializable {
     @FXML
     private Label titleLabel;
     
@@ -45,6 +49,9 @@ public class EventCardController {
     
     @FXML
     private Button deleteButton;
+
+    @FXML private TextField searchField;
+    @FXML private Button searchButton;
 
     private Evenement currentEvent;
     private IEvenementService evenementService;
@@ -85,7 +92,11 @@ public class EventCardController {
                 File file = new File(photoPath);
                 if (file.exists()) {
                     Image image = new Image(file.toURI().toString());
-                    eventImage.setImage(image);
+                    if (image != null && !image.isError()) {
+                        eventImage.setImage(image);
+                    } else {
+                        setDefaultImage();
+                    }
                 } else {
                     setDefaultImage();
                 }
@@ -100,8 +111,13 @@ public class EventCardController {
 
     private void setDefaultImage() {
         try {
-            Image defaultImage = new Image("https://via.placeholder.com/300x200?text=Event");
-            eventImage.setImage(defaultImage);
+            // Use a local resource instead of a URL
+            Image defaultImage = new Image(getClass().getResourceAsStream("/images/default-event.png"));
+            if (defaultImage != null) {
+                eventImage.setImage(defaultImage);
+            } else {
+                System.err.println("Failed to load default image");
+            }
         } catch (Exception e) {
             System.err.println("Error loading default image: " + e.getMessage());
         }
@@ -207,5 +223,33 @@ public class EventCardController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        // Initialize search functionality
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterEvents(newValue);
+        });
+    }
+    
+    @FXML
+    private void toggleSearch() {
+        boolean isVisible = searchField.isVisible();
+        searchField.setVisible(!isVisible);
+        searchField.setManaged(!isVisible);
+        
+        if (!isVisible) {
+            searchField.requestFocus();
+        } else {
+            searchField.clear();
+            filterEvents("");
+        }
+    }
+    
+    public void filterEvents(String searchText) {
+        if (mainController != null) {
+            mainController.filterEvents(searchText);
+        }
     }
 } 

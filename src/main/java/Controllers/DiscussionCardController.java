@@ -2,40 +2,75 @@ package Controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import entite.Discussion;
 import java.io.File;
 import java.time.format.DateTimeFormatter;
 
 public class DiscussionCardController {
-    @FXML
-    private ImageView authorImageView;
-    
-    @FXML
-    private Label authorLabel;
-    
-    @FXML
-    private Label timestampLabel;
-    
-    @FXML
-    private Label contentLabel;
+    @FXML private Label timestampLabel;
+    @FXML private Label contentLabel;
+    @FXML private VBox imageContainer;
+    @FXML private ImageView discussionImageView;
+    @FXML private Button modifyButton;
+    @FXML private Button deleteButton;
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy à HH:mm");
+    private static final double MAX_IMAGE_WIDTH = 600;
+    private static final double MAX_IMAGE_HEIGHT = 800;
+
+    private Runnable onDelete;
+    private Runnable onModify;
+
+    public void setOnDelete(Runnable onDelete) {
+        this.onDelete = onDelete;
+    }
+    public void setOnModify(Runnable onModify) {
+        this.onModify = onModify;
+    }
+
+    @FXML
+    private void handleDelete() {
+        if (onDelete != null) onDelete.run();
+    }
+
+    @FXML
+    private void handleModify() {
+        if (onModify != null) onModify.run();
+    }
 
     public void setDiscussion(Discussion discussion) {
-        // Set author image if available
-        if (discussion.getMedia() != null && !discussion.getMedia().isEmpty()) {
-            File imageFile = new File(discussion.getMedia());
-            if (imageFile.exists()) {
-                Image image = new Image(imageFile.toURI().toString());
-                authorImageView.setImage(image);
-            }
-        }
-        
         // Set text content
-        authorLabel.setText("User #" + discussion.getEventId()); // Using eventId as temporary user ID
         timestampLabel.setText(discussion.getCreatedAt().format(formatter));
         contentLabel.setText(discussion.getCaption());
+
+        String media = discussion.getMedia();
+        if (media != null && !media.isEmpty()) {
+            try {
+                Image image;
+                if (media.startsWith("http")) {
+                    // It's a GIF or image URL
+                    image = new Image(media, true);
+                } else {
+                    // It's a local file path (fix slashes for Windows)
+                    File imageFile = new File(media.replace("\\", File.separator));
+                    image = new Image(imageFile.toURI().toString());
+                }
+                discussionImageView.setImage(image);
+                discussionImageView.setPreserveRatio(true);
+                discussionImageView.setVisible(true);
+                imageContainer.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                discussionImageView.setVisible(false);
+                imageContainer.setVisible(false);
+            }
+        } else {
+            discussionImageView.setVisible(false);
+            imageContainer.setVisible(false);
+        }
     }
 } 

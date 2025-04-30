@@ -19,8 +19,13 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.io.File;
 import java.io.IOException;
+import service.WeatherService;
+import javafx.scene.control.TextField;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
 
-public class EventCardStudentController {
+public class EventCardStudentController implements Initializable {
     @FXML
     private Label titleLabel;
     
@@ -34,6 +39,12 @@ public class EventCardStudentController {
     private Label locationLabel;
     
     @FXML
+    private Label weatherLabel;
+    
+    @FXML
+    private Label capacityLabel;
+    
+    @FXML
     private ImageView eventImage;
     
     @FXML
@@ -42,13 +53,18 @@ public class EventCardStudentController {
     @FXML
     private Button participateButton;
 
+    @FXML private TextField searchField;
+    @FXML private Button searchButton;
+
     private Evenement currentEvent;
     private User currentUser;
     private ParticipationService participationService;
     private EvenementStudentController mainController;
+    private WeatherService weatherService;
 
     public EventCardStudentController() {
         this.participationService = new ParticipationService();
+        this.weatherService = new WeatherService();
     }
 
     public void setMainController(EvenementStudentController controller) {
@@ -69,8 +85,15 @@ public class EventCardStudentController {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE dd MMMM yyyy 'à' HH:mm", Locale.FRENCH);
         dateLabel.setText(dateFormat.format(event.getDateevent()));
         
-        // Set location with icon (using Unicode character for location pin)
+        // Set location with icon
         locationLabel.setText("📍 " + event.getLocation());
+        
+        // Get and set weather information
+        String weatherInfo = weatherService.getWeatherForLocation(
+            event.getLocation(), 
+            event.getDateevent().toLocalDate()
+        );
+        weatherLabel.setText(weatherInfo);
         
         // Set description (limit to brief preview)
         String description = event.getDescription();
@@ -79,6 +102,9 @@ public class EventCardStudentController {
         }
         descriptionLabel.setText(description);
         
+        // Update capacity information
+        updateCapacityInfo();
+        
         // Load and set the image
         String photoPath = event.getPhoto();
         if (photoPath != null && !photoPath.isEmpty()) {
@@ -86,7 +112,11 @@ public class EventCardStudentController {
                 File file = new File(photoPath);
                 if (file.exists()) {
                     Image image = new Image(file.toURI().toString());
-                    eventImage.setImage(image);
+                    if (image != null && !image.isError()) {
+                        eventImage.setImage(image);
+                    } else {
+                        setDefaultImage();
+                    }
                 } else {
                     setDefaultImage();
                 }
@@ -102,15 +132,44 @@ public class EventCardStudentController {
         updateParticipateButton();
     }
 
+    private void updateCapacityInfo() {
+        if (currentEvent != null) {
+            int totalCapacity = currentEvent.getCapacite();
+            int currentParticipants = participationService.getParticipantCount(currentEvent.getId());
+            int remainingSpots = totalCapacity - currentParticipants;
+            
+            String capacityText;
+            if (remainingSpots <= 0) {
+                capacityText = "❌ Complet (" + currentParticipants + "/" + totalCapacity + ")";
+                capacityLabel.setStyle("-fx-text-fill: #f44336; -fx-font-weight: bold;");
+            } else {
+                capacityText = "✅ Places disponibles: " + remainingSpots + "/" + totalCapacity;
+                capacityLabel.setStyle("-fx-text-fill: #4CAF50; -fx-font-weight: bold;");
+            }
+            capacityLabel.setText(capacityText);
+        }
+    }
+
     private void updateParticipateButton() {
         if (currentUser != null && currentEvent != null) {
             boolean isParticipating = participationService.isParticipating(currentEvent.getId(), currentUser.getId());
+            int currentParticipants = participationService.getParticipantCount(currentEvent.getId());
+            int totalCapacity = currentEvent.getCapacite();
+            
             if (isParticipating) {
-                participateButton.setText("Cancel Participation");
+                participateButton.setText("Annuler la participation");
                 participateButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;");
+                participateButton.setDisable(false);
             } else {
-                participateButton.setText("Participate");
-                participateButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;");
+                if (currentParticipants >= totalCapacity) {
+                    participateButton.setText("Complet");
+                    participateButton.setStyle("-fx-background-color: #9e9e9e; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: default;");
+                    participateButton.setDisable(true);
+                } else {
+                    participateButton.setText("Participer");
+                    participateButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;");
+                    participateButton.setDisable(false);
+                }
             }
         }
     }
@@ -118,33 +177,42 @@ public class EventCardStudentController {
     @FXML
     private void handleParticipateClick() {
         if (currentUser == null || currentEvent == null) {
-            showAlert(Alert.AlertType.WARNING, "Error", "Please log in to participate in events.");
+            showAlert(Alert.AlertType.WARNING, "Erreur", "Veuillez vous connecter pour participer aux événements.");
             return;
         }
 
         boolean isParticipating = participationService.isParticipating(currentEvent.getId(), currentUser.getId());
+        int currentParticipants = participationService.getParticipantCount(currentEvent.getId());
+        int totalCapacity = currentEvent.getCapacite();
+
+        if (!isParticipating && currentParticipants >= totalCapacity) {
+            showAlert(Alert.AlertType.WARNING, "Événement complet", "Désolé, l'événement a atteint sa capacité maximale.");
+            return;
+        }
+
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         
         if (isParticipating) {
-            confirmation.setTitle("Cancel Participation");
-            confirmation.setHeaderText("Cancel participation in: " + currentEvent.getName());
-            confirmation.setContentText("Are you sure you want to cancel your participation in this event?");
+            confirmation.setTitle("Annuler la participation");
+            confirmation.setHeaderText("Annuler la participation à: " + currentEvent.getName());
+            confirmation.setContentText("Êtes-vous sûr de vouloir annuler votre participation à cet événement?");
         } else {
-            confirmation.setTitle("Participate in Event");
-            confirmation.setHeaderText("Participate in: " + currentEvent.getName());
-            confirmation.setContentText("Would you like to participate in this event?");
+            confirmation.setTitle("Participer à l'événement");
+            confirmation.setHeaderText("Participer à: " + currentEvent.getName());
+            confirmation.setContentText("Voulez-vous participer à cet événement?");
         }
 
         confirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 if (isParticipating) {
                     participationService.removeParticipation(currentEvent.getId(), currentUser.getId());
-                    showAlert(Alert.AlertType.INFORMATION, "Success", "You have cancelled your participation.");
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Vous avez annulé votre participation.");
                 } else {
                     participationService.addParticipation(currentEvent.getId(), currentUser.getId());
-                    showAlert(Alert.AlertType.INFORMATION, "Success", "You are now participating in this event!");
+                    showAlert(Alert.AlertType.INFORMATION, "Succès", "Vous participez maintenant à cet événement!");
                 }
                 updateParticipateButton();
+                updateCapacityInfo();
                 if (mainController != null) {
                     mainController.refreshEvents();
                 }
@@ -178,8 +246,13 @@ public class EventCardStudentController {
 
     private void setDefaultImage() {
         try {
-            Image defaultImage = new Image("https://via.placeholder.com/300x200?text=Event");
-            eventImage.setImage(defaultImage);
+            // Use a local resource instead of a URL
+            Image defaultImage = new Image(getClass().getResourceAsStream("/images/default-event.png"));
+            if (defaultImage != null) {
+                eventImage.setImage(defaultImage);
+            } else {
+                System.err.println("Failed to load default image");
+            }
         } catch (Exception e) {
             System.err.println("Error loading default image: " + e.getMessage());
         }
@@ -191,5 +264,33 @@ public class EventCardStudentController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        // Initialize search functionality
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterEvents(newValue);
+        });
+    }
+    
+    @FXML
+    private void toggleSearch() {
+        boolean isVisible = searchField.isVisible();
+        searchField.setVisible(!isVisible);
+        searchField.setManaged(!isVisible);
+        
+        if (!isVisible) {
+            searchField.requestFocus();
+        } else {
+            searchField.clear();
+            filterEvents("");
+        }
+    }
+    
+    public void filterEvents(String searchText) {
+        if (mainController != null) {
+            mainController.filterEvents(searchText);
+        }
     }
 } 

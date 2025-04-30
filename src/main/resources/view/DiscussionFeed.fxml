@@ -9,48 +9,51 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="Controllers.DiscussionFeedController"
-      style="-fx-background-color: #f0f2f5;"
-      stylesheets="@../styles/discussion-feed.css">
+      style="-fx-background-color: white;"
+      maxWidth="800" maxHeight="700">
       
-    <!-- Event Header Section (like Facebook cover) -->
-    <VBox styleClass="event-header">
+    <!-- Event Header -->
+    <VBox style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);">
         <!-- Event Cover Image -->
-        <ImageView fx:id="eventCoverImage" fitWidth="1200" fitHeight="300" 
-                   style="-fx-background-color: #e9ebee;">
-            <VBox.margin>
-                <Insets bottom="-50"/>
-            </VBox.margin>
-        </ImageView>
+        <ImageView fx:id="eventCoverImage" fitWidth="800" fitHeight="200" 
+                  preserveRatio="true"
+                  style="-fx-background-color: #f0f2f5;"/>
         
-        <!-- Event Info Section (overlaps with image) -->
-        <VBox style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
+        <!-- Event Info -->
+        <VBox style="-fx-padding: 20;">
+            <Label fx:id="eventTitleLabel" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
             
-            <Label fx:id="eventTitleLabel" styleClass="event-title">
-                <font>
-                    <Font name="System Bold" size="24.0"/>
-                </font>
-            </Label>
-            
-            <HBox spacing="20" alignment="CENTER_LEFT">
-                <Label fx:id="eventDateLabel" styleClass="event-info"/>
-                <Label fx:id="eventLocationLabel" styleClass="event-info"/>
+            <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-padding: 10 0;">
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <Label text="📅" style="-fx-font-size: 16;"/>
+                    <Label fx:id="eventDateLabel" style="-fx-font-size: 14; -fx-text-fill: #65676B;"/>
+                </HBox>
+                
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <Label text="📍" style="-fx-font-size: 16;"/>
+                    <Label fx:id="eventLocationLabel" style="-fx-font-size: 14; -fx-text-fill: #65676B;"/>
+                </HBox>
             </HBox>
         </VBox>
     </VBox>
     
+    <!-- Divider -->
+    <Separator style="-fx-background-color: #f0f2f5; -fx-padding: 1;"/>
+    
     <!-- Main Content Area -->
-    <ScrollPane fitToWidth="true" style="-fx-background: #f0f2f5; -fx-background-color: #f0f2f5;">
-        <VBox spacing="20" style="-fx-padding: 20;">
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" 
+                style="-fx-background-color: transparent; -fx-padding: 0;">
+        <VBox spacing="15" style="-fx-padding: 20;">
             <!-- Add Discussion Button -->
             <Button fx:id="addDiscussionButton" onAction="#handleAddDiscussion"
-                    style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
+                    style="-fx-background-color: #f0f2f5; -fx-background-radius: 8;">
+                <padding>
+                    <Insets top="12" right="16" bottom="12" left="16"/>
+                </padding>
                 <graphic>
-                    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10;">
-                        <Label text="+" style="-fx-font-size: 24; -fx-text-fill: #1877f2;"/>
-                        <Label text="Ajouter une discussion" style="-fx-font-size: 14;"/>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="💬" style="-fx-font-size: 18;"/>
+                        <Label text="Ajouter un commentaire" style="-fx-font-size: 14; -fx-text-fill: #65676B;"/>
                     </HBox>
                 </graphic>
             </Button>

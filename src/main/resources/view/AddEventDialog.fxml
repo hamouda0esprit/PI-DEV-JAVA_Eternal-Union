@@ -17,11 +17,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700" prefWidth="1000" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddEventDialogController">
+<AnchorPane prefHeight="800" prefWidth="1000" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddEventDialogController">
    <children>
       
       <!-- En-tête avec le titre -->
-      <VBox alignment="TOP_CENTER" layoutX="50" layoutY="20" prefWidth="900" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0">
+      <VBox alignment="TOP_CENTER" layoutX="50" layoutY="20" prefWidth="900" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="20.0">
         <padding>
             <Insets bottom="20" left="20" right="20" top="20" />
         </padding>
@@ -48,7 +48,7 @@
             </TextField>
             
             <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextArea fx:id="descriptionArea" prefRowCount="3" style="-fx-background-radius: 5; -fx-padding: 8;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextArea fx:id="descriptionArea" prefRowCount="2" style="-fx-background-radius: 5; -fx-padding: 8;" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
                 <effect>
                     <DropShadow color="#0000001a" radius="3" spread="0.1" />
                 </effect>
@@ -75,10 +75,17 @@
                 </ListView>
             </VBox>
             
-            <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Photo:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-            <VBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                <StackPane minHeight="250" minWidth="250" onMouseClicked="#handleBrowsePhoto" style="-fx-background-color: #f0f0f0; -fx-background-radius: 5; -fx-border-color: #42a5f5; -fx-border-radius: 5; -fx-border-width: 2; -fx-border-style: dashed;">
-                    <ImageView fx:id="imageView" fitHeight="230" fitWidth="230" pickOnBounds="true" preserveRatio="true">
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Capacity:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <TextField fx:id="capaciteField" promptText="Enter capacity" style="-fx-background-radius: 5; -fx-padding: 8;" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <effect>
+                    <DropShadow color="#0000001a" radius="3" spread="0.1" />
+                </effect>
+            </TextField>
+            
+            <Label style="-fx-font-weight: bold; -fx-text-fill: #333333;" text="Photo:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <VBox alignment="CENTER" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                <StackPane minHeight="200" minWidth="200" onMouseClicked="#handleBrowsePhoto" style="-fx-background-color: #f0f0f0; -fx-background-radius: 5; -fx-border-color: #42a5f5; -fx-border-radius: 5; -fx-border-width: 2; -fx-border-style: dashed;">
+                    <ImageView fx:id="imageView" fitHeight="180" fitWidth="180" pickOnBounds="true" preserveRatio="true">
                         <StackPane.margin>
                             <Insets bottom="10" left="10" right="10" top="10" />
                         </StackPane.margin>
@@ -97,6 +104,7 @@
                <ColumnConstraints />
             </columnConstraints>
             <rowConstraints>
+               <RowConstraints />
                <RowConstraints />
                <RowConstraints />
                <RowConstraints />

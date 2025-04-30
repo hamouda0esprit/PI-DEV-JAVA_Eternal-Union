@@ -17,7 +17,7 @@ public class EvenementService implements IEvenementService {
 
     @Override
     public void add(Evenement e) {
-        String query = "INSERT INTO evenement (name, description, dateevent, location, time, iduser, photo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO evenement (name, description, dateevent, location, time, iduser, photo, capacite) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             pst = conn.prepareStatement(query);
             pst.setString(1, e.getName());
@@ -27,6 +27,7 @@ public class EvenementService implements IEvenementService {
             pst.setTime(5, e.getTime());
             pst.setInt(6, e.getIduser());
             pst.setString(7, e.getPhoto());
+            pst.setInt(8, e.getCapacite());
             pst.executeUpdate();
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
@@ -51,6 +52,7 @@ public class EvenementService implements IEvenementService {
                 e.setTime(rs.getTime("time"));
                 e.setIduser(rs.getInt("iduser"));
                 e.setPhoto(rs.getString("photo"));
+                e.setCapacite(rs.getInt("capacite"));
                 list.add(e);
                 System.out.println("Found event: " + e.getName());
             }
@@ -79,6 +81,7 @@ public class EvenementService implements IEvenementService {
                 e.setTime(rs.getTime("time"));
                 e.setIduser(rs.getInt("iduser"));
                 e.setPhoto(rs.getString("photo"));
+                e.setCapacite(rs.getInt("capacite"));
                 return e;
             }
         } catch (SQLException ex) {
@@ -89,7 +92,7 @@ public class EvenementService implements IEvenementService {
 
     @Override
     public void update(Evenement e) {
-        String query = "UPDATE evenement SET name=?, description=?, dateevent=?, location=?, time=?, iduser=?, photo=? WHERE id=?";
+        String query = "UPDATE evenement SET name=?, description=?, dateevent=?, location=?, time=?, iduser=?, photo=?, capacite=? WHERE id=?";
         try {
             pst = conn.prepareStatement(query);
             pst.setString(1, e.getName());
@@ -99,7 +102,8 @@ public class EvenementService implements IEvenementService {
             pst.setTime(5, e.getTime());
             pst.setInt(6, e.getIduser());
             pst.setString(7, e.getPhoto());
-            pst.setInt(8, e.getId());
+            pst.setInt(8, e.getCapacite());
+            pst.setInt(9, e.getId());
             pst.executeUpdate();
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());

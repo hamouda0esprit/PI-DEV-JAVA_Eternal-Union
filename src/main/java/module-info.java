@@ -7,9 +7,12 @@ module com.example.pijava {
     requires itextpdf;
     requires com.github.librepdf.openpdf;
     requires com.fasterxml.jackson.databind;
-    requires java.sql;
     requires java.desktop;
     requires java.net.http;
+    requires java.compiler;
+    requires com.google.gson;
+    requires okhttp3;
+    requires java.sql;
 
     opens com.example.pijava to javafx.fxml;
     opens Controllers to javafx.fxml;
