@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="Controllers.AdminDashboardController">
+    
+    <left>
+        <fx:include source="AdminSidebar.fxml" />
+    </left>
+    
+    <center>
+        <VBox spacing="20" style="-fx-background-color: #f4f6f8;" prefWidth="900">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/>
+            </padding>
+            
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="Tableau de Bord" style="-fx-text-fill: #2c3e50;">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="refreshButton" text="Rafraîchir" style="-fx-background-color: #3498db; -fx-text-fill: white;">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                </Button>
+            </HBox>
+            
+            <!-- Main Dashboard Widgets -->
+            <GridPane hgap="20" vgap="20">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50" />
+                    <ColumnConstraints percentWidth="50" />
+                </columnConstraints>
+                
+                <!-- Users Card -->
+                <VBox styleClass="dashboard-card" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);" 
+                      GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Label text="👥" style="-fx-font-size: 36px;"/>
+                        <VBox>
+                            <Label text="Utilisateurs" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 18px;"/>
+                            <Label fx:id="userCountLabel" text="0" style="-fx-text-fill: #3498db; -fx-font-weight: bold; -fx-font-size: 24px;"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button text="Gérer" onAction="#goToUsersAdmin" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                    </HBox>
+                </VBox>
+                
+                <!-- Courses Card -->
+                <VBox styleClass="dashboard-card" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);" 
+                      GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Label text="📚" style="-fx-font-size: 36px;"/>
+                        <VBox>
+                            <Label text="Cours" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 18px;"/>
+                            <Label fx:id="courseCountLabel" text="0" style="-fx-text-fill: #3498db; -fx-font-weight: bold; -fx-font-size: 24px;"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button text="Gérer" onAction="#goToCoursesAdmin" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                    </HBox>
+                </VBox>
+                
+                <!-- Forums Card -->
+                <VBox styleClass="dashboard-card" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);" 
+                      GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Label text="💬" style="-fx-font-size: 36px;"/>
+                        <VBox>
+                            <Label text="Forums" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 18px;"/>
+                            <Label fx:id="forumCountLabel" text="0" style="-fx-text-fill: #3498db; -fx-font-weight: bold; -fx-font-size: 24px;"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button text="Gérer" onAction="#goToForumsAdmin" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                    </HBox>
+                </VBox>
+                
+                <!-- Events Card -->
+                <VBox styleClass="dashboard-card" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);" 
+                      GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Label text="📅" style="-fx-font-size: 36px;"/>
+                        <VBox>
+                            <Label text="Événements" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 18px;"/>
+                            <Label fx:id="eventCountLabel" text="0" style="-fx-text-fill: #3498db; -fx-font-weight: bold; -fx-font-size: 24px;"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button text="Gérer" onAction="#goToEventsAdmin" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                    </HBox>
+                </VBox>
+            </GridPane>
+            
+            <!-- Recent Activity Section -->
+            <Label text="Activité Récente" style="-fx-text-fill: #2c3e50; -fx-font-weight: bold; -fx-font-size: 18px;">
+                <VBox.margin>
+                    <Insets top="20" bottom="10"/>
+                </VBox.margin>
+            </Label>
+            
+            <VBox style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);">
+                <padding>
+                    <Insets top="15" right="15" bottom="15" left="15"/>
+                </padding>
+                <TableView fx:id="recentActivityTable" VBox.vgrow="ALWAYS" prefHeight="200">
+                    <columns>
+                        <TableColumn fx:id="activityDateColumn" text="Date" prefWidth="150"/>
+                        <TableColumn fx:id="activityTypeColumn" text="Type" prefWidth="100"/>
+                        <TableColumn fx:id="activityDescriptionColumn" text="Description" prefWidth="400"/>
+                        <TableColumn fx:id="activityUserColumn" text="Utilisateur" prefWidth="150"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Aucune activité récente" />
+                    </placeholder>
+                </TableView>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane> 
