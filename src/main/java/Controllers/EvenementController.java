@@ -424,20 +424,22 @@ public class EvenementController implements Initializable {
     }
     
     private void loadEventsList() {
-        System.out.println("Loading events list");
         eventsGrid.getChildren().clear();
         
-        // Get events from the service
+        if (currentUser == null) {
+            return;
+        }
+        
+        // Get all events
         List<Evenement> events = evenementService.getAll();
-        System.out.println("Found " + events.size() + " events");
         
         for (Evenement event : events) {
             try {
-                System.out.println("Creating card for event: " + event.getName());
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/EventCard.fxml"));
                 Node eventCard = loader.load();
                 EventCardController controller = loader.getController();
-                controller.setMainController(this); // Set the main controller reference
+                controller.setMainController(this);
+                controller.setCurrentUser(currentUser);
                 controller.setEventData(event);
                 eventsGrid.getChildren().add(eventCard);
             } catch (IOException e) {
@@ -445,10 +447,6 @@ public class EvenementController implements Initializable {
                 e.printStackTrace();
             }
         }
-        
-        // Make sure the grid is visible
-        eventsGrid.setVisible(true);
-        eventsGrid.setManaged(true);
     }
     
     @FXML
@@ -543,7 +541,7 @@ public class EvenementController implements Initializable {
         // Get all events and sort them by date
         List<Evenement> upcomingEvents = evenementService.getAll().stream()
             .filter(e -> !e.getDateevent().toLocalDate().isBefore(LocalDate.now()))
-            .filter(e -> matchesSearch(e, searchText))
+            .filter(e -> searchText.isEmpty() || matchesSearch(e, searchText))
             .sorted(Comparator.comparing(Evenement::getDateevent))
             .collect(Collectors.toList());
         
@@ -551,8 +549,18 @@ public class EvenementController implements Initializable {
         
         // Create event cards
         for (Evenement event : upcomingEvents) {
-            VBox eventCard = createEventCard(event);
-            upcomingEventsList.getChildren().add(eventCard);
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/EventCardTeacher.fxml"));
+                Node eventCard = loader.load();
+                EventCardTeacherController controller = loader.getController();
+                controller.setMainController(this);
+                controller.setCurrentUser(currentUser);
+                controller.setEventData(event);
+                upcomingEventsList.getChildren().add(eventCard);
+            } catch (IOException e) {
+                System.err.println("Error creating event card: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
     

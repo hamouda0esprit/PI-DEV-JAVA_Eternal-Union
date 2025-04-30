@@ -61,6 +61,12 @@
                    style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
         </HBox>
         
+        <!-- Weather -->
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <Label fx:id="weatherLabel" styleClass="event-weather"
+                   style="-fx-font-size: 14px; -fx-text-fill: #2196F3; -fx-font-weight: bold;"/>
+        </HBox>
+        
         <!-- Description -->
         <Label fx:id="descriptionLabel" styleClass="event-description" 
                wrapText="true" maxWidth="280"

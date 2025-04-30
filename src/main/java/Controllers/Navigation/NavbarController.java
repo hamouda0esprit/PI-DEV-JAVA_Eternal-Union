@@ -156,9 +156,9 @@ public class NavbarController implements Initializable {
                 controller.setCurrentUser(currentUser);
             }
             
-            // Update the view
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(root);
+            // Get the parent scene and update its content
+            Stage stage = (Stage) evenementsButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
             
             System.out.println("Successfully navigated to events view for user: " + currentUser.getName() + " (Type: " + currentUser.getType() + ")");
             

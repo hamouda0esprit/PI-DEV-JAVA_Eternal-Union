@@ -46,14 +46,14 @@
         <VBox spacing="15" style="-fx-padding: 20;">
             <!-- Add Discussion Button -->
             <Button fx:id="addDiscussionButton" onAction="#handleAddDiscussion"
-                    style="-fx-background-color: #f0f2f5; -fx-background-radius: 8;">
+                    style="-fx-background-color: #1877F2; -fx-background-radius: 8; -fx-cursor: hand;">
                 <padding>
                     <Insets top="12" right="16" bottom="12" left="16"/>
                 </padding>
                 <graphic>
                     <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="💬" style="-fx-font-size: 18;"/>
-                        <Label text="Ajouter un commentaire" style="-fx-font-size: 14; -fx-text-fill: #65676B;"/>
+                        <Label text="➕" style="-fx-font-size: 18; -fx-text-fill: white;"/>
+                        <Label text="Ajouter une post" style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: white;"/>
                     </HBox>
                 </graphic>
             </Button>

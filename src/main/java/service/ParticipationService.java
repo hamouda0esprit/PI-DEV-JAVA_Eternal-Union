@@ -90,4 +90,27 @@ public class ParticipationService {
         }
         return 0;
     }
+
+    public List<User> getParticipantsForEvent(int eventId) {
+        List<User> participants = new ArrayList<>();
+        String query = "SELECT u.* FROM user u " +
+                      "JOIN evenement_user eu ON u.id = eu.user_id " +
+                      "WHERE eu.evenement_id = ?";
+        try (PreparedStatement pst = conn.prepareStatement(query)) {
+            pst.setInt(1, eventId);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getInt("phone"));
+                user.setType(rs.getString("type"));
+                participants.add(user);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error getting participants: " + ex.getMessage());
+        }
+        return participants;
+    }
 } 

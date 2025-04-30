@@ -36,6 +36,8 @@ public class DiscussionDialogController {
     public String selectedGifUrl;
     private int eventId;
     private DiscussionService discussionService;
+    private boolean editMode = false;
+    private int editingDiscussionId = -1;
 
     public void initialize() {
         // Initialize the discussion service
@@ -160,12 +162,10 @@ public class DiscussionDialogController {
             discussion.setCaption(descriptionArea.getText());
             discussion.setMedia(selectedGifUrl != null ? selectedGifUrl : selectedPhotoPath);
             discussion.setCreatedAt(LocalDateTime.now());
-            
-            try {
-                discussionService.addDiscussion(discussion);
+            if (editMode) {
+                discussion.setId(editingDiscussionId);
                 saveClicked = true;
-                
-                // Find the dialog pane
+                // Close dialog logic (same as before)
                 Scene scene = dialogStage.getScene();
                 if (scene != null && scene.getRoot() instanceof DialogPane) {
                     DialogPane dialogPane = (DialogPane) scene.getRoot();
@@ -176,9 +176,25 @@ public class DiscussionDialogController {
                 } else if (dialogStage instanceof Stage) {
                     ((Stage) dialogStage).close();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert("Error", "Failed to save discussion: " + e.getMessage());
+            } else {
+                try {
+                    discussionService.addDiscussion(discussion);
+                    saveClicked = true;
+                    // Close dialog logic (same as before)
+                    Scene scene = dialogStage.getScene();
+                    if (scene != null && scene.getRoot() instanceof DialogPane) {
+                        DialogPane dialogPane = (DialogPane) scene.getRoot();
+                        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+                        if (okButton != null) {
+                            okButton.fire();
+                        }
+                    } else if (dialogStage instanceof Stage) {
+                        ((Stage) dialogStage).close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showAlert("Error", "Failed to save discussion: " + e.getMessage());
+                }
             }
         }
     }
@@ -241,5 +257,10 @@ public class DiscussionDialogController {
         discussion.setMedia(selectedGifUrl != null ? selectedGifUrl : selectedPhotoPath);
         discussion.setCreatedAt(LocalDateTime.now());
         return discussion;
+    }
+
+    public void setEditMode(boolean editMode, int discussionId) {
+        this.editMode = editMode;
+        this.editingDiscussionId = discussionId;
     }
 } 

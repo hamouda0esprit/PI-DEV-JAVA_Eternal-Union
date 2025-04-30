@@ -24,6 +24,17 @@ import javafx.scene.control.TextField;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.io.FileOutputStream;
+import javafx.stage.FileChooser;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.Font;
+import javax.imageio.ImageIO;
+import java.awt.BasicStroke;
 
 public class EventCardStudentController implements Initializable {
     @FXML
@@ -52,6 +63,9 @@ public class EventCardStudentController implements Initializable {
     
     @FXML
     private Button participateButton;
+    
+    @FXML
+    private Button qrCodeButton;
 
     @FXML private TextField searchField;
     @FXML private Button searchButton;
@@ -61,6 +75,7 @@ public class EventCardStudentController implements Initializable {
     private ParticipationService participationService;
     private EvenementStudentController mainController;
     private WeatherService weatherService;
+    private boolean isParticipating;
 
     public EventCardStudentController() {
         this.participationService = new ParticipationService();
@@ -151,27 +166,13 @@ public class EventCardStudentController implements Initializable {
     }
 
     private void updateParticipateButton() {
-        if (currentUser != null && currentEvent != null) {
-            boolean isParticipating = participationService.isParticipating(currentEvent.getId(), currentUser.getId());
-            int currentParticipants = participationService.getParticipantCount(currentEvent.getId());
-            int totalCapacity = currentEvent.getCapacite();
-            
-            if (isParticipating) {
-                participateButton.setText("Annuler la participation");
-                participateButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;");
-                participateButton.setDisable(false);
-            } else {
-                if (currentParticipants >= totalCapacity) {
-                    participateButton.setText("Complet");
-                    participateButton.setStyle("-fx-background-color: #9e9e9e; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: default;");
-                    participateButton.setDisable(true);
-                } else {
-                    participateButton.setText("Participer");
-                    participateButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 4; -fx-cursor: hand;");
-                    participateButton.setDisable(false);
-                }
-            }
-        }
+        isParticipating = participationService.isParticipating(currentEvent.getId(), currentUser.getId());
+        participateButton.setText(isParticipating ? "Annuler" : "Participer");
+        participateButton.setStyle(isParticipating ? 
+            "-fx-background-color: #e74c3c;" : 
+            "-fx-background-color: #2196F3;");
+        qrCodeButton.setVisible(isParticipating);
+        qrCodeButton.setManaged(isParticipating);
     }
 
     @FXML
@@ -228,6 +229,7 @@ public class EventCardStudentController implements Initializable {
             
             DiscussionFeedController controller = loader.getController();
             controller.setEvent(currentEvent);
+            controller.setCurrentUser(currentUser);
             
             Stage feedStage = new Stage();
             feedStage.initModality(Modality.APPLICATION_MODAL);
@@ -241,6 +243,66 @@ public class EventCardStudentController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Could not open discussion feed: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleQRCodeClick() {
+        if (!isParticipating) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Attention");
+            alert.setHeaderText(null);
+            alert.setContentText("Vous devez d'abord participer à l'événement pour générer un QR code.");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            // Create QR code data
+            String qrData = String.format("Event: %s\nStudent: %s\nEvent ID: %d\nStudent ID: %d",
+                    currentEvent.getName(),
+                    currentUser.getName(),
+                    currentEvent.getId(),
+                    currentUser.getId());
+
+            // Generate QR code
+            String qrCodeUrl = String.format("https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=%s",
+                    URLEncoder.encode(qrData, StandardCharsets.UTF_8));
+
+            // Create file chooser
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Enregistrer le QR Code");
+            fileChooser.setInitialFileName("qr_code_" + currentEvent.getName() + ".png");
+            fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Images PNG", "*.png")
+            );
+
+            // Show save dialog
+            File file = fileChooser.showSaveDialog(qrCodeButton.getScene().getWindow());
+            if (file != null) {
+                // Download and save the QR code
+                URL url = new URL(qrCodeUrl);
+                try (InputStream in = url.openStream();
+                     FileOutputStream out = new FileOutputStream(file)) {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                }
+
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                successAlert.setTitle("Succès");
+                successAlert.setHeaderText(null);
+                successAlert.setContentText("QR Code généré et enregistré avec succès !");
+                successAlert.showAndWait();
+            }
+        } catch (Exception e) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Erreur");
+            errorAlert.setHeaderText(null);
+            errorAlert.setContentText("Erreur lors de la génération du QR Code : " + e.getMessage());
+            errorAlert.showAndWait();
         }
     }
 

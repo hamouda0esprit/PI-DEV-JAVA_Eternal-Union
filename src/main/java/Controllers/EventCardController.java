@@ -24,6 +24,8 @@ import javafx.scene.control.TextField;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
+import entite.User;
+import service.WeatherService;
 
 public class EventCardController implements Initializable {
     @FXML
@@ -37,6 +39,9 @@ public class EventCardController implements Initializable {
     
     @FXML
     private Label locationLabel;
+    
+    @FXML
+    private Label weatherLabel;
     
     @FXML
     private ImageView eventImage;
@@ -56,13 +61,20 @@ public class EventCardController implements Initializable {
     private Evenement currentEvent;
     private IEvenementService evenementService;
     private EvenementController mainController;
+    private User currentUser;
+    private WeatherService weatherService;
 
     public EventCardController() {
         this.evenementService = new EvenementService();
+        this.weatherService = new WeatherService();
     }
 
     public void setMainController(EvenementController controller) {
         this.mainController = controller;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
     }
 
     public void setEventData(Evenement event) {
@@ -77,6 +89,13 @@ public class EventCardController implements Initializable {
         
         // Set location with icon (using Unicode character for location pin)
         locationLabel.setText("📍 " + event.getLocation());
+        
+        // Get and set weather information
+        String weatherInfo = weatherService.getWeatherForLocation(
+            event.getLocation(), 
+            event.getDateevent().toLocalDate()
+        );
+        weatherLabel.setText(weatherInfo);
         
         // Set description (limit to brief preview)
         String description = event.getDescription();
@@ -131,6 +150,7 @@ public class EventCardController implements Initializable {
             
             DiscussionFeedController controller = loader.getController();
             controller.setEvent(currentEvent);
+            controller.setCurrentUser(currentUser);
             
             Stage feedStage = new Stage();
             feedStage.initModality(Modality.APPLICATION_MODAL);

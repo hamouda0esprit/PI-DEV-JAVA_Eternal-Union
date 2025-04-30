@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import entite.Discussion;
 import java.io.File;
 import java.time.format.DateTimeFormatter;
+import entite.User;
 
 public class DiscussionCardController {
     @FXML private Label timestampLabel;
@@ -24,6 +25,8 @@ public class DiscussionCardController {
 
     private Runnable onDelete;
     private Runnable onModify;
+    private User currentUser;
+    private Discussion currentDiscussion;
 
     public void setOnDelete(Runnable onDelete) {
         this.onDelete = onDelete;
@@ -32,17 +35,39 @@ public class DiscussionCardController {
         this.onModify = onModify;
     }
 
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+        updateButtonVisibility();
+    }
+
+    private void updateButtonVisibility() {
+        // Show buttons for all users
+        if (modifyButton != null) {
+            modifyButton.setVisible(true);
+            modifyButton.setManaged(true);
+        }
+        if (deleteButton != null) {
+            deleteButton.setVisible(true);
+            deleteButton.setManaged(true);
+        }
+    }
+
     @FXML
     private void handleDelete() {
-        if (onDelete != null) onDelete.run();
+        if (onDelete != null && currentDiscussion != null) {
+            onDelete.run();
+        }
     }
 
     @FXML
     private void handleModify() {
-        if (onModify != null) onModify.run();
+        if (onModify != null && currentDiscussion != null) {
+            onModify.run();
+        }
     }
 
     public void setDiscussion(Discussion discussion) {
+        this.currentDiscussion = discussion;
         // Set text content
         timestampLabel.setText(discussion.getCreatedAt().format(formatter));
         contentLabel.setText(discussion.getCaption());
