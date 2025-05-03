@@ -10,6 +10,8 @@ module com.example.pijava {
     requires java.desktop;
     requires java.net.http;
     requires com.fasterxml.jackson.databind;
+    requires org.apache.httpcomponents.httpclient;
+    requires org.apache.httpcomponents.httpcore;
 
     opens com.example.pijava to javafx.fxml;
     opens Controllers to javafx.fxml;

@@ -32,6 +32,7 @@ import service.ForumService;
 import service.UserService;
 import utils.FileUtils;
 import service.ProfanityFilterService;
+import service.LanguageToolService;
 
 public class ForumAddController {
 
@@ -64,13 +65,15 @@ public class ForumAddController {
     private MediaPlayer mediaPlayer;
     private final ProfanityFilterService profanityFilterService;
     public final AI21Service ai21Service;
-
+    private final LanguageToolService languageToolService;
     private User currentUser;
     private UserService userService;
 
     public ForumAddController() {
         this.ai21Service = new AI21Service();
         this.profanityFilterService = new ProfanityFilterService();
+        this.languageToolService = new LanguageToolService();
+        this.currentUser = LoginController.getAuthenticatedUser();
     }
 
     private String formatMathematicalSymbols(String text) {
@@ -218,6 +221,11 @@ public class ForumAddController {
 
                     userService.updateUser(currentUser);
                 }
+
+                // Check grammar and spelling using LanguageTool
+                /*String languageToolResponse = languageToolService.checkText(filteredDescription);
+                System.out.println("LanguageTool Response for Description:");
+                System.out.println(languageToolResponse);*/
 
                 // Additional validation after filtering
                 if (filteredTitle == null || filteredTitle.isEmpty()) {

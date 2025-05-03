@@ -34,6 +34,9 @@ import service.ForumService;
 import service.UserService;
 import service.ProfanityFilterService;
 import utils.FileUtils;
+import service.LanguageToolService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -96,6 +99,12 @@ public class ForumDiscussionController implements Initializable {
 
     @FXML
     private Button stopButton;
+
+    @FXML
+    private Label detectedLanguage;
+
+    @FXML
+    private Label languageConfidence;
 
     private Forum currentForum;
     private User currentUser;
@@ -188,10 +197,32 @@ public class ForumDiscussionController implements Initializable {
             System.err.println("Error loading user image: " + e.getMessage());
         }
 
+        // Check language using LanguageTool
+        try {
+            String languageToolResponse = new LanguageToolService().checkText(forum.getDescription());
+            if (languageToolResponse != null) {
+                // Parse the JSON response
+                JsonNode root = new ObjectMapper().readTree(languageToolResponse);
+                JsonNode languageNode = root.path("language");
+                
+                if (languageNode.has("name")) {
+                    detectedLanguage.setText(languageNode.get("name").asText());
+                }
+                
+                if (languageNode.has("detectedLanguage")) {
+                    JsonNode detectedNode = languageNode.get("detectedLanguage");
+                    if (detectedNode.has("confidence")) {
+                        double confidence = detectedNode.get("confidence").asDouble() * 100;
+                        languageConfidence.setText(String.format("%.1f%%", confidence));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error checking language: " + e.getMessage());
+            detectedLanguage.setText("Error detecting language");
+            languageConfidence.setText("0%");
+        }
 
-        /*System.out.println("Media : "+forum.getMedia());
-        System.out.println("Media emp : "+forum.getMedia().isEmpty());
-        System.out.println("Media null : "+(forum.getMedia() == null));*/
         // Handle media display
         if (forum.getMedia() != null && !forum.getMedia().isEmpty()) {
             try {
@@ -199,7 +230,7 @@ public class ForumDiscussionController implements Initializable {
             } catch (Exception e) {
                 System.err.println("Error loading media: " + e.getMessage());
             }
-        }else if (forum.getMedia() == null || forum.getMedia().isEmpty()) {
+        } else if (forum.getMedia() == null || forum.getMedia().isEmpty()) {
             forumImage.setFitHeight(0);
             forumVideo.setFitHeight(0);
         }

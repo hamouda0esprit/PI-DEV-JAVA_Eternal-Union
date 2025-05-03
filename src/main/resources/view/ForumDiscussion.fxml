@@ -54,6 +54,14 @@
 
                         <Label fx:id="forumDescription" style="-fx-font-size: 14;" text="No text here ?" wrapText="true" />
 
+                        <!-- Language Accuracy Information -->
+                        <HBox alignment="CENTER_LEFT" spacing="5" style="-fx-padding: 5;">
+                            <Label style="-fx-font-size: 12; -fx-text-fill: #757575;" text="Language: " />
+                            <Label fx:id="detectedLanguage" style="-fx-font-size: 12; -fx-text-fill: #42a5f5;" text="Not detected" />
+                            <Label style="-fx-font-size: 12; -fx-text-fill: #757575;" text=" | Confidence: " />
+                            <Label fx:id="languageConfidence" style="-fx-font-size: 12; -fx-text-fill: #42a5f5;" text="0%" />
+                        </HBox>
+
                         <!-- Forum Image/Video Container -->
                         <VBox fx:id="MediaField" alignment="CENTER">
                             <StackPane fx:id="mediaContainer">

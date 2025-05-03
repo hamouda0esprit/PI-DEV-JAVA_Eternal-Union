@@ -90,6 +90,13 @@
             <version>2.13.0</version>
         </dependency>
 
+        <!-- HTTP Client for LanguageTool API -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
+
     </dependencies>
 
     <build>
