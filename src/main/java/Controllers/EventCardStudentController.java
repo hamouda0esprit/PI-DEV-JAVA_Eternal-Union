@@ -249,60 +249,87 @@ public class EventCardStudentController implements Initializable {
     @FXML
     private void handleQRCodeClick() {
         if (!isParticipating) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Attention");
-            alert.setHeaderText(null);
-            alert.setContentText("Vous devez d'abord participer à l'événement pour générer un QR code.");
-            alert.showAndWait();
+            showAlert(Alert.AlertType.WARNING, "Attention", "Vous devez d'abord participer à l'événement pour générer un ticket.");
             return;
         }
 
         try {
             // Create QR code data
-            String qrData = String.format("Event: %s\nStudent: %s\nEvent ID: %d\nStudent ID: %d",
-                    currentEvent.getName(),
-                    currentUser.getName(),
-                    currentEvent.getId(),
-                    currentUser.getId());
+            String qrData = String.format("Event: %s\nStudent: %s\nID: %d-%d", 
+                currentEvent.getName(), 
+                currentUser.getName(),
+                currentEvent.getId(),
+                currentUser.getId());
 
-            // Generate QR code
+            // Create QR code using API
             String qrCodeUrl = String.format("https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=%s",
-                    URLEncoder.encode(qrData, StandardCharsets.UTF_8));
+                URLEncoder.encode(qrData, StandardCharsets.UTF_8));
 
             // Create file chooser
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Enregistrer le QR Code");
-            fileChooser.setInitialFileName("qr_code_" + currentEvent.getName() + ".png");
+            fileChooser.setTitle("Enregistrer le Ticket");
             fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Images PNG", "*.png")
             );
+            fileChooser.setInitialFileName("ticket_" + currentEvent.getName() + ".png");
 
             // Show save dialog
             File file = fileChooser.showSaveDialog(qrCodeButton.getScene().getWindow());
             if (file != null) {
-                // Download and save the QR code
-                URL url = new URL(qrCodeUrl);
-                try (InputStream in = url.openStream();
-                     FileOutputStream out = new FileOutputStream(file)) {
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, bytesRead);
-                    }
-                }
+                // Create a new image with ticket design
+                BufferedImage ticket = new BufferedImage(600, 400, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = ticket.createGraphics();
 
-                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                successAlert.setTitle("Succès");
-                successAlert.setHeaderText(null);
-                successAlert.setContentText("QR Code généré et enregistré avec succès !");
-                successAlert.showAndWait();
+                // Set background to white
+                g2d.setColor(Color.WHITE);
+                g2d.fillRect(0, 0, 600, 400);
+
+                // Add border
+                g2d.setColor(new Color(33, 150, 243)); // Blue color
+                g2d.setStroke(new BasicStroke(3));
+                g2d.drawRect(10, 10, 580, 380);
+
+                // Add title
+                g2d.setColor(new Color(33, 150, 243));
+                g2d.setFont(new Font("Arial", Font.BOLD, 24));
+                g2d.drawString("TICKET D'ENTRÉE", 200, 50);
+
+                // Add event name
+                g2d.setColor(Color.BLACK);
+                g2d.setFont(new Font("Arial", Font.BOLD, 20));
+                g2d.drawString("Événement: " + currentEvent.getName(), 20, 100);
+
+                // Add date
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE dd MMMM yyyy 'à' HH:mm", Locale.FRENCH);
+                g2d.setFont(new Font("Arial", Font.PLAIN, 16));
+                g2d.drawString("Date: " + dateFormat.format(currentEvent.getDateevent()), 20, 130);
+
+                // Add location
+                g2d.drawString("Lieu: " + currentEvent.getLocation(), 20, 160);
+
+                // Add student name
+                g2d.drawString("Participant: " + currentUser.getName(), 20, 190);
+
+                // Download and add QR code
+                URL url = new URL(qrCodeUrl);
+                BufferedImage qrCode = ImageIO.read(url);
+                g2d.drawImage(qrCode, 350, 100, 200, 200, null);
+
+                // Add ticket number
+                g2d.setFont(new Font("Arial", Font.BOLD, 14));
+                g2d.drawString("Ticket #" + currentEvent.getId() + "-" + currentUser.getId(), 20, 350);
+
+                // Add disclaimer
+                g2d.setFont(new Font("Arial", Font.ITALIC, 12));
+                g2d.drawString("Ce ticket est valable uniquement pour le participant mentionné", 20, 380);
+
+                // Save the ticket
+                ImageIO.write(ticket, "PNG", file);
+                showAlert(Alert.AlertType.INFORMATION, "Succès", "Ticket généré avec succès!");
             }
         } catch (Exception e) {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setTitle("Erreur");
-            errorAlert.setHeaderText(null);
-            errorAlert.setContentText("Erreur lors de la génération du QR Code : " + e.getMessage());
-            errorAlert.showAndWait();
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de générer le ticket: " + e.getMessage());
         }
     }
 
