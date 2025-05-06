@@ -14,11 +14,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import service.UserService;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class ProfileController implements Initializable {
     @FXML
@@ -90,35 +92,8 @@ public class ProfileController implements Initializable {
             emailField.setText(currentUser.getEmail());
             bioTextArea.setText(currentUser.getBio() != null ? currentUser.getBio() : "");
             
-            // Set avatar image if available
-            String imageUrl = currentUser.getImg();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                try {
-                    // Check if it's a valid URL
-                    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
-                        Image avatarImage = new Image(imageUrl);
-                        if (!avatarImage.isError()) {
-                            profileImageView.setImage(avatarImage);
-                        } else {
-                            loadDefaultAvatar();
-                        }
-                    } else {
-                        // Try to load from resources
-                        InputStream imageStream = getClass().getResourceAsStream("/images/" + imageUrl);
-                        if (imageStream != null) {
-                            Image avatarImage = new Image(imageStream);
-                            profileImageView.setImage(avatarImage);
-                        } else {
-                            loadDefaultAvatar();
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("Error loading profile image: " + e.getMessage());
-                    loadDefaultAvatar();
-                }
-            } else {
-                loadDefaultAvatar();
-            }
+            // Load profile image
+            loadProfileImage();
             
             // Update verification status
             if ("1".equals(currentUser.getVerified())) {
@@ -159,18 +134,30 @@ public class ProfileController implements Initializable {
 
         try {
             if (imageUrl != null && !imageUrl.isEmpty()) {
-                // Check if URL is valid
-                if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
-                    // If it's a local file path, try to load from resources
-                    imageUrl = "/images/" + imageUrl;
-                    System.out.println("Trying to load local image: " + imageUrl);
-                }
-
-                // Try to load the image
-                Image image = new Image(imageUrl);
-                if (!image.isError()) {
-                    profileImageView.setImage(image);
-                    return;
+                // Check if it's a default avatar (starts with A)
+                if (imageUrl.startsWith("A")) {
+                    // Load default avatar from Images folder
+                    InputStream imageStream = getClass().getResourceAsStream("/Images/" + imageUrl);
+                    if (imageStream != null) {
+                        Image image = new Image(imageStream);
+                        profileImageView.setImage(image);
+                        return;
+                    }
+                } else if (imageUrl.startsWith("ProfilesIMG/")) {
+                    // Load custom avatar from ProfilesIMG folder
+                    InputStream imageStream = getClass().getResourceAsStream("/" + imageUrl);
+                    if (imageStream != null) {
+                        Image image = new Image(imageStream);
+                        profileImageView.setImage(image);
+                        return;
+                    }
+                } else if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+                    // Handle URL
+                    Image image = new Image(imageUrl);
+                    if (!image.isError()) {
+                        profileImageView.setImage(image);
+                        return;
+                    }
                 }
             }
 
@@ -201,8 +188,88 @@ public class ProfileController implements Initializable {
     }
     
     private void handleChangeAvatar() {
-        // TODO: Implement avatar change functionality
-        System.out.println("Change avatar clicked");
+        try {
+            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+            fileChooser.setTitle("Select Profile Picture");
+            fileChooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+            );
+            
+            File selectedFile = fileChooser.showOpenDialog(profileContainer.getScene().getWindow());
+            if (selectedFile != null) {
+                // Validate file extension
+                String fileName = selectedFile.getName().toLowerCase();
+                if (!fileName.endsWith(".png") && !fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg")) {
+                    showAlert("Error", "Invalid image format. Please use PNG, JPG, or JPEG");
+                    return;
+                }
+                
+                // Try to load the image to validate it's a proper image file
+                try {
+                    Image image = new Image(selectedFile.toURI().toString());
+                    if (image.isError()) {
+                        showAlert("Error", "Invalid image file. Please select a valid image.");
+                        return;
+                    }
+                    
+                    // Copy the image to ProfilesIMG folder
+                    String newImagePath = copyImageToProfilesFolder(selectedFile);
+                    if (newImagePath == null) {
+                        showAlert("Error", "Failed to save the image. Please try again.");
+                        return;
+                    }
+                    
+                    // Update the user's image path
+                    currentUser.setImg(newImagePath);
+                    
+                    // Update the profile image view
+                    profileImageView.setImage(image);
+                    
+                    // Save changes to database
+                    userService.updateUser(currentUser);
+                    
+                    showAlert("Success", "Profile picture updated successfully!");
+                    
+                } catch (Exception e) {
+                    showAlert("Error", "Invalid image file. Please select a valid image.");
+                    System.err.println("Error loading custom image: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error in handleChangeAvatar: " + e.getMessage());
+            e.printStackTrace();
+            showAlert("Error", "Failed to change profile picture: " + e.getMessage());
+        }
+    }
+
+    private String copyImageToProfilesFolder(File sourceFile) {
+        try {
+            // Create ProfilesIMG directory if it doesn't exist
+            File profilesDir = new File("src/main/resources/ProfilesIMG");
+            if (!profilesDir.exists()) {
+                profilesDir.mkdirs();
+            }
+
+            // Generate a unique filename using UUID
+            String extension = sourceFile.getName().substring(sourceFile.getName().lastIndexOf("."));
+            String newFileName = UUID.randomUUID().toString() + extension;
+            File destinationFile = new File(profilesDir, newFileName);
+
+            // Copy the file
+            java.nio.file.Files.copy(
+                sourceFile.toPath(),
+                destinationFile.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            );
+
+            // Return the relative path to be stored in the database
+            return "ProfilesIMG/" + newFileName;
+        } catch (IOException e) {
+            System.err.println("Error copying image file: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
     
     private void handleSaveChanges() {

@@ -72,8 +72,6 @@ public class RegisterDialogController implements Initializable {
     
     // Step 5 controls
     @FXML
-    private ImageView selectedAvatarPreview;
-    @FXML
     private Button finishRegistrationButton;
     
     private Stage dialogStage;
@@ -217,6 +215,40 @@ public class RegisterDialogController implements Initializable {
     
     private void setupStep4() {
         // Setup avatar selection buttons
+        previousButton.setOnAction(e -> goToPreviousStep());
+        finishButton.setOnAction(e -> {
+            if (selectedAvatarPath == null) {
+                showError("Please select an avatar or upload your own image");
+                return;
+            }
+            
+            // Check if it's a default avatar (starts with A) or custom avatar
+            if (selectedAvatarPath.startsWith("A")) {
+                // Default avatar validation
+                String imagePath = "/Images/" + selectedAvatarPath;
+                try {
+                    // Check if the resource exists
+                    if (getClass().getResource(imagePath) == null) {
+                        showError("Selected image not found");
+                        return;
+                    }
+                } catch (Exception ex) {
+                    showError("Error validating default avatar");
+                    return;
+                }
+            } else {
+                // Custom avatar validation - check if the file exists in ProfilesIMG
+                File imageFile = new File("src/main/resources/" + selectedAvatarPath);
+                if (!imageFile.exists()) {
+                    showError("Selected image not found");
+                    return;
+                }
+            }
+            
+            // If all validations pass, proceed to next step
+            goToNextStep();
+        });
+        
         for (int i = 1; i <= 6; i++) {
             Button avatarButton = (Button) avatarContainer.lookup("#avatar" + i);
             if (avatarButton != null) {
@@ -243,45 +275,8 @@ public class RegisterDialogController implements Initializable {
     }
     
     private void setupStep5() {
-        System.out.println("Setting up Step 5 with avatar: " + selectedAvatarPath);
-        
-        // Set the selected avatar image in the preview
-        if (selectedAvatarPreview != null && selectedAvatarPath != null) {
-            try {
-                Image avatarImage = null;
-                
-                // Check if the avatar is a default avatar or a custom one
-                if (selectedAvatarPath.startsWith("A")) {
-                    // It's a default avatar from resources
-                    String imagePath = "/Images/" + selectedAvatarPath;
-                    System.out.println("Loading default avatar from: " + imagePath);
-                    avatarImage = new Image(getClass().getResourceAsStream(imagePath));
-                } else {
-                    // It's a custom avatar from file system
-                    File file = new File(selectedAvatarPath);
-                    if (file.exists()) {
-                        System.out.println("Loading custom avatar from: " + file.getAbsolutePath());
-                        avatarImage = new Image(file.toURI().toString());
-                    } else {
-                        System.out.println("Custom avatar file not found: " + selectedAvatarPath);
-                        // Fallback to default avatar
-                        avatarImage = new Image(getClass().getResourceAsStream("/Images/A1.png"));
-                    }
-                }
-                
-                if (avatarImage != null) {
-                    selectedAvatarPreview.setImage(avatarImage);
-                    System.out.println("Avatar image set successfully");
-                } else {
-                    System.out.println("Failed to load avatar image");
-                }
-            } catch (Exception e) {
-                System.out.println("Error loading avatar preview: " + e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("selectedAvatarPreview or selectedAvatarPath is null");
-        }
+        System.out.println("===== SETUP STEP 5 DEBUG =====");
+        System.out.println("Selected Avatar Path: " + selectedAvatarPath);
         
         if (finishRegistrationButton != null) {
             finishRegistrationButton.setOnAction(e -> {
@@ -403,23 +398,71 @@ public class RegisterDialogController implements Initializable {
         return isValid;
     }
     
+    private String copyImageToProfilesFolder(File sourceFile) {
+        try {
+            // Create ProfilesIMG directory if it doesn't exist
+            File profilesDir = new File("src/main/resources/ProfilesIMG");
+            if (!profilesDir.exists()) {
+                profilesDir.mkdirs();
+            }
+
+            // Generate a unique filename using UUID
+            String extension = sourceFile.getName().substring(sourceFile.getName().lastIndexOf("."));
+            String newFileName = UUID.randomUUID().toString() + extension;
+            File destinationFile = new File(profilesDir, newFileName);
+
+            // Copy the file
+            java.nio.file.Files.copy(
+                sourceFile.toPath(),
+                destinationFile.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+            );
+
+            // Return the relative path to be stored in the database
+            return "ProfilesIMG/" + newFileName;
+        } catch (IOException e) {
+            System.err.println("Error copying image file: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private void uploadCustomAvatar() {
         System.out.println("Opening file chooser for custom avatar");
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Select Avatar Image");
             fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
             );
             
             File selectedFile = fileChooser.showOpenDialog(dialogStage);
             if (selectedFile != null) {
-                selectedAvatarPath = selectedFile.getAbsolutePath();
-                System.out.println("Custom avatar selected: " + selectedAvatarPath);
+                // Validate file extension
+                String fileName = selectedFile.getName().toLowerCase();
+                if (!fileName.endsWith(".png") && !fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg")) {
+                    showError("Invalid image format. Please use PNG, JPG, or JPEG");
+                    return;
+                }
                 
-                // Create and display a preview of the selected image
+                // Try to load the image to validate it's a proper image file
                 try {
                     Image image = new Image(selectedFile.toURI().toString());
+                    if (image.isError()) {
+                        showError("Invalid image file. Please select a valid image.");
+                        return;
+                    }
+                    
+                    // Copy the image to ProfilesIMG folder and get the new path
+                    String newImagePath = copyImageToProfilesFolder(selectedFile);
+                    if (newImagePath == null) {
+                        showError("Failed to save the image. Please try again.");
+                        return;
+                    }
+                    
+                    System.out.println("Setting selectedAvatarPath to: " + newImagePath);
+                    this.selectedAvatarPath = newImagePath;
+                    registrationData.setImg(newImagePath);
                     
                     // Create a new avatar button to display the custom image
                     ImageView imageView = new ImageView(image);
@@ -464,25 +507,19 @@ public class RegisterDialogController implements Initializable {
                     
                     // Add event handler to the custom button
                     customButton.setOnAction(e -> {
-                        selectedAvatarPath = selectedFile.getAbsolutePath();
+                        System.out.println("Custom button clicked, setting path to: " + newImagePath);
+                        this.selectedAvatarPath = newImagePath;
+                        registrationData.setImg(newImagePath);
                         highlightSelectedAvatar(customButton);
                     });
                     
                     // Show a success message
                     System.out.println("Custom avatar added successfully: " + buttonAdded);
                     
-                    // Auto-select the custom avatar
-                    selectedAvatarPath = selectedFile.getAbsolutePath();
                 } catch (Exception e) {
+                    showError("Invalid image file. Please select a valid image.");
                     System.out.println("Error loading custom image: " + e.getMessage());
                     e.printStackTrace();
-                    
-                    // Show error alert
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Image Upload Error");
-                    alert.setContentText("Could not load the selected image: " + e.getMessage());
-                    alert.showAndWait();
                 }
             } else {
                 System.out.println("No file selected for custom avatar");
@@ -581,7 +618,6 @@ public class RegisterDialogController implements Initializable {
             
             // Ensure we have the avatar path set
             if (selectedAvatarPath == null || selectedAvatarPath.isEmpty()) {
-                // Set default avatar if none selected
                 selectedAvatarPath = "A1.png";
             }
             
@@ -628,17 +664,13 @@ public class RegisterDialogController implements Initializable {
 
     @FXML
     public void handleNextStep() {
-        System.out.println("=============================================");
-        System.out.println("handleNextStep called directly from FXML");
-        System.out.println("Current step: " + currentStep);
-        System.out.println("Selected avatar: " + selectedAvatarPath);
-        System.out.println("=============================================");
-        
         try {
             // Make sure we have a selected avatar
             if (selectedAvatarPath == null || selectedAvatarPath.isEmpty()) {
                 selectedAvatarPath = "A1.png"; // Default avatar
                 System.out.println("Using default avatar: " + selectedAvatarPath);
+            } else {
+                System.out.println("Using selected avatar: " + selectedAvatarPath);
             }
             
             // Save the selected avatar
@@ -662,27 +694,33 @@ public class RegisterDialogController implements Initializable {
     
     // Direct method to go to step 5
     private void goToStep5Directly() {
-        System.out.println("Going to step 5 directly with avatar: " + selectedAvatarPath);
+        System.out.println("===== GO TO STEP 5 DIRECTLY DEBUG =====");
+        System.out.println("Current avatar path before transition: " + selectedAvatarPath);
+        
         try {
-            // Save the avatar selection
-            if (selectedAvatarPath == null || selectedAvatarPath.isEmpty()) {
-                selectedAvatarPath = "A1.png"; // Default avatar
-                System.out.println("Using default avatar in goToStep5Directly: " + selectedAvatarPath);
-            }
-            registrationData.setImg(selectedAvatarPath);
+            // Store the current avatar path
+            String currentAvatarPath = selectedAvatarPath;
+            System.out.println("Storing current avatar path: " + currentAvatarPath);
             
             // Manually load step 5
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/RegisterDialogStep5.fxml"));
             Parent root = loader.load();
             
             RegisterDialogController controller = loader.getController();
+            
+            // Set all necessary data
             controller.setDialogStage(dialogStage);
             controller.currentStep = 5;
             controller.registrationData = this.registrationData;
             controller.selectedUserType = this.selectedUserType;
-            controller.selectedAvatarPath = this.selectedAvatarPath;
+            controller.selectedAvatarPath = currentAvatarPath;
             
-            System.out.println("Transferred avatar path to new controller: " + this.selectedAvatarPath);
+            // Update the registration data with the current avatar path
+            if (currentAvatarPath != null && !currentAvatarPath.isEmpty()) {
+                controller.registrationData.setImg(currentAvatarPath);
+            }
+            
+            System.out.println("Transferred avatar path to new controller: " + currentAvatarPath);
             
             // Pass overlay reference to the next controller
             if (this.overlay != null && this.mainContainer != null) {
@@ -695,8 +733,8 @@ public class RegisterDialogController implements Initializable {
             // Re-center dialog
             Stage primaryStage = (Stage) dialogStage.getOwner();
             if (primaryStage != null) {
-                double dialogWidth = 500; // Width from FXML
-                double dialogHeight = 460; // Height from FXML
+                double dialogWidth = 500;
+                double dialogHeight = 460;
                 double centerX = primaryStage.getX() + (primaryStage.getWidth() / 2) - (dialogWidth / 2);
                 double centerY = primaryStage.getY() + (primaryStage.getHeight() / 2) - (dialogHeight / 2);
                 
@@ -713,5 +751,13 @@ public class RegisterDialogController implements Initializable {
             alert.setContentText("Error details: " + ex.getMessage());
             alert.showAndWait();
         }
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Validation Error");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 } 

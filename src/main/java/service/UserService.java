@@ -27,8 +27,15 @@ public class UserService {
                 connection = utils.DataSource.getInstance().getConnection();
             }
             
-            String query = "INSERT INTO user (name, email, date_of_birth, password, img, type, phone, rate, score, bio, verified, google_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, 0, 0.0, 0, 'Vous n''avez pas encore de bio', 0, NULL)";
+            // Handle default avatar path
+            String imagePath = user.getImg();
+            if (imagePath == null || imagePath.isEmpty() || imagePath.startsWith("A")) {
+                // If it's a default avatar (starts with A), keep it as is
+                imagePath = imagePath != null ? imagePath : "A1.png";
+            }
+            
+            String query = "INSERT INTO user (name, email, date_of_birth, password, img, type, phone, rate, score, bio, verified, google_id,warnings) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, 0, 0.0, 0, 'Vous n''avez pas encore de bio', 0, NULL,0)";
             
             System.out.println("Preparing statement with query: " + query);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -37,7 +44,7 @@ public class UserService {
             preparedStatement.setString(2, user.getEmail());
             preparedStatement.setDate(3, new java.sql.Date(user.getDate_of_birth().getTime()));
             preparedStatement.setString(4, user.getPassword());
-            preparedStatement.setString(5, user.getImg());
+            preparedStatement.setString(5, imagePath);
             preparedStatement.setString(6, user.getType());
             
             System.out.println("User data being inserted:");
@@ -45,7 +52,7 @@ public class UserService {
             System.out.println("- Email: " + user.getEmail());
             System.out.println("- Birth Date: " + user.getDate_of_birth());
             System.out.println("- Password: " + (user.getPassword() != null ? "[SECURE]" : "null"));
-            System.out.println("- Image: " + user.getImg());
+            System.out.println("- Image: " + imagePath);
             System.out.println("- Type: " + user.getType());
             
             System.out.println("Executing insert statement...");

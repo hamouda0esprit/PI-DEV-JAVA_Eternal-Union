@@ -51,7 +51,7 @@
                            <children>
                               <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../Images/teachi.png" />
+                                    <Image url="@../Images/book.png" />
                                  </image>
                               </ImageView>
                               <Label text="TEACH" textAlignment="CENTER" styleClass="role-text" />
@@ -66,7 +66,7 @@
                            <children>
                               <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../Images/mo.png" />
+                                    <Image url="@../Images/learni.png" />
                                  </image>
                               </ImageView>
                               <Label text="LEARN" textAlignment="CENTER" styleClass="role-text" />

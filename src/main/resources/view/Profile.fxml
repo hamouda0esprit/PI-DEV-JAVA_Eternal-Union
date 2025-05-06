@@ -1,203 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="800.0" prefWidth="1000.0" styleClass="profile-container" stylesheets="@../styles/login.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ProfileController">
+<BorderPane prefHeight="800.0" prefWidth="1200.0" styleClass="profile-container" stylesheets="@../styles/login.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ProfileController">
     <center>
         <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
             <content>
-                <VBox alignment="TOP_CENTER" spacing="25.0" style="-fx-background-color: white;">
-                    <children>
-                        <VBox alignment="CENTER" spacing="10.0">
-                            <children>
-                                <Label text="Profile Picture" textAlignment="CENTER">
-                                    <font>
-                                        <Font name="System Bold" size="18.0" />
-                                    </font>
-                                </Label>
-                                <HBox alignment="CENTER_LEFT" spacing="10">
-                                    <children>
-                                        <ImageView fx:id="profileImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../images/default-avatar.png" />
-                                            </image>
-                                        </ImageView>
-                                        <VBox>
-                                            <children>
-                                                <Label fx:id="verificationStatusLabel" text="Not Verified" style="-fx-text-fill: red;" />
-                                                <Button fx:id="changeAvatarButton" mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Change Avatar">
-                                                    <font>
-                                                        <Font size="14.0" />
-                                                    </font>
-                                                </Button>
-                                            </children>
-                                        </VBox>
-                                    </children>
-                                </HBox>
-                            </children>
+                <VBox alignment="TOP_CENTER" spacing="30.0" styleClass="profile-content">
+                    <!-- Profile Header Section -->
+                    <VBox alignment="CENTER" spacing="20.0" styleClass="profile-header">
+                        <ImageView fx:id="profileImageView" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" styleClass="profile-image">
+                            <image>
+                                <Image url="@../images/default-avatar.png" />
+                            </image>
+                        </ImageView>
+                        <VBox alignment="CENTER" spacing="5.0">
+                            <Label fx:id="verificationStatusLabel" text="Not Verified" styleClass="verification-label" />
+                            <Button fx:id="changeAvatarButton" mnemonicParsing="false" styleClass="btn-upload" text="Change Profile Picture" />
                         </VBox>
-                        
-                        <VBox alignment="CENTER" spacing="10.0" styleClass="profile-section">
-                            <children>
-                                <Label text="Personal Information" textAlignment="CENTER">
-                                    <font>
-                                        <Font name="System Bold" size="18.0" />
-                                    </font>
-                                </Label>
+                    </VBox>
+
+                    <!-- Main Content Section -->
+                    <HBox alignment="CENTER" spacing="30.0" styleClass="profile-main-content">
+                        <!-- Left Column -->
+                        <VBox spacing="20.0" styleClass="profile-section" prefWidth="500">
+                            <Label text="Personal Information" styleClass="section-title" />
+                            
+                            <VBox spacing="15.0">
+                                <VBox spacing="5.0">
+                                    <Label text="Full Name" styleClass="field-label" />
+                                    <TextField fx:id="nameField" styleClass="profile-field" promptText="Enter your full name" />
+                                </VBox>
                                 
-                                <HBox alignment="CENTER" spacing="10.0">
-                                    <children>
-                                        <VBox alignment="CENTER_LEFT" prefWidth="120.0">
-                                            <children>
-                                                <Label text="Full Name:">
-                                                    <font>
-                                                        <Font size="14.0" />
-                                                    </font>
-                                                </Label>
-                                            </children>
-                                        </VBox>
-                                        <TextField fx:id="nameField" prefHeight="35.0" prefWidth="300.0" promptText="Enter your full name" />
-                                    </children>
-                                </HBox>
+                                <VBox spacing="5.0">
+                                    <Label text="Email" styleClass="field-label" />
+                                    <TextField fx:id="emailField" styleClass="profile-field" promptText="Enter your email" />
+                                </VBox>
                                 
-                                <HBox alignment="CENTER" spacing="10.0">
-                                    <children>
-                                        <VBox alignment="CENTER_LEFT" prefWidth="120.0">
-                                            <children>
-                                                <Label text="Email:">
-                                                    <font>
-                                                        <Font size="14.0" />
-                                                    </font>
-                                                </Label>
-                                            </children>
-                                        </VBox>
-                                        <TextField fx:id="emailField" prefHeight="35.0" prefWidth="300.0" promptText="Enter your email" />
-                                    </children>
-                                </HBox>
-                            </children>
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
+                                <VBox spacing="5.0">
+                                    <Label text="Bio" styleClass="field-label" />
+                                    <TextArea fx:id="bioTextArea" prefHeight="120.0" styleClass="profile-textarea" promptText="Tell us about yourself..." wrapText="true" />
+                                </VBox>
+                            </VBox>
                         </VBox>
-                        
-                        <VBox alignment="CENTER" spacing="10.0" styleClass="profile-section">
-                            <children>
-                                <Label text="Bio" textAlignment="CENTER">
-                                    <font>
-                                        <Font name="System Bold" size="18.0" />
-                                    </font>
-                                </Label>
+
+                        <!-- Right Column -->
+                        <VBox spacing="20.0" styleClass="profile-section" prefWidth="500">
+                            <Label text="Security Settings" styleClass="section-title" />
+                            
+                            <VBox spacing="15.0">
+                                <VBox spacing="5.0">
+                                    <Label text="Current Password" styleClass="field-label" />
+                                    <PasswordField fx:id="currentPasswordField" styleClass="profile-field" promptText="Enter current password" />
+                                </VBox>
                                 
-                                <TextArea fx:id="bioTextArea" prefHeight="120.0" prefWidth="450.0" promptText="Tell us about yourself..." wrapText="true" />
-                            </children>
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
+                                <VBox spacing="5.0">
+                                    <Label text="New Password" styleClass="field-label" />
+                                    <PasswordField fx:id="newPasswordField" styleClass="profile-field" promptText="Enter new password" />
+                                </VBox>
+                                
+                                <VBox spacing="5.0">
+                                    <Label text="Confirm New Password" styleClass="field-label" />
+                                    <PasswordField fx:id="confirmPasswordField" styleClass="profile-field" promptText="Confirm new password" />
+                                </VBox>
+                                
+                                <Label fx:id="passwordErrorLabel" styleClass="error-label" visible="false" />
+                            </VBox>
                         </VBox>
-                        
-                        <VBox alignment="CENTER" spacing="10.0" styleClass="profile-section">
-                            <children>
-                                <Label text="Change Password" textAlignment="CENTER">
-                                    <font>
-                                        <Font name="System Bold" size="18.0" />
-                                    </font>
-                                </Label>
-                                
-                                <HBox alignment="CENTER" spacing="10.0">
-                                    <children>
-                                        <VBox alignment="CENTER_LEFT" prefWidth="180.0">
-                                            <children>
-                                                <Label text="Current Password:">
-                                                    <font>
-                                                        <Font size="14.0" />
-                                                    </font>
-                                                </Label>
-                                            </children>
-                                        </VBox>
-                                        <PasswordField fx:id="currentPasswordField" prefHeight="35.0" prefWidth="300.0" promptText="Enter current password" />
-                                    </children>
-                                </HBox>
-                                
-                                <HBox alignment="CENTER" spacing="10.0">
-                                    <children>
-                                        <VBox alignment="CENTER_LEFT" prefWidth="180.0">
-                                            <children>
-                                                <Label text="New Password:">
-                                                    <font>
-                                                        <Font size="14.0" />
-                                                    </font>
-                                                </Label>
-                                            </children>
-                                        </VBox>
-                                        <PasswordField fx:id="newPasswordField" prefHeight="35.0" prefWidth="300.0" promptText="Enter new password" />
-                                    </children>
-                                </HBox>
-                                
-                                <HBox alignment="CENTER" spacing="10.0">
-                                    <children>
-                                        <VBox alignment="CENTER_LEFT" prefWidth="180.0">
-                                            <children>
-                                                <Label text="Confirm New Password:">
-                                                    <font>
-                                                        <Font size="14.0" />
-                                                    </font>
-                                                </Label>
-                                            </children>
-                                        </VBox>
-                                        <PasswordField fx:id="confirmPasswordField" prefHeight="35.0" prefWidth="300.0" promptText="Confirm new password" />
-                                    </children>
-                                </HBox>
-                                
-                                <Label fx:id="passwordErrorLabel" textFill="RED" visible="false" />
-                            </children>
-                            <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                            </padding>
-                        </VBox>
-                        
-                        <HBox alignment="CENTER" spacing="20.0">
-                            <children>
-                                <Button fx:id="backButton" mnemonicParsing="false" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Back">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Button>
-                                <Button fx:id="saveButton" mnemonicParsing="false" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" text="Save Changes">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Button>
-                                <Button fx:id="cancelButton" mnemonicParsing="false" style="-fx-background-color: #95a5a6; -fx-text-fill: white;" text="Cancel">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Button>
-                                <Button fx:id="logoutButton" mnemonicParsing="false" style="-fx-background-color: #34495e; -fx-text-fill: white;" text="Logout">
-                                    <font>
-                                        <Font size="14.0" />
-                                    </font>
-                                </Button>
-                            </children>
-                            <VBox.margin>
-                                <Insets bottom="30.0" top="10.0" />
-                            </VBox.margin>
-                        </HBox>
-                    </children>
-                    <padding>
-                        <Insets bottom="20.0" left="150.0" right="150.0" top="30.0" />
-                    </padding>
+                    </HBox>
+
+                    <!-- Action Buttons -->
+                    <HBox alignment="CENTER" spacing="20.0" styleClass="profile-actions">
+                        <Button fx:id="backButton" mnemonicParsing="false" styleClass="btn-secondary" text="Back" />
+                        <Button fx:id="saveButton" mnemonicParsing="false" styleClass="btn-primary" text="Save Changes" />
+                        <Button fx:id="cancelButton" mnemonicParsing="false" styleClass="btn-secondary" text="Cancel" />
+                        <Button fx:id="logoutButton" mnemonicParsing="false" styleClass="btn-danger" text="Logout" />
+                    </HBox>
                 </VBox>
             </content>
         </ScrollPane>

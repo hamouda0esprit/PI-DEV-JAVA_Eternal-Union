@@ -4,15 +4,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import service.UserService;
-import entite.User;
-
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.UUID;
 
-import Controllers.IconsLoader;
 import Controllers.LoginController;
 import utils.DataSource;
 
@@ -48,7 +41,7 @@ public class main extends Application {
             
             // Load icons
             System.out.println("Loading icons...");
-            IconsLoader.loadIcons();
+
             
             // Launch the application
             System.out.println("Starting application...");
