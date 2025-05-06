@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="700" prefWidth="1000" style="-fx-background-color: #42a5f5;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ExamenController">
+   <children>
+      <fx:include source="Navbar.fxml"/>
+      
+      <VBox spacing="20" AnchorPane.topAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+         <padding>
+            <Insets left="50.0" right="50.0" bottom="30.0"/>
+         </padding>
+         <children>
+            <VBox style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
+               <padding>
+                  <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
+               </padding>
+               <children>
+                  <Label text="Ajouter un examen" style="-fx-text-fill: #333333;">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="30.0" />
+                     </VBox.margin>
+                  </Label>
+                  
+                  <Label text="MATIÈRE" style="-fx-text-fill: #555555;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="matiereField" promptText="Entrez la matière">
+                     <VBox.margin>
+                        <Insets bottom="15.0" />
+                     </VBox.margin>
+                  </TextField>
+                  
+                  <Label text="TITRE" style="-fx-text-fill: #555555;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="titreField" promptText="Entrez le titre">
+                     <VBox.margin>
+                        <Insets bottom="15.0" />
+                     </VBox.margin>
+                  </TextField>
+                  
+                  <Label text="DESCRIPTION" style="-fx-text-fill: #555555;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextArea fx:id="descriptionArea" prefHeight="60.0" promptText="Entrez la description" wrapText="true">
+                     <VBox.margin>
+                        <Insets bottom="15.0" />
+                     </VBox.margin>
+                  </TextArea>
+                  
+                  <Label text="DATE" style="-fx-text-fill: #555555;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <DatePicker fx:id="datePicker" prefWidth="Infinity" promptText="jj/mm/aaaa">
+                     <VBox.margin>
+                        <Insets bottom="15.0" />
+                     </VBox.margin>
+                  </DatePicker>
+                  
+                  <Label text="DURÉE EN MINUTES" style="-fx-text-fill: #555555;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="dureeField" promptText="Entrez la durée en minutes">
+                     <VBox.margin>
+                        <Insets bottom="15.0" />
+                     </VBox.margin>
+                  </TextField>
+                  
+                  <Label text="VOULEZ-VOUS CRÉER UN EXAMEN DE QUEL TYPE ?" style="-fx-text-fill: #555555;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <ComboBox fx:id="typeComboBox" prefWidth="Infinity" promptText="Test">
+                     <VBox.margin>
+                        <Insets bottom="15.0" />
+                     </VBox.margin>
+                  </ComboBox>
+                  
+                  <Label text="NBR ESSAI" style="-fx-text-fill: #555555;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="nbrEssaiField" promptText="Entrez le nombre d'essais">
+                     <VBox.margin>
+                        <Insets bottom="25.0" />
+                     </VBox.margin>
+                  </TextField>
+                  
+                  <HBox alignment="CENTER" spacing="20">
+                     <Button fx:id="submitButton" onAction="#handleSubmit" text="Suivant" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="120" prefHeight="35">
+                        <font>
+                           <Font name="System Bold" size="14.0" />
+                        </font>
+                     </Button>
+                     <Button fx:id="retourAccueilButton" onAction="#handleRetourAccueil" text="Annuler" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;" prefWidth="120" prefHeight="35">
+                        <font>
+                           <Font name="System Bold" size="14.0" />
+                        </font>
+                     </Button>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.media.MediaView?>
+
+<BorderPane prefHeight="675.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.Forum.ForumListController">
+    <!-- Top Navigation Bar -->
+    <top>
+        <fx:include source="Navbar.fxml" />
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <BorderPane style="-fx-background-color: #54a2e0; -fx-padding: 20;">
+            <!-- Forum Title and Search -->
+            <top>
+                <HBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;">
+                    <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #54a2e0;" text="FORUM" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <HBox>
+                        <ImageView fitHeight="16" fitWidth="16">
+                            <!--<Image url="@/images/search.png"/>-->
+                        </ImageView>
+                        <TextField fx:id="searchField" onKeyReleased="#handleSearch" prefWidth="300" promptText="Rechercher des discussions..." />
+                    </HBox>
+                </HBox>
+            </top>
+
+            <center>
+                <HBox spacing="15">
+                    <!-- Left Sidebar -->
+                    <VBox prefWidth="200" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;">
+                        <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #54a2e0;" text="Sujets" />
+
+                        <Button maxWidth="Infinity" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" styleClass="sidebar-button" text="Tous les sujets" />
+
+                        <Button maxWidth="Infinity" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" styleClass="sidebar-button" text="Questions" />
+
+                        <Button maxWidth="Infinity" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" styleClass="sidebar-button" text="Discussions" />
+
+                        <Button maxWidth="Infinity" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" styleClass="sidebar-button" text="Aide" />
+                        <HBox.margin>
+                            <Insets top="20.0" />
+                        </HBox.margin>
+                    </VBox>
+
+                    <!-- Main Forum Content - Now with ScrollPane to accommodate multiple posts -->
+                    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" HBox.hgrow="ALWAYS">
+                        <VBox fx:id="forumPostsContainer" spacing="15" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;">
+                            <!-- Forum posts will be added here dynamically -->
+                            <VBox fx:id="mediaContainer" alignment="CENTER">
+                                <StackPane>
+                                    <ImageView fx:id="forumImage"
+                                           fitWidth="700"
+                                           fitHeight="300"
+                                           preserveRatio="true"
+                                           style="-fx-background-color: #f5f5f5;">
+                                        <VBox.margin>
+                                            <Insets top="10" bottom="10" />
+                                        </VBox.margin>
+                                    </ImageView>
+                                    <MediaView fx:id="forumVideo"
+                                           fitWidth="700"
+                                           fitHeight="300"
+                                           preserveRatio="true"
+                                           visible="false">
+                                        <VBox.margin>
+                                            <Insets top="10" bottom="10" />
+                                        </VBox.margin>
+                                    </MediaView>
+                                </StackPane>
+                                <HBox fx:id="videoControls" 
+                                      alignment="CENTER" 
+                                      spacing="10" 
+                                      style="-fx-background-color: #f5f5f5; -fx-padding: 10; -fx-background-radius: 5;"
+                                      visible="false">
+                                    <Button fx:id="playButton" 
+                                           style="-fx-background-color: #42a5f5; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 5 15; -fx-font-weight: bold;"
+                                           text="▶" />
+                                    <Button fx:id="pauseButton" 
+                                           style="-fx-background-color: #42a5f5; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 5 15; -fx-font-weight: bold;"
+                                           text="⏸" />
+                                    <Button fx:id="stopButton" 
+                                           style="-fx-background-color: #42a5f5; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 5 15; -fx-font-weight: bold;"
+                                           text="⏹" />
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                        <HBox.margin>
+                            <Insets top="20.0" />
+                        </HBox.margin>
+                    </ScrollPane>
+                    <!-- Right Sidebar -->
+                    <VBox alignment="CENTER" prefWidth="250" spacing="15" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;">
+                        <Label prefHeight="205.0" prefWidth="220.0" text="C'est un espace pour quand vous n'arrivez pas à trouver la bonne réponse." textAlignment="CENTER" wrapText="true" />
+
+                        <Separator />
+
+                        <Label prefHeight="214.0" prefWidth="220.0" text="Ici, vous pouvez demander de l'aide ou assister d'autres personnes si possible." textAlignment="CENTER" wrapText="true" />
+                        <HBox.margin>
+                            <Insets top="20.0" />
+                        </HBox.margin>
+                    </VBox>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
+                </HBox>
+            </center>
+
+            <!-- Bottom Action Button -->
+            <bottom>
+                <VBox spacing="10">
+                    <!-- Pagination Controls -->
+                    <HBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 10;">
+                        <Button fx:id="prevPageButton" onAction="#handlePreviousPage" style="-fx-background-color: #54a2e0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 8 15;" text="Previous">
+                            <HBox.margin>
+                                <Insets right="5" />
+                            </HBox.margin>
+                        </Button>
+                        <Label fx:id="pageInfoLabel" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #54a2e0;" text="Page 1 of 1" />
+                        <Button fx:id="nextPageButton" onAction="#handleNextPage" style="-fx-background-color: #54a2e0; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 8 15;" text="Next">
+                            <HBox.margin>
+                                <Insets left="5" />
+                            </HBox.margin>
+                        </Button>
+                  <VBox.margin>
+                     <Insets />
+                  </VBox.margin>
+                    </HBox>
+                    
+                    <HBox style="-fx-padding: 15;">
+                        <Button fx:id="ViewForumButton" onAction="#HandleViewForum" style="-fx-background-color: white; -fx-background-radius: 50;" text="📚"/>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <Button fx:id="AddForumButton" onAction="#HandleAddForum" style="-fx-background-color: white; -fx-background-radius: 50;" text="➕"/>
+                    </HBox>
+                </VBox>
+            </bottom>
+        </BorderPane>
+    </center>
+
+</BorderPane>

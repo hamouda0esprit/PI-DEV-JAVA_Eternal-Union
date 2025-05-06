@@ -31,12 +31,12 @@ public class AdminSidebarController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Initialize the list of navigation buttons
         navButtons = Arrays.asList(
-                dashboardButton, usersButton, forumsButton,
-                eventsButton, examsButton, coursesButton
+            dashboardButton, usersButton, forumsButton,
+            eventsButton, examsButton, coursesButton
         );
 
         navigationState = AdminNavigationStateManager.getInstance();
-
+        
         // Listen for changes in the current view
         navigationState.currentViewProperty().addListener((observable, oldValue, newValue) -> {
             updateActiveButton(newValue);
@@ -84,32 +84,32 @@ public class AdminSidebarController implements Initializable {
             navigationState.setCurrentView("Dashboard");
             navigateTo("Dashboard");
         });
-
+        
         usersButton.setOnAction(e -> {
             navigationState.setCurrentView("Users");
             navigateTo("Users");
         });
-
+        
         forumsButton.setOnAction(e -> {
             navigationState.setCurrentView("Forum");
             navigateTo("Forum");
         });
-
+        
         eventsButton.setOnAction(e -> {
             navigationState.setCurrentView("Evenement");
             navigateTo("Evenement");
         });
-
+        
         examsButton.setOnAction(e -> {
             navigationState.setCurrentView("Exams");
             navigateTo("Panel");
         });
-
+        
         coursesButton.setOnAction(e -> {
             navigationState.setCurrentView("Courses");
             navigateTo("/../../AdminCours");
         });
-
+        
         backButton.setOnAction(e -> {
             navButtons.forEach(button -> button.getStyleClass().remove("active"));
             returnToMainSite();
@@ -123,17 +123,17 @@ public class AdminSidebarController implements Initializable {
             Parent root = loader.load();
             Stage stage = (Stage) dashboardButton.getScene().getWindow();
             Scene scene = new Scene(root);
-
+            
             // Add the stylesheet
             String css = getClass().getResource("/styles/admin.css").toExternalForm();
             scene.getStylesheets().clear();
             scene.getStylesheets().add(css);
-
+            
             // Set the window icon
             Image icon = new Image(getClass().getResourceAsStream("/images/logo.png"));
             stage.getIcons().clear();
             stage.getIcons().add(icon);
-
+            
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -148,17 +148,17 @@ public class AdminSidebarController implements Initializable {
             Parent root = loader.load();
             Stage stage = (Stage) backButton.getScene().getWindow();
             Scene scene = new Scene(root);
-
+            
             // Add the stylesheet
             String css = getClass().getResource("/styles/style.css").toExternalForm();
             scene.getStylesheets().clear();
             scene.getStylesheets().add(css);
-
+            
             // Set the window icon
             Image icon = new Image(getClass().getResourceAsStream("/images/logo.png"));
             stage.getIcons().clear();
             stage.getIcons().add(icon);
-
+            
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -174,4 +174,4 @@ public class AdminSidebarController implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
-}
+} 

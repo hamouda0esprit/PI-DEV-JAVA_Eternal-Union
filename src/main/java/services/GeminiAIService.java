@@ -4,10 +4,10 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.google.gson.*;
+//import com.google.gson.*;
 
 public class GeminiAIService {
-    private static final String API_KEY = "AIzaSyDmQEcJ5FRVf7sOiQcdUVETwk_r1ACDQnY";
+ /*   private static final String API_KEY = "AIzaSyDmQEcJ5FRVf7sOiQcdUVETwk_r1ACDQnY";
     private static final String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" + API_KEY;
 
     public static String explainText(String inputText) throws IOException {
@@ -56,4 +56,5 @@ public class GeminiAIService {
         }
         return "No explanation received.";
     }
+    */
 }

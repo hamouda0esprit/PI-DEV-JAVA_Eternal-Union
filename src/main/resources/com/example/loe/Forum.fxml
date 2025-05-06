@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="675.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.Forum.ForumListController">
+    <!-- Top Navigation Bar -->
+    <top>
+        <VBox>
+            <!-- Top header with logo and user info -->
+            <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: white; -fx-padding: 10; -fx-border-color: #e0e0e0; -fx-border-width: 0 0 1 0;">
+                <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                    <Image url="@Images/logo.png" />
+                </ImageView>
+
+                <!-- Main Navigation -->
+                <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: white; -fx-padding: 5;">
+                    <Button styleClass="nav-button">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="5">
+                                <Label text="Accueil" />
+                            </HBox>
+                        </graphic>
+                        <style>-fx-background-color: transparent;</style>
+                    </Button>
+
+                    <Button styleClass="nav-button">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="5">
+                                <Label text="Cours" />
+                            </HBox>
+                        </graphic>
+                        <style>-fx-background-color: transparent;</style>
+                    </Button>
+
+                    <Button styleClass="nav-button">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="5">
+                                <Label text="Examen" />
+                            </HBox>
+                        </graphic>
+                        <style>-fx-background-color: transparent;</style>
+                    </Button>
+
+                    <Button styleClass="nav-button">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="5">
+                                <Label text="Événements" />
+                            </HBox>
+                        </graphic>
+                        <style>-fx-background-color: transparent;</style>
+                    </Button>
+
+                    <Button styleClass="nav-button-active">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="5">
+                                <Label style="-fx-text-fill: white;" text="Forum" />
+                            </HBox>
+                        </graphic>
+                        <style>-fx-background-color: #54a2e0; -fx-background-radius: 5;</style>
+                    </Button>
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <HBox alignment="CENTER_RIGHT" spacing="10">
+                    <Button styleClass="user-button">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="5">
+                                <ImageView fitHeight="30" fitWidth="30" preserveRatio="true">
+                                    <!--<Image url="@user.png"/>-->
+                                </ImageView>
+                                <Label text="AhmedAbid" />
+                                <Label style="-fx-text-fill: #888888;" text="#0" />
+                            </HBox>
+                        </graphic>
+                        <style>-fx-background-color: #54a2e0; -fx-text-fill: white; -fx-background-radius: 20;</style>
+                    </Button>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <BorderPane style="-fx-background-color: #54a2e0; -fx-padding: 20;">
+            <!-- Forum Title and Search -->
+            <top>
+                <HBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;">
+                    <Label style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #54a2e0;" text="FORUM" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <TextField prefWidth="300" promptText="Rechercher des discussions...">
+                        <ImageView fitHeight="16" fitWidth="16">
+                            <!--<Image url="@search.png"/>-->
+                        </ImageView>
+                    </TextField>
+                </HBox>
+            </top>
+
+            <center>
+                <HBox spacing="15">
+                    <!-- Left Sidebar -->
+                    <VBox prefWidth="200" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;">
+                        <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #54a2e0;" text="Sujets" />
+
+                        <Button maxWidth="Infinity" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" styleClass="sidebar-button" text="Tous les sujets" />
+
+                        <Button maxWidth="Infinity" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" styleClass="sidebar-button" text="Questions" />
+
+                        <Button maxWidth="Infinity" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" styleClass="sidebar-button" text="Discussions" />
+
+                        <Button maxWidth="Infinity" style="-fx-background-color: #f8f8f8; -fx-background-radius: 5; -fx-alignment: CENTER_LEFT; -fx-padding: 10;" styleClass="sidebar-button" text="Aide" />
+                        <HBox.margin>
+                            <Insets top="20.0" />
+                        </HBox.margin>
+                    </VBox>
+
+                    <!-- Main Forum Content - Now with ScrollPane to accommodate multiple posts -->
+                    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" HBox.hgrow="ALWAYS">
+                        <VBox fx:id="forumPostsContainer" spacing="15" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;">
+                            <!-- Forum posts will be added here dynamically -->
+                        </VBox>
+                        <HBox.margin>
+                            <Insets top="20.0" />
+                        </HBox.margin>
+                    </ScrollPane>
+
+                    <!-- Right Sidebar -->
+                    <VBox alignment="CENTER" prefWidth="250" spacing="15" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15;">
+                        <Label prefHeight="205.0" prefWidth="220.0" text="C'est un espace pour quand vous n'arrivez pas à trouver la bonne réponse." textAlignment="CENTER" wrapText="true" />
+
+                        <Separator />
+
+                        <Label prefHeight="214.0" prefWidth="220.0" text="Ici, vous pouvez demander de l'aide ou assister d'autres personnes si possible." textAlignment="CENTER" wrapText="true" />
+                        <HBox.margin>
+                            <Insets top="20.0" />
+                        </HBox.margin>
+                    </VBox>
+                </HBox>
+            </center>
+
+            <!-- Bottom Action Button -->
+            <bottom>
+                <HBox style="-fx-padding: 15;">
+                    <Button fx:id="ViewForumButton" onAction="#HandleViewForum" style="-fx-background-color: white; -fx-background-radius: 50;">
+                        <graphic>
+                            <ImageView fitHeight="24" fitWidth="24">
+                                <!--<Image url="@menu.png"/>-->
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <Button fx:id="AddForumButton" onAction="#HandleAddForum" style="-fx-background-color: white; -fx-background-radius: 50;">
+                        <graphic>
+                            <ImageView fitHeight="24" fitWidth="24">
+                                <!--<Image url="@chat.png"/>-->
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </bottom>
+        </BorderPane>
+    </center>
+
+    <!-- CSS Style -->
+    <stylesheets>
+        <URL value="@styles.css" />
+    </stylesheets>
+</BorderPane>

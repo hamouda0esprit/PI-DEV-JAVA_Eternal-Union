@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="590.0" prefWidth="895.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AfficherItemController">
+   <children>
+      <fx:include source="Navbar.fxml" />
+      <TableView fx:id="tableview" layoutX="47.0" layoutY="135.0" prefHeight="430.0" prefWidth="698.0">
+         <columns>
+            <TableColumn fx:id="idCol" prefWidth="43.0" text="id" />
+            <TableColumn fx:id="lessonIdCol" prefWidth="83.0" text="lesson_id" />
+            <TableColumn fx:id="typeCol" prefWidth="99.0" text="type_item" />
+            <TableColumn fx:id="contentCol" prefWidth="472.0" text="content" />
+         </columns>
+      </TableView>
+      <Text fill="#40a1e1" layoutX="47.0" layoutY="111.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Items" wrappingWidth="335.13671875">
+         <font>
+            <Font name="Arial" size="49.0" />
+         </font>
+      </Text>
+      <Button fx:id="addButton" layoutX="751.0" layoutY="95.0" mnemonicParsing="false" onAction="#showAddForm" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="ADD" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="142.0" mnemonicParsing="false" onAction="#handleUpdate" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="UPDATE" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="189.0" mnemonicParsing="false" onAction="#handleDelete" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="DELETE" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="236.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="PDF" textFill="#40a1e1" />
+      <Button layoutX="751.0" layoutY="284.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="135.0" style="-fx-border-color: #40a1e1; -fx-border-radius: 10px; -fx-background-color: transparent;" text="EXCEL" textFill="#40a1e1" />
+   </children>
+</AnchorPane>

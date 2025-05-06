@@ -27,4 +27,4 @@ public class AdminNavigationStateManager {
     public StringProperty currentViewProperty() {
         return currentView;
     }
-}
+} 

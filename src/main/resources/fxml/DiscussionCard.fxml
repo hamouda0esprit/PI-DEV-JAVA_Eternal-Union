@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="Controllers.DiscussionCardController"
+      spacing="10"
+      styleClass="discussion-card">
+    
+    <padding>
+        <Insets top="10" right="15" bottom="10" left="15"/>
+    </padding>
+    
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <ImageView fx:id="authorImageView" fitHeight="40" fitWidth="40" preserveRatio="true"/>
+        <VBox spacing="5">
+            <Label fx:id="authorLabel" styleClass="author-label"/>
+            <Label fx:id="timestampLabel" styleClass="timestamp-label"/>
+        </VBox>
+    </HBox>
+    
+    <Label fx:id="contentLabel" wrapText="true" styleClass="content-label"/>
+</VBox> 

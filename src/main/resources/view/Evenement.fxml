@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.EvenementController">
+    <!-- Include Navbar -->
+    <fx:include source="Navbar.fxml"/>
+    
+    <!-- View Toggle Buttons -->
+    <HBox alignment="CENTER" spacing="10" styleClass="view-toggle-container">
+        <padding>
+            <Insets top="10" bottom="10"/>
+        </padding>
+        <Button fx:id="calendarViewBtn" text="Calendar View" styleClass="view-toggle-button" onAction="#showCalendarView"/>
+        <Button fx:id="listViewBtn" text="Events List" styleClass="view-toggle-button" onAction="#showListView"/>
+    </HBox>
+    
+    <!-- Views Container -->
+    <StackPane VBox.vgrow="ALWAYS">
+        <!-- Calendar View -->
+        <HBox fx:id="calendarView" styleClass="main-container" visible="true" managed="true">
+            <!-- Calendar Section -->
+            <VBox spacing="20.0" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                </padding>
+                <children>
+                    <!-- Calendar Header -->
+                    <HBox alignment="CENTER" spacing="20">
+                        <Button styleClass="calendar-nav-button" text="&lt;" onAction="#previousMonth"/>
+                        <Label fx:id="monthYearLabel" styleClass="month-year-label" text="February 2024">
+                            <font>
+                                <Font name="System Bold" size="24.0"/>
+                            </font>
+                        </Label>
+                        <Button styleClass="calendar-nav-button" text="&gt;" onAction="#nextMonth"/>
+                    </HBox>
+                    
+                    <!-- Calendar Grid -->
+                    <GridPane fx:id="calendarGrid" styleClass="calendar-grid" alignment="CENTER" hgap="10" vgap="10">
+                        <!-- Day Headers -->
+                        <Label text="Sun" styleClass="day-header" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                        <Label text="Mon" styleClass="day-header" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <Label text="Tue" styleClass="day-header" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                        <Label text="Wed" styleClass="day-header" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                        <Label text="Thu" styleClass="day-header" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+                        <Label text="Fri" styleClass="day-header" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
+                        <Label text="Sat" styleClass="day-header" GridPane.columnIndex="6" GridPane.rowIndex="0"/>
+                    </GridPane>
+                </children>
+            </VBox>
+            
+            <!-- Sidebar - Upcoming Events -->
+            <VBox styleClass="sidebar" minWidth="300" maxWidth="300">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+                <children>
+                    <Label text="Upcoming Events" styleClass="sidebar-title">
+                        <font>
+                            <Font name="System Bold" size="18.0"/>
+                        </font>
+                    </Label>
+                    
+                    <ScrollPane fitToWidth="true" styleClass="sidebar-scroll" VBox.vgrow="ALWAYS">
+                        <VBox fx:id="upcomingEventsList" spacing="10" styleClass="upcoming-events-list">
+                            <!-- Events will be added here programmatically -->
+                        </VBox>
+                    </ScrollPane>
+                </children>
+            </VBox>
+        </HBox>
+        
+        <!-- Events List View -->
+        <ScrollPane fx:id="eventsListView" styleClass="events-list-view" visible="false" managed="false" fitToWidth="true">
+            <content>
+                <FlowPane fx:id="eventsGrid" styleClass="events-grid" hgap="30" vgap="30" alignment="CENTER">
+                    <padding>
+                        <Insets top="30" right="30" bottom="30" left="30"/>
+                    </padding>
+                    <style>
+                        -fx-background-color: #5B9BD5;
+                    </style>
+                </FlowPane>
+            </content>
+            <style>
+                -fx-background: #5B9BD5;
+                -fx-background-color: #5B9BD5;
+            </style>
+        </ScrollPane>
+    </StackPane>
+</VBox> 

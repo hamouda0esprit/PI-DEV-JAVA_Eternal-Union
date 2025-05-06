@@ -27,4 +27,4 @@ public class NavigationStateManager {
     public StringProperty currentViewProperty() {
         return currentView;
     }
-}
+} 

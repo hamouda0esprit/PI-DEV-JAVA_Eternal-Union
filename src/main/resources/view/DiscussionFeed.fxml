@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.String?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.DiscussionFeedController"
+      style="-fx-background-color: #f0f2f5;"
+      stylesheets="@../styles/discussion-feed.css">
+      
+    <!-- Event Header Section (like Facebook cover) -->
+    <VBox styleClass="event-header">
+        <!-- Event Cover Image -->
+        <ImageView fx:id="eventCoverImage" fitWidth="1200" fitHeight="300" 
+                   style="-fx-background-color: #e9ebee;">
+            <VBox.margin>
+                <Insets bottom="-50"/>
+            </VBox.margin>
+        </ImageView>
+        
+        <!-- Event Info Section (overlaps with image) -->
+        <VBox style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            
+            <Label fx:id="eventTitleLabel" styleClass="event-title">
+                <font>
+                    <Font name="System Bold" size="24.0"/>
+                </font>
+            </Label>
+            
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <Label fx:id="eventDateLabel" styleClass="event-info"/>
+                <Label fx:id="eventLocationLabel" styleClass="event-info"/>
+            </HBox>
+        </VBox>
+    </VBox>
+    
+    <!-- Main Content Area -->
+    <ScrollPane fitToWidth="true" style="-fx-background: #f0f2f5; -fx-background-color: #f0f2f5;">
+        <VBox spacing="20" style="-fx-padding: 20;">
+            <!-- Add Discussion Button -->
+            <Button fx:id="addDiscussionButton" onAction="#handleAddDiscussion"
+                    style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
+                <graphic>
+                    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10;">
+                        <Label text="+" style="-fx-font-size: 24; -fx-text-fill: #1877f2;"/>
+                        <Label text="Ajouter une discussion" style="-fx-font-size: 14;"/>
+                    </HBox>
+                </graphic>
+            </Button>
+            
+            <!-- Discussions Container -->
+            <VBox fx:id="discussionsContainer" spacing="15"/>
+        </VBox>
+    </ScrollPane>
+</VBox> 

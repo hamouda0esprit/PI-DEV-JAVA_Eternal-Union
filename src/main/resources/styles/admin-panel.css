@@ -1,0 +1,158 @@
+/* Styles généraux */
+.root {
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: #f5f5f5;
+}
+
+/* Styles du menu latéral */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #555;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 10 15;
+}
+
+.menu-button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.menu-button .icon {
+    -fx-background-color: #555;
+}
+
+.menu-button:hover .icon {
+    -fx-background-color: #2196F3;
+}
+
+/* Styles pour le tableau */
+.table-view {
+    -fx-background-color: white;
+    -fx-table-cell-border-color: transparent;
+    -fx-border-color: #e0e0e0;
+}
+
+.table-view .column-header {
+    -fx-background-color: #fafafa;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10px;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #555;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 5 0;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #fafafa;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+/* Boutons d'action dans le tableau */
+.action-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 5;
+}
+
+.view-button {
+    -fx-background-color: #2196F3;
+    -fx-background-radius: 3;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 4 8;
+    -fx-cursor: hand;
+}
+
+.edit-button {
+    -fx-background-color: #FFC107;
+    -fx-background-radius: 3;
+    -fx-padding: 4;
+    -fx-cursor: hand;
+}
+
+.delete-button {
+    -fx-background-color: #F44336;
+    -fx-background-radius: 3;
+    -fx-padding: 4;
+    -fx-cursor: hand;
+}
+
+.download-button {
+    -fx-background-color: #4CAF50;
+    -fx-background-radius: 3;
+    -fx-padding: 4;
+    -fx-cursor: hand;
+}
+
+/* Statut badges */
+.status-badge {
+    -fx-background-radius: 15;
+    -fx-text-fill: white;
+    -fx-padding: 3 8;
+    -fx-font-size: 12px;
+    -fx-alignment: center;
+}
+
+.status-completed {
+    -fx-background-color: #4CAF50;
+}
+
+.status-upcoming {
+    -fx-background-color: #F44336;
+}
+
+.status-planned {
+    -fx-background-color: #FF9800;
+}
+
+/* Buttons */
+.primary-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 15;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #45a049;
+}
+
+/* Icons */
+.icon-home {
+    -fx-shape: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z";
+}
+
+.icon-users {
+    -fx-shape: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z";
+}
+
+.icon-forums {
+    -fx-shape: "M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h2V4h6v4z";
+}
+
+.icon-courses {
+    -fx-shape: "M12 6.253v13h-8v-13h8zm2 0V4a2 2 0 00-2-2H4a2 2 0 00-2 2v15a2 2 0 002 2h8a2 2 0 002-2v-2.253h1V18a2 2 0 002-2v-8a2 2 0 00-2-2h-1z";
+}
+
+.icon-exams {
+    -fx-shape: "M9 2a1 1 0 000 2h2a1 1 0 100-2H9z M4 5a2 2 0 012-2 1 1 0 010 2H4z M4 7h10v10H4V7z";
+}
+
+.icon-events {
+    -fx-shape: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z";
+} 

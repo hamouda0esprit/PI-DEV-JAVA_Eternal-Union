@@ -185,7 +185,7 @@ public class AfficherItemStudentController implements Initializable {
         }
     }
 private void showExplanationPopup(String paragraph) {
-    Stage popupStage = new Stage();
+  /*  Stage popupStage = new Stage();
     popupStage.setTitle("AI Explanation");
 
     TextFlow explanationFlow = new TextFlow();
@@ -226,6 +226,8 @@ private void showExplanationPopup(String paragraph) {
             });
         }
     }).start();
+
+   */
 }
 
 
