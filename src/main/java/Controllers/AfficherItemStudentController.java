@@ -16,6 +16,9 @@ import java.io.IOException;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 
+import javafx.scene.control.ScrollPane;
+
+
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -181,45 +184,50 @@ public class AfficherItemStudentController implements Initializable {
             showAlert("Selection Error", "Please select an item to delete.");
         }
     }
+private void showExplanationPopup(String paragraph) {
+    Stage popupStage = new Stage();
+    popupStage.setTitle("AI Explanation");
 
-    private void showExplanationPopup(String paragraph) {
-        Stage popupStage = new Stage();
-        popupStage.setTitle("AI Explanation");
+    TextFlow explanationFlow = new TextFlow();
+    explanationFlow.setPrefWidth(480);
+    explanationFlow.setLineSpacing(5);
 
-        TextFlow explanationFlow = new TextFlow();
-        explanationFlow.setPrefWidth(400);
-        explanationFlow.setLineSpacing(5);
+    Text loading = new Text("Asking AI for explanation...");
+    explanationFlow.getChildren().add(loading);
 
-        Text loading = new Text("Asking AI for explanation...");
-        explanationFlow.getChildren().add(loading);
+    // Wrap in ScrollPane
+    ScrollPane scrollPane = new ScrollPane(explanationFlow);
+    scrollPane.setFitToWidth(true);
+    scrollPane.setPrefSize(500, 300);
 
-        StackPane root = new StackPane(explanationFlow);
-        Scene scene = new Scene(root, 500, 300);
-        popupStage.setScene(scene);
-        popupStage.show();
+    StackPane root = new StackPane(scrollPane);
+    Scene scene = new Scene(root, 500, 300);
+    popupStage.setScene(scene);
+    popupStage.show();
 
-        // Call Gemini in a background thread to avoid freezing UI
-        new Thread(() -> {
-            try {
-                String aiResponse = GeminiAIService.explainText(paragraph);
-                Text explanation = new Text(aiResponse);
-                explanation.setWrappingWidth(480);
+    // Call Gemini in a background thread to avoid freezing UI
+    new Thread(() -> {
+        try {
+            String aiResponse = GeminiAIService.explainText(paragraph);
+            Text explanation = new Text(aiResponse);
+            explanation.setWrappingWidth(460); // Adjust to fit inside ScrollPane
 
-                // Update UI on JavaFX Application Thread
-                javafx.application.Platform.runLater(() -> {
-                    explanationFlow.getChildren().clear();
-                    explanationFlow.getChildren().add(explanation);
-                });
+            // Update UI on JavaFX Application Thread
+            javafx.application.Platform.runLater(() -> {
+                explanationFlow.getChildren().clear();
+                explanationFlow.getChildren().add(explanation);
+            });
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                javafx.application.Platform.runLater(() -> {
-                    explanationFlow.getChildren().clear();
-                    explanationFlow.getChildren().add(new Text("Failed to get explanation from AI."));
-                });
-            }
-        }).start();
-    }
+        } catch (IOException e) {
+            e.printStackTrace();
+            javafx.application.Platform.runLater(() -> {
+                explanationFlow.getChildren().clear();
+                explanationFlow.getChildren().add(new Text("Failed to get explanation from AI."));
+            });
+        }
+    }).start();
+}
+
 
 
 }

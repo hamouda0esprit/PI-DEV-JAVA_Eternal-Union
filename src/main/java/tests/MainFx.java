@@ -17,7 +17,7 @@ public class MainFx extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherCoursEleve.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AdminCours.fxml"));
             Parent root = loader.load();
             Scene sc = new Scene(root);
             stage.setTitle("Liste des Cours");
