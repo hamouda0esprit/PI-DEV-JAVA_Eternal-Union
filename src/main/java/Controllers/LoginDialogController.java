@@ -3,16 +3,22 @@ package Controllers;
 import entite.User;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import service.UserService;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+
+import javafx.fxml.FXMLLoader;
 
 public class LoginDialogController implements Initializable {
     @FXML
@@ -72,33 +78,24 @@ public class LoginDialogController implements Initializable {
         try {
             // Verify credentials against database
             authenticatedUser = authenticateUser(email, password);
-            System.out.println(authenticatedUser.getWarnings());
-            if (authenticatedUser != null && authenticatedUser.getWarnings()<3) {
-                // Show success message
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Login Successful");
-                alert.setHeaderText("Welcome Back!");
-                alert.setContentText("You have successfully logged in to your account.");
-                alert.showAndWait();
-                
-                loginSuccessful = true;
-                closeDialog();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                if (authenticatedUser.getWarnings()>=3) {
-                    alert.setTitle("Login Failed");
-                    alert.setHeaderText("Account locked");
-                    alert.setContentText("Your account has been locked.");
-                    alert.showAndWait();
-                }else{
-                    // Show error message for invalid credentials
-
-                    alert.setTitle("Login Failed");
-                    alert.setHeaderText("Authentication Error");
-                    alert.setContentText("Invalid email or password. Please try again.");
-                    alert.showAndWait();
+            
+            if (authenticatedUser != null) {
+                // Check verification status
+                if (!"1".equals(authenticatedUser.getVerified())) {
+                    // User is not verified, show verification dialog
+                    showVerificationDialog();
+                } else {
+                    // User is verified, proceed with login
+                    loginSuccessful = true;
+                    closeDialog();
                 }
-
+            } else {
+                // Show error message for invalid credentials
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Login Failed");
+                alert.setHeaderText("Authentication Error");
+                alert.setContentText("Invalid email or password. Please try again.");
+                alert.showAndWait();
             }
         } catch (Exception e) {
             // Show error message for database errors
@@ -139,8 +136,7 @@ public class LoginDialogController implements Initializable {
                 user.setImg(rs.getString("img"));
                 user.setScore(rs.getInt("score"));
                 user.setBio(rs.getString("bio"));
-                user.setWarnings(rs.getInt("warnings"));
-
+                
                 System.out.println("Authentication successful for user: " + user.getName());
                 
                 return user;
@@ -158,6 +154,37 @@ public class LoginDialogController implements Initializable {
     private void closeDialog() {
         if (dialogStage != null) {
             dialogStage.close();
+        }
+    }
+
+    private void showVerificationDialog() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/VerificationDialog.fxml"));
+            Parent root = loader.load();
+            
+            VerificationDialogController controller = loader.getController();
+            controller.setUserEmail(authenticatedUser.getEmail());
+            
+            Stage stage = new Stage();
+            stage.setTitle("Email Verification");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+            
+            // After verification dialog closes, check if user is now verified
+            if (authenticatedUser != null) {
+                authenticatedUser = userService.getUserByEmail(authenticatedUser.getEmail());
+                if ("1".equals(authenticatedUser.getVerified())) {
+                    loginSuccessful = true;
+                    closeDialog();
+                }
+            }
+        } catch (IOException | SQLException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Verification Error");
+            alert.setContentText("Failed to show verification dialog: " + e.getMessage());
+            alert.showAndWait();
         }
     }
 } 

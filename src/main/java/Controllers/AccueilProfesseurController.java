@@ -1,6 +1,8 @@
 package Controllers;
 
 import entite.Examen;
+import entite.Question;
+import entite.Reponse;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -15,11 +17,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import service.ExamenService;
+import service.QuestionService;
+import service.ReponseService;
 
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AccueilProfesseurController implements Initializable {
@@ -37,6 +43,8 @@ public class AccueilProfesseurController implements Initializable {
     @FXML private TableColumn<Examen, Button> actionsColumn;
     
     private ExamenService examenService;
+    private QuestionService questionService;
+    private ReponseService reponseService;
     private ObservableList<Examen> examens;
     
     // Variable pour stocker l'ID de l'utilisateur
@@ -45,6 +53,8 @@ public class AccueilProfesseurController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         examenService = new ExamenService();
+        questionService = new QuestionService();
+        reponseService = new ReponseService();
         examens = FXCollections.observableArrayList();
         
         // Configuration des colonnes
@@ -95,6 +105,7 @@ public class AccueilProfesseurController implements Initializable {
         actionsColumn.setCellValueFactory(cellData -> {
             Button viewButton = new Button("Voir");
             viewButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white;");
+            viewButton.setTooltip(new Tooltip("Voir le quiz et ses questions/réponses"));
             viewButton.setOnAction(event -> voirExamen(cellData.getValue()));
             
             return new SimpleObjectProperty<>(viewButton);
@@ -134,8 +145,58 @@ public class AccueilProfesseurController implements Initializable {
     }
     
     private void voirExamen(Examen examen) {
-        showAlert(Alert.AlertType.INFORMATION, "Voir Examen", 
-                "Fonctionnalité pour voir l'examen " + examen.getTitre() + " à implémenter");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ConsulterQuizView.fxml"));
+            Parent root = loader.load();
+            
+            ConsulterQuizController controller = loader.getController();
+            controller.setExamenId(examen.getId());
+            
+            // Configurer le mode professeur (pas le mode admin)
+            controller.setAdminMode(false);
+            
+            if (userId != null) {
+                controller.setUserId(userId);
+            }
+            
+            // Pré-charger les questions et réponses pour un affichage plus rapide
+            preloadQuestionsAndResponses(controller, examen.getId());
+            
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setTitle("Consulter Quiz: " + examen.getTitre());
+            stage.setScene(scene);
+            stage.setMaximized(true);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir la vue de consultation du quiz");
+        }
+    }
+    
+    /**
+     * Précharge les questions et réponses pour un affichage plus rapide
+     * @param controller Le contrôleur de consultation du quiz
+     * @param examenId L'ID de l'examen
+     */
+    private void preloadQuestionsAndResponses(ConsulterQuizController controller, int examenId) {
+        // Récupérer les questions de l'examen
+        List<Question> questions = questionService.recupererParExamen(examenId);
+        
+        // Récupérer les réponses pour chaque question
+        List<Reponse> allResponses = new ArrayList<>();
+        for (Question question : questions) {
+            List<Reponse> reponses = reponseService.recupererParQuestion(question.getId());
+            allResponses.addAll(reponses);
+        }
+        
+        // Activer le mode démo avec les questions et réponses préchargées, même si l'une des listes est vide
+        // C'est nécessaire pour les quiz générés par IA qui pourraient ne pas avoir de questions encore
+        ConsulterQuizController.setDemoQuestionsAndResponses(questions, allResponses);
+        ConsulterQuizController.setUseDemo(true);
+        
+        // Log pour débogage
+        System.out.println("Préchargement : " + questions.size() + " questions et " + allResponses.size() + " réponses pour l'examen #" + examenId);
     }
     
     @FXML
@@ -155,7 +216,15 @@ public class AccueilProfesseurController implements Initializable {
     @FXML
     private void handleConsulterExamen() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/ExamenTableView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ExamenTableView.fxml"));
+            Parent root = loader.load();
+            
+            // Passer l'ID utilisateur au contrôleur de la table des examens
+            ExamenTableController controller = loader.getController();
+            if (controller != null && userId != null) {
+                controller.setUserId(userId);
+            }
+            
             Scene scene = new Scene(root);
             Stage stage = (Stage) consulterExamenButton.getScene().getWindow();
             stage.setScene(scene);

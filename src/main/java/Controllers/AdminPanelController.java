@@ -42,40 +42,141 @@ public class AdminPanelController implements Initializable {
     @FXML private Button examsButton;
     @FXML private Button eventsButton;
     @FXML private Button addExamButton;
-    
+
+    // Ajout des champs pour la recherche et les filtres
+    @FXML private TextField searchField;
+    @FXML private Button searchButton;
+    @FXML private ComboBox<String> matiereFilter;
+    @FXML private ComboBox<String> typeFilter;
+    @FXML private Button resetFiltersButton;
+
     @FXML private TableView<Examen> examensTable;
     @FXML private TableColumn<Examen, String> titreColumn;
     @FXML private TableColumn<Examen, String> instructeurColumn;
     @FXML private TableColumn<Examen, String> descriptionColumn;
     @FXML private TableColumn<Examen, String> dateCreationColumn;
     @FXML private TableColumn<Examen, HBox> actionsColumn;
-    
+
     private ExamenService examenService;
     private ObservableList<Examen> examens;
-    
+
     // ID de l'utilisateur administrateur
     private String userId;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         examenService = new ExamenService();
         examens = FXCollections.observableArrayList();
-        
+
         // Configuration des colonnes du tableau
         setupTableColumns();
-        
+
+        // Initialisation des filtres
+        initializeFilters();
+
+        // Configuration des événements de recherche
+        setupSearchEvents();
+
         // Charger les examens
         loadExamens();
     }
-    
+
+    /**
+     * Initialise les filtres pour les matières et types d'examens
+     */
+    private void initializeFilters() {
+        // Initialiser les combos avec l'option "Tous"
+        ObservableList<String> matieresList = FXCollections.observableArrayList();
+        ObservableList<String> typesList = FXCollections.observableArrayList();
+
+        matieresList.add("Toutes les matières");
+        typesList.add("Tous les types");
+
+        // Récupérer les listes de matières et types
+        matieresList.addAll(examenService.recupererMatieresDistinctes());
+        typesList.addAll(examenService.recupererTypesDistincts());
+
+        // Configurer les ComboBox
+        matiereFilter.setItems(matieresList);
+        typeFilter.setItems(typesList);
+
+        // Définir les valeurs par défaut
+        matiereFilter.setValue("Toutes les matières");
+        typeFilter.setValue("Tous les types");
+    }
+
+    /**
+     * Configure les événements pour la recherche et les filtres
+     */
+    private void setupSearchEvents() {
+        // Action pour le bouton de recherche
+        searchButton.setOnAction(e -> applyFilters());
+
+        // Action pour le bouton de réinitialisation des filtres
+        resetFiltersButton.setOnAction(e -> resetFilters());
+
+        // Action pour la recherche avec Enter dans le champ de recherche
+        searchField.setOnAction(e -> applyFilters());
+
+        // Actions pour les changements dans les filtres
+        matiereFilter.setOnAction(e -> applyFilters());
+        typeFilter.setOnAction(e -> applyFilters());
+    }
+
+    /**
+     * Applique les filtres actuels et met à jour la liste des examens
+     */
+    private void applyFilters() {
+        String searchTerm = searchField.getText().trim();
+        String matiere = matiereFilter.getValue();
+        String type = typeFilter.getValue();
+
+        // Convertir les valeurs "Tous" en null pour la recherche
+        if (matiere != null && matiere.equals("Toutes les matières")) {
+            matiere = null;
+        }
+
+        if (type != null && type.equals("Tous les types")) {
+            type = null;
+        }
+
+        // Effectuer la recherche avec les critères spécifiés
+        examens.clear();
+        examens.addAll(examenService.rechercherExamens(searchTerm, null, matiere, type));
+        examensTable.setItems(examens);
+
+        // Mettre à jour le titre du tableau pour indiquer le résultat de la recherche
+        int count = examens.size();
+        if (searchTerm.isEmpty() && matiere == null && type == null) {
+            examensTable.setPlaceholder(new Label("Aucun examen trouvé"));
+        } else {
+            examensTable.setPlaceholder(new Label("Aucun résultat pour cette recherche"));
+        }
+
+        // Afficher le nombre de résultats
+        System.out.println(count + " examens trouvés pour la recherche");
+    }
+
+    /**
+     * Réinitialise tous les filtres et recharge la liste complète des examens
+     */
+    private void resetFilters() {
+        searchField.clear();
+        matiereFilter.setValue("Toutes les matières");
+        typeFilter.setValue("Tous les types");
+
+        // Recharger tous les examens
+        loadExamens();
+    }
+
     /**
      * Configure les colonnes du tableau des examens
      */
     private void setupTableColumns() {
         // Titre
-        titreColumn.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getTitre()));
-        
+        titreColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTitre()));
+
         // Instructeur - utilisez une valeur par défaut ou récupérez depuis la BD
         instructeurColumn.setCellValueFactory(cellData -> {
             if (cellData.getValue().getIdUser() != null) {
@@ -84,11 +185,11 @@ public class AdminPanelController implements Initializable {
                 return new SimpleStringProperty("Utilisateur inconnu");
             }
         });
-        
+
         // Description
-        descriptionColumn.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getDescription()));
-        
+        descriptionColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescription()));
+
         // Date de création
         dateCreationColumn.setCellValueFactory(cellData -> {
             Date date = cellData.getValue().getDate();
@@ -98,46 +199,46 @@ public class AdminPanelController implements Initializable {
             }
             return new SimpleStringProperty("--");
         });
-        
+
         // Actions
         actionsColumn.setCellValueFactory(cellData -> {
             Examen examen = cellData.getValue();
-            
+
             // Bouton Voir
             Button viewButton = new Button();
             viewButton.getStyleClass().add("view-button");
             viewButton.setText("👁");
             viewButton.setOnAction(e -> viewExam(examen));
-            
+
             // Bouton Modifier
             Button editButton = new Button();
             editButton.getStyleClass().add("edit-button");
             editButton.setText("✏");
             editButton.setStyle("-fx-background-color: #FFC107; -fx-text-fill: white;");
             editButton.setOnAction(e -> editExam(examen));
-            
+
             // Bouton Supprimer
             Button deleteButton = new Button();
             deleteButton.getStyleClass().add("delete-button");
             deleteButton.setText("🗑");
             deleteButton.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
             deleteButton.setOnAction(e -> deleteExam(examen));
-            
+
             // Bouton Télécharger
             Button downloadButton = new Button();
             downloadButton.getStyleClass().add("download-button");
             downloadButton.setText("⬇");
             downloadButton.setStyle("-fx-background-color: #673AB7; -fx-text-fill: white;");
             downloadButton.setOnAction(e -> downloadExam(examen));
-            
+
             // Container pour les boutons
             HBox actionsBox = new HBox(5);
             actionsBox.getChildren().addAll(viewButton, editButton, deleteButton, downloadButton);
-            
+
             return new SimpleObjectProperty<>(actionsBox);
         });
     }
-    
+
     /**
      * Charge les examens depuis la base de données
      */
@@ -146,7 +247,7 @@ public class AdminPanelController implements Initializable {
         examens.addAll(examenService.recupererTout());
         examensTable.setItems(examens);
     }
-    
+
     /**
      * Définit l'ID de l'utilisateur connecté
      * @param userId ID de l'utilisateur
@@ -155,45 +256,45 @@ public class AdminPanelController implements Initializable {
         this.userId = userId;
         System.out.println("ID utilisateur défini dans AdminPanelController: " + userId);
     }
-    
+
     // Actions des boutons du menu
-    
+
     @FXML
     private void handleDashboard() {
         showNotImplementedFeature("Tableau de bord");
     }
-    
+
     @FXML
     private void handleUsers() {
         showNotImplementedFeature("Gestion des utilisateurs");
     }
-    
+
     @FXML
     private void handleForums() {
         showNotImplementedFeature("Gestion des forums");
     }
-    
+
     @FXML
     private void handleCourses() {
         showNotImplementedFeature("Gestion des cours");
     }
-    
+
     @FXML
     private void handleExams() {
         // Déjà sur cette vue, rien à faire
     }
-    
+
     @FXML
     private void handleEvents() {
         showNotImplementedFeature("Gestion des événements");
     }
-    
+
     @FXML
     private void handleAddExam() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ExamenView.fxml"));
             Parent root = loader.load();
-            
+
             // Configurer le contrôleur en mode administrateur
             ExamenController controller = loader.getController();
             if (controller != null) {
@@ -202,7 +303,7 @@ public class AdminPanelController implements Initializable {
                     controller.setUserId(userId);
                 }
             }
-            
+
             // Passer à la nouvelle vue
             Scene scene = addExamButton.getScene();
             Stage stage = (Stage) scene.getWindow();
@@ -214,14 +315,14 @@ public class AdminPanelController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir la vue de création d'examen: " + e.getMessage());
         }
     }
-    
+
     // Actions pour les examens
-    
+
     private void viewExam(Examen examen) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ConsulterQuizView.fxml"));
             Parent root = loader.load();
-            
+
             // Configurer le contrôleur
             ConsulterQuizController controller = loader.getController();
             if (controller != null) {
@@ -232,7 +333,7 @@ public class AdminPanelController implements Initializable {
                     controller.setUserId(userId);
                 }
             }
-            
+
             Scene scene = new Scene(root);
             Stage stage = (Stage) examensTable.getScene().getWindow();
             stage.setScene(scene);
@@ -243,12 +344,12 @@ public class AdminPanelController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir la vue de consultation d'examen: " + e.getMessage());
         }
     }
-    
+
     private void editExam(Examen examen) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ExamenView.fxml"));
             Parent root = loader.load();
-            
+
             // Configurer le contrôleur en mode administrateur
             ExamenController controller = loader.getController();
             if (controller != null) {
@@ -258,7 +359,7 @@ public class AdminPanelController implements Initializable {
                     controller.setUserId(userId);
                 }
             }
-            
+
             // Passer à la vue d'édition
             Scene scene = examensTable.getScene();
             Stage stage = (Stage) scene.getWindow();
@@ -270,13 +371,13 @@ public class AdminPanelController implements Initializable {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'ouvrir la vue d'édition d'examen: " + e.getMessage());
         }
     }
-    
+
     private void deleteExam(Examen examen) {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Confirmation de suppression");
         confirmAlert.setHeaderText("Supprimer l'examen");
         confirmAlert.setContentText("Êtes-vous sûr de vouloir supprimer l'examen: " + examen.getTitre() + "?");
-        
+
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 boolean success = examenService.supprimer(examen.getId());
@@ -289,32 +390,32 @@ public class AdminPanelController implements Initializable {
             }
         });
     }
-    
+
     private void downloadExam(Examen examen) {
         // Configurer le sélecteur de fichier
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Enregistrer le document de l'examen");
         fileChooser.setInitialFileName(examen.getTitre().replaceAll("[^a-zA-Z0-9]", "_") + ".docx");
         fileChooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Documents Word (*.docx)", "*.docx")
+                new FileChooser.ExtensionFilter("Documents Word (*.docx)", "*.docx")
         );
-        
+
         // Afficher le dialogue de sauvegarde
         File file = fileChooser.showSaveDialog(examensTable.getScene().getWindow());
         if (file == null) {
             return; // L'utilisateur a annulé
         }
-        
+
         try {
             // Récupérer les questions et réponses
             QuestionService questionService = new QuestionService();
             ReponseService reponseService = new ReponseService();
-            
-            List<Question> questions = questionService.recupererParExamenId(examen.getId());
-            
+
+            List<Question> questions = questionService.recupererParExamen(examen.getId());
+
             // Créer un nouveau document Word
             XWPFDocument document = new XWPFDocument();
-            
+
             // Style du titre
             XWPFParagraph titleParagraph = document.createParagraph();
             titleParagraph.setAlignment(ParagraphAlignment.CENTER);
@@ -323,7 +424,7 @@ public class AdminPanelController implements Initializable {
             titleRun.setBold(true);
             titleRun.setFontSize(18);
             titleRun.addBreak();
-            
+
             // Informations générales
             XWPFParagraph infoParagraph = document.createParagraph();
             infoParagraph.setAlignment(ParagraphAlignment.LEFT);
@@ -332,22 +433,22 @@ public class AdminPanelController implements Initializable {
             infoTitleRun.setBold(true);
             infoTitleRun.setFontSize(14);
             infoTitleRun.addBreak();
-            
+
             // Tableau des informations
             XWPFTable infoTable = document.createTable(5, 2);
             infoTable.setWidth("100%");
-            
+
             // Formater la date
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             String dateStr = examen.getDate() != null ? dateFormat.format(examen.getDate()) : "Non définie";
-            
+
             // Remplir le tableau d'informations
             addRowToTable(infoTable.getRow(0), "Matière:", examen.getMatiere());
             addRowToTable(infoTable.getRow(1), "Type:", examen.getType());
             addRowToTable(infoTable.getRow(2), "Date:", dateStr);
             addRowToTable(infoTable.getRow(3), "Durée:", examen.getDuree() + " minutes");
             addRowToTable(infoTable.getRow(4), "Nombre d'essais:", String.valueOf(examen.getNbrEssai()));
-            
+
             // Description
             XWPFParagraph descParagraph = document.createParagraph();
             descParagraph.setAlignment(ParagraphAlignment.LEFT);
@@ -357,12 +458,12 @@ public class AdminPanelController implements Initializable {
             descTitleRun.setBold(true);
             descTitleRun.setFontSize(14);
             descTitleRun.addBreak();
-            
+
             XWPFRun descRun = descParagraph.createRun();
             descRun.setText(examen.getDescription());
             descRun.addBreak();
             descRun.addBreak();
-            
+
             // Questions et réponses
             XWPFParagraph questionsParagraph = document.createParagraph();
             questionsParagraph.setAlignment(ParagraphAlignment.LEFT);
@@ -371,7 +472,7 @@ public class AdminPanelController implements Initializable {
             questionsTitleRun.setBold(true);
             questionsTitleRun.setFontSize(14);
             questionsTitleRun.addBreak();
-            
+
             if (questions.isEmpty()) {
                 XWPFParagraph noQuestionsParagraph = document.createParagraph();
                 XWPFRun noQuestionsRun = noQuestionsParagraph.createRun();
@@ -380,25 +481,25 @@ public class AdminPanelController implements Initializable {
             } else {
                 for (int i = 0; i < questions.size(); i++) {
                     Question question = questions.get(i);
-                    
+
                     // Paragraphe de la question
                     XWPFParagraph questionParagraph = document.createParagraph();
                     questionParagraph.setAlignment(ParagraphAlignment.LEFT);
                     questionParagraph.setSpacingBefore(10);
-                    
+
                     XWPFRun questionRun = questionParagraph.createRun();
                     questionRun.setText((i + 1) + ". " + question.getQuestion() + " (" + question.getNbr_points() + " points)");
                     questionRun.setBold(true);
                     questionRun.addBreak();
-                    
+
                     // Récupérer les réponses pour cette question
-                    List<Reponse> reponses = reponseService.recupererParQuestionId(question.getId());
-                    
+                    List<Reponse> reponses = reponseService.recupererParQuestion(question.getId());
+
                     if (!reponses.isEmpty()) {
                         for (Reponse reponse : reponses) {
                             XWPFParagraph reponseParagraph = document.createParagraph();
                             reponseParagraph.setIndentationLeft(500); // Indentation pour les réponses
-                            
+
                             XWPFRun reponseRun = reponseParagraph.createRun();
                             reponseRun.setText("□ " + reponse.getReponse());
                             reponseRun.addBreak();
@@ -406,43 +507,43 @@ public class AdminPanelController implements Initializable {
                     } else {
                         XWPFParagraph noResponseParagraph = document.createParagraph();
                         noResponseParagraph.setIndentationLeft(500);
-                        
+
                         XWPFRun noResponseRun = noResponseParagraph.createRun();
                         noResponseRun.setText("Aucune réponse définie.");
                         noResponseRun.addBreak();
                     }
                 }
             }
-            
+
             // Pied de page
             XWPFParagraph footerParagraph = document.createParagraph();
             footerParagraph.setAlignment(ParagraphAlignment.CENTER);
             footerParagraph.setSpacingBefore(20);
-            
+
             XWPFRun footerRun = footerParagraph.createRun();
             footerRun.setText("Document généré automatiquement");
             footerRun.setItalic(true);
             footerRun.setColor("999999");
             footerRun.setFontSize(8);
-            
+
             // Écrire le document dans le fichier
             try (FileOutputStream out = new FileOutputStream(file)) {
                 document.write(out);
             }
-            
-            showAlert(Alert.AlertType.INFORMATION, "Succès", 
-                "Le document de l'examen a été généré avec succès et enregistré à l'emplacement suivant:\n" + 
-                file.getAbsolutePath() + "\n\n" +
-                "Vous pouvez l'ouvrir avec Microsoft Word ou un logiciel compatible pour le visualiser, l'imprimer " +
-                "ou l'exporter en PDF.");
-            
+
+            showAlert(Alert.AlertType.INFORMATION, "Succès",
+                    "Le document de l'examen a été généré avec succès et enregistré à l'emplacement suivant:\n" +
+                            file.getAbsolutePath() + "\n\n" +
+                            "Vous pouvez l'ouvrir avec Microsoft Word ou un logiciel compatible pour le visualiser, l'imprimer " +
+                            "ou l'exporter en PDF.");
+
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur", 
-                "Erreur lors de la génération du document: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Erreur lors de la génération du document: " + e.getMessage());
         }
     }
-    
+
     /**
      * Ajoute une ligne à un tableau Word
      */
@@ -452,15 +553,15 @@ public class AdminPanelController implements Initializable {
         XWPFRun run1 = paragraph1.createRun();
         run1.setText(label);
         run1.setBold(true);
-        
+
         XWPFTableCell cell2 = row.getCell(1);
         XWPFParagraph paragraph2 = cell2.getParagraphs().get(0);
         XWPFRun run2 = paragraph2.createRun();
         run2.setText(value);
     }
-    
+
     // Méthodes utilitaires
-    
+
     private void showNotImplementedFeature(String feature) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Fonctionnalité non implémentée");
@@ -468,7 +569,7 @@ public class AdminPanelController implements Initializable {
         alert.setContentText("La fonctionnalité '" + feature + "' n'est pas encore implémentée.");
         alert.showAndWait();
     }
-    
+
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

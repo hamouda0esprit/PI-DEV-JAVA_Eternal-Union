@@ -1,4 +1,3 @@
-
 package entite;
 
 import java.util.Date;
@@ -14,17 +13,17 @@ public class User {
     private String password;
     private String img;
     private int score;
-    private int warnings;
     private String bio;
-    private boolean verified;
+    private String verified;
     private String google_id;
-
+    private int warnings;
+    
     public User() {
     }
-
-    public User(String name, String email, int phone, String type,
-                Date date_of_birth, String password, String img, int score,
-                String bio, boolean verified, String google_id,double rate, int warnings) {
+    
+    public User(String name, String email, int phone, String type, 
+                Date date_of_birth, String password, String img, int score, 
+                String bio, String verified, String google_id, double rate) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -37,12 +36,12 @@ public class User {
         this.bio = bio;
         this.verified = verified;
         this.google_id = google_id;
-        this.warnings = warnings;
+        this.warnings = 0;
     }
-
-    public User(int id, String name, String email, int phone, String type,
-                Date date_of_birth, String password, String img, int score,
-                String bio, boolean verified, String google_id,double rate) {
+    
+    public User(int id, String name, String email, int phone, String type, 
+                Date date_of_birth, String password, String img, int score, 
+                String bio, String verified, String google_id, double rate) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -56,9 +55,9 @@ public class User {
         this.bio = bio;
         this.verified = verified;
         this.google_id = google_id;
-        this.warnings = warnings;
+        this.warnings = 0;
     }
-
+    
     // Getters and Setters
     public int getId() {
         return id;
@@ -67,10 +66,6 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
-
-    public int getWarnings() {return warnings;}
-
-    public void setWarnings(int warnings) {this.warnings = warnings;}
 
     public String getName() {
         return name;
@@ -144,11 +139,11 @@ public class User {
         this.bio = bio;
     }
 
-    public boolean isVerified() {
+    public String getVerified() {
         return verified;
     }
 
-    public void setVerified(boolean verified) {
+    public void setVerified(String verified) {
         this.verified = verified;
     }
 
@@ -173,9 +168,9 @@ public class User {
                 ", img='" + img + '\'' +
                 ", score=" + score +
                 ", bio='" + bio + '\'' +
-                ", verified=" + verified +
+                ", verified='" + verified + '\'' +
                 ", google_id='" + google_id + '\'' +
-                ", warnings='" + warnings + '\'' +
+                ", warnings=" + warnings +
                 '}';
     }
 
@@ -185,5 +180,13 @@ public class User {
 
     public void setRate(double rate) {
         this.rate = rate;
+    }
+
+    public int getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(int warnings) {
+        this.warnings = warnings;
     }
 }

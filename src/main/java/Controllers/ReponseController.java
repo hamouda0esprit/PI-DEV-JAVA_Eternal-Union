@@ -74,7 +74,7 @@ public class ReponseController implements Initializable {
     
     private void loadQuestionsForExamen(int examenId) {
         this.examenId = examenId;
-        questionsList = questionService.recupererParExamenId(examenId);
+        questionsList = questionService.recupererParExamen(examenId);
     }
     
     private void findQuestionIndex(int questionId) {
@@ -116,7 +116,7 @@ public class ReponseController implements Initializable {
     private void updateQuestionInfo() {
         if (selectedQuestion != null) {
             int totalQuestions = (questionsList != null) ? questionsList.size() : 0;
-            questionLabel.setText("Question " + selectedQuestion.getId() + " (" + (currentQuestionIndex + 1) + "/" + totalQuestions + "): " + selectedQuestion.getQuestion());
+            questionLabel.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestions + ": " + selectedQuestion.getQuestion());
         } else {
             questionLabel.setText("Aucune question sélectionnée");
         }
@@ -190,7 +190,7 @@ public class ReponseController implements Initializable {
         
         try {
             reponsesContainer.getChildren().clear();
-            reponsesList = reponseService.recupererParQuestionId(selectedQuestion.getId());
+            reponsesList = reponseService.recupererParQuestion(selectedQuestion.getId());
             
             if (reponsesList.isEmpty()) {
                 Label emptyLabel = new Label("Aucune réponse ajoutée pour cette question");

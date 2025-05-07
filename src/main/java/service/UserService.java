@@ -20,7 +20,7 @@ public class UserService implements IService<User>{
     private Connection connection;
 
     public UserService() {
-        connection = DataSource.getInstance().getConncetion();
+        connection = DataSource.getInstance().getConnection();
     }
 
     public Connection getConnection() {
@@ -33,11 +33,18 @@ public class UserService implements IService<User>{
         try {
             if (connection == null || connection.isClosed()) {
                 System.out.println("Connection is null or closed, getting a new connection");
-                connection = utils.DataSource.getInstance().getConncetion();
+                connection = utils.DataSource.getInstance().getConnection();
             }
 
-            String query = "INSERT INTO user (name, email, date_of_birth, password, img, type, phone, rate, score, bio, verified, google_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, 0, 0.0, 0, 'Vous n''avez pas encore de bio', 0, NULL)";
+            // Handle default avatar path
+            String imagePath = user.getImg();
+            if (imagePath == null || imagePath.isEmpty() || imagePath.startsWith("A")) {
+                // If it's a default avatar (starts with A), keep it as is
+                imagePath = imagePath != null ? imagePath : "A1.png";
+            }
+
+            String query = "INSERT INTO user (name, email, date_of_birth, password, img, type, phone, rate, score, bio, verified, google_id,warnings) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, 0, 0.0, 0, 'Vous n''avez pas encore de bio', 0, NULL,0)";
 
             System.out.println("Preparing statement with query: " + query);
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -46,7 +53,7 @@ public class UserService implements IService<User>{
             preparedStatement.setString(2, user.getEmail());
             preparedStatement.setDate(3, new java.sql.Date(user.getDate_of_birth().getTime()));
             preparedStatement.setString(4, user.getPassword());
-            preparedStatement.setString(5, user.getImg());
+            preparedStatement.setString(5, imagePath);
             preparedStatement.setString(6, user.getType());
 
             System.out.println("User data being inserted:");
@@ -54,7 +61,7 @@ public class UserService implements IService<User>{
             System.out.println("- Email: " + user.getEmail());
             System.out.println("- Birth Date: " + user.getDate_of_birth());
             System.out.println("- Password: " + (user.getPassword() != null ? "[SECURE]" : "null"));
-            System.out.println("- Image: " + user.getImg());
+            System.out.println("- Image: " + imagePath);
             System.out.println("- Type: " + user.getType());
 
             System.out.println("Executing insert statement...");
@@ -99,7 +106,7 @@ public class UserService implements IService<User>{
             user.setImg(resultSet.getString("img"));
             user.setScore(resultSet.getInt("score"));
             user.setBio(resultSet.getString("bio"));
-            user.setVerified(resultSet.getBoolean("verified"));
+            user.setVerified(resultSet.getString("verified"));
             user.setGoogle_id(resultSet.getString("google_id"));
 
             users.add(user);
@@ -129,7 +136,7 @@ public class UserService implements IService<User>{
             user.setImg(resultSet.getString("img"));
             user.setScore(resultSet.getInt("score"));
             user.setBio(resultSet.getString("bio"));
-            user.setVerified(resultSet.getBoolean("verified"));
+            user.setVerified(resultSet.getString("verified"));
             user.setGoogle_id(resultSet.getString("google_id"));
 
             resultSet.close();
@@ -160,7 +167,7 @@ public class UserService implements IService<User>{
             user.setImg(resultSet.getString("img"));
             user.setScore(resultSet.getInt("score"));
             user.setBio(resultSet.getString("bio"));
-            user.setVerified(resultSet.getBoolean("verified"));
+            user.setVerified(resultSet.getString("verified"));
             user.setGoogle_id(resultSet.getString("google_id"));
 
             resultSet.close();
@@ -172,10 +179,9 @@ public class UserService implements IService<User>{
         preparedStatement.close();
         return null;
     }
-
     // Update user with full profile editing capabilities
     public void updateUser(User user) throws SQLException {
-        String query = "UPDATE user SET name = ?, email = ?, password = ?, img = ?, bio = ?, warnings = ? WHERE id = ?";
+        String query = "UPDATE user SET name = ?, email = ?, password = ?, img = ?, bio = ? WHERE id = ?";
 
         System.out.println("Updating user with ID: " + user.getId());
         System.out.println("- Name: " + user.getName());
@@ -183,7 +189,6 @@ public class UserService implements IService<User>{
         System.out.println("- Password: [SECURE]");
         System.out.println("- Image: " + user.getImg());
         System.out.println("- Bio: " + user.getBio());
-        System.out.println("- Warnings: " + user.getWarnings());
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, user.getName());
@@ -191,8 +196,7 @@ public class UserService implements IService<User>{
             preparedStatement.setString(3, user.getPassword());
             preparedStatement.setString(4, user.getImg());
             preparedStatement.setString(5, user.getBio());
-            preparedStatement.setInt(6, user.getWarnings());
-            preparedStatement.setInt(7, user.getId());
+            preparedStatement.setInt(6, user.getId());
 
             int rowsAffected = preparedStatement.executeUpdate();
             System.out.println("User update completed. Rows affected: " + rowsAffected);
@@ -214,6 +218,52 @@ public class UserService implements IService<User>{
 
         preparedStatement.executeUpdate();
         preparedStatement.close();
+    }
+    public User getUserByUsername(String username) {
+        String query = "SELECT * FROM user WHERE name = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getInt("phone"),
+                        resultSet.getString("type"),
+                        resultSet.getDate("date_of_birth"),
+                        resultSet.getString("password"),
+                        resultSet.getString("img"),
+                        resultSet.getInt("score"),
+                        resultSet.getString("bio"),
+                        resultSet.getString("verified"),
+                        resultSet.getString("google_id"),
+                        resultSet.getDouble("rate")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting user by username: " + e.getMessage());
+        }
+        return null;
+    }
+    public void updateUserVerification(String email, String verified) throws SQLException {
+        String query = "UPDATE user SET verified = ? WHERE email = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, verified);
+            preparedStatement.setString(2, email);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            System.out.println("User verification update completed. Rows affected: " + rowsAffected);
+
+            if (rowsAffected == 0) {
+                throw new SQLException("User verification update failed, no rows affected.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error updating user verification: " + e.getMessage());
+            throw e;
+        }
     }
     public boolean authenticateFast(String id) {
         System.out.println("Authentification avec ID: " + id);

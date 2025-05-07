@@ -3,6 +3,7 @@ package Controllers;
 import entite.Examen;
 import entite.Question;
 import entite.Reponse;
+import entite.ResultatQuiz;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import service.ExamenService;
 import service.QuestionService;
 import service.ReponseService;
+import service.ResultatQuizService;
 import service.UserService;
 import javafx.scene.Node;
 import javafx.geometry.Insets;
@@ -28,6 +30,7 @@ import java.util.ResourceBundle;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Date;
 
 public class ConsulterQuizController implements Initializable {
 
@@ -45,6 +48,7 @@ public class ConsulterQuizController implements Initializable {
     private QuestionService questionService;
     private ReponseService reponseService;
     private UserService userService;
+    private ResultatQuizService resultatQuizService;
     private Examen examen;
     private int examenId;
     private String examenTitre;
@@ -90,6 +94,7 @@ public class ConsulterQuizController implements Initializable {
         questionService = new QuestionService();
         reponseService = new ReponseService();
         userService = new UserService();
+        resultatQuizService = new ResultatQuizService();
         
         // Utiliser les données de démo si elles ont été définies par RepondreQuizController
         if (useDemo) {
@@ -166,20 +171,66 @@ public class ConsulterQuizController implements Initializable {
             questions = demoQuestions;
             System.out.println("Chargement de " + questions.size() + " questions de démonstration pour les résultats");
         } else {
-            questions = questionService.recupererParExamenId(examen.getId());
+            questions = questionService.recupererParExamen(examen.getId());
             System.out.println("Chargement de " + questions.size() + " questions depuis la base de données pour l'examen #" + examen.getId());
         }
         
         if (questions.isEmpty()) {
-            Label emptyLabel = new Label("Aucune question disponible pour ce quiz.");
-            emptyLabel.setStyle("-fx-padding: 20; -fx-font-style: italic;");
-            questionsContainer.getChildren().add(emptyLabel);
+            // Message spécial pour les quiz générés par IA
+            if (examen.getType() != null && examen.getType().equals("Quiz généré par IA")) {
+                VBox messageBox = new VBox(10);
+                messageBox.setAlignment(Pos.CENTER);
+                messageBox.setPadding(new Insets(30));
+                messageBox.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);");
+                
+                Label titleLabel = new Label("Quiz généré par IA");
+                titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-text-fill: #2196F3;");
+                
+                Label infoLabel = new Label("Ce quiz a été généré par Intelligence Artificielle mais ne contient pas encore de questions.");
+                infoLabel.setStyle("-fx-font-size: 14;");
+                infoLabel.setWrapText(true);
+                
+                Label instructionLabel = new Label("Utilisez l'interface d'édition pour ajouter des questions et des réponses.");
+                instructionLabel.setStyle("-fx-font-size: 14;");
+                instructionLabel.setWrapText(true);
+                
+                Button addQuestionsBtn = new Button("Ajouter des questions");
+                addQuestionsBtn.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-padding: 10 20;");
+                addQuestionsBtn.setOnAction(e -> {
+                    try {
+                        // Naviguer vers la vue des questions
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/QuestionView.fxml"));
+                        Parent root = loader.load();
+                        
+                        QuestionController controller = loader.getController();
+                        controller.setExamenId(examen.getId());
+                        controller.setExamenInfo(examen.getTitre(), examen.getDescription());
+                        
+                        Scene scene = questionsContainer.getScene();
+                        Stage stage = (Stage) scene.getWindow();
+                        stage.setScene(new Scene(root));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        showAlert("Erreur", "Erreur lors de la navigation vers l'éditeur de questions", Alert.AlertType.ERROR);
+                    }
+                });
+                
+                messageBox.getChildren().addAll(titleLabel, infoLabel, instructionLabel, addQuestionsBtn);
+                questionsContainer.getChildren().add(messageBox);
+            } else {
+                Label emptyLabel = new Label("Aucune question disponible pour ce quiz.");
+                emptyLabel.setStyle("-fx-padding: 20; -fx-font-style: italic;");
+                questionsContainer.getChildren().add(emptyLabel);
+            }
             return;
         }
         
+        // Numéroter les questions séquentiellement (1, 2, 3, ...) au lieu d'utiliser leur ID
+        int questionNumber = 1;
         for (Question question : questions) {
-            VBox questionCard = createQuestionCard(question);
+            VBox questionCard = createQuestionCard(question, questionNumber);
             questionsContainer.getChildren().add(questionCard);
+            questionNumber++;
         }
     }
     
@@ -193,17 +244,17 @@ public class ConsulterQuizController implements Initializable {
             }
             return reponsesForQuestion;
         } else {
-            return reponseService.recupererParQuestionId(questionId);
+            return reponseService.recupererParQuestion(questionId);
         }
     }
     
-    private VBox createQuestionCard(Question question) {
+    private VBox createQuestionCard(Question question, int questionNumber) {
         VBox questionCard = new VBox();
         questionCard.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-padding: 20;");
         questionCard.setSpacing(20);
         
-        // Titre de la question
-        Label questionLabel = new Label("Question " + question.getId() + ": " + question.getQuestion());
+        // Titre de la question avec numéro séquentiel au lieu de l'ID
+        Label questionLabel = new Label("Question " + questionNumber + ": " + question.getQuestion());
         questionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
         questionCard.getChildren().add(questionLabel);
         
@@ -277,9 +328,22 @@ public class ConsulterQuizController implements Initializable {
             
             if (isStudentMode) {
                 // Rediriger vers l'accueil étudiant
-                fxmlPath = "/view/AccueilEtudiant.fxml";
-                title = "Espace Étudiant";
-                System.out.println("Redirection vers l'accueil étudiant");
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AccueilEtudiant.fxml"));
+                Parent root = loader.load();
+                
+                // Passer l'ID utilisateur au contrôleur
+                AccueilEtudiantController controller = loader.getController();
+                if (userId != null && !userId.isEmpty()) {
+                    controller.setUserId(userId);
+                }
+                
+                Scene scene = backButton.getScene();
+                Stage stage = (Stage) scene.getWindow();
+                scene.setRoot(root);
+                stage.setTitle("Espace Étudiant");
+                
+                System.out.println("Redirection vers l'accueil étudiant avec userId: " + userId);
+                return;
             } else if (isAdminMode) {
                 // Rediriger vers le panneau d'administration
                 fxmlPath = "/view/AdminPanel.fxml";
@@ -292,7 +356,7 @@ public class ConsulterQuizController implements Initializable {
                 System.out.println("Redirection vers l'accueil professeur");
             }
             
-            // Charger la page correspondante
+            // Charger la page correspondante pour les modes admin et prof
             Parent root = FXMLLoader.load(getClass().getResource(fxmlPath));
             Scene scene = backButton.getScene();
             Stage stage = (Stage) scene.getWindow();
@@ -339,7 +403,7 @@ public class ConsulterQuizController implements Initializable {
             ReponseController controller = loader.getController();
             if (controller != null && examen != null) {
                 // Récupérer la première question de l'examen pour l'afficher
-                List<Question> questions = questionService.recupererParExamenId(examen.getId());
+                List<Question> questions = questionService.recupererParExamen(examen.getId());
                 if (!questions.isEmpty()) {
                     controller.setQuestion(questions.get(0));
                     controller.setExamenInfo(examen.getId(), examen.getTitre(), examen.getDescription());
@@ -411,7 +475,7 @@ public class ConsulterQuizController implements Initializable {
         if (useDemo && !demoQuestions.isEmpty()) {
             questions = demoQuestions;
         } else {
-            questions = questionService.recupererParExamenId(examen.getId());
+            questions = questionService.recupererParExamen(examen.getId());
         }
         
         for (Question question : questions) {
@@ -449,6 +513,37 @@ public class ConsulterQuizController implements Initializable {
                 if (Math.random() > 0.3) {  // 70% de chances de réussir pour la démo
                     pointsObtenus += question.getNbr_points();
                 }
+            }
+        }
+        
+        // Enregistrer le résultat dans la base de données si c'est un vrai quiz (pas une démo)
+        // et si l'utilisateur est un étudiant
+        if (!useDemo && examen != null && isStudentMode && userId != null && !userId.isEmpty()) {
+            try {
+                int userIdInt = Integer.parseInt(userId);
+                
+                // Vérifier si un résultat existe déjà pour cet étudiant et cet examen
+                if (!resultatQuizService.verifierExistenceResultat(userIdInt, examen.getId())) {
+                    // Créer un nouvel objet ResultatQuiz
+                    ResultatQuiz resultat = new ResultatQuiz();
+                    resultat.setExamen_id(examen.getId());
+                    resultat.setId_user_id(userIdInt);
+                    resultat.setScore(pointsObtenus);
+                    resultat.setTotalPoints(totalPoints);
+                    resultat.setDatePassage(new Date()); // Date actuelle
+                    
+                    // Ajouter le résultat à la base de données
+                    boolean success = resultatQuizService.ajouter(resultat);
+                    if (success) {
+                        System.out.println("Résultat enregistré pour l'utilisateur " + userId + " sur l'examen " + examen.getId());
+                    } else {
+                        System.err.println("Erreur lors de l'enregistrement du résultat");
+                    }
+                } else {
+                    System.out.println("L'utilisateur " + userId + " a déjà un résultat enregistré pour cet examen");
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Erreur lors de la conversion de l'ID utilisateur: " + e.getMessage());
             }
         }
         

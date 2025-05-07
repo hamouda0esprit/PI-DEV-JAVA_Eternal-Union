@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.WebcamCaptureController"
+            prefHeight="600.0" prefWidth="800.0">
+    
+    <VBox alignment="CENTER" spacing="20.0" AnchorPane.bottomAnchor="0.0" 
+          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        
+        <Label text="Face Recognition" 
+               style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+        
+        <ImageView fx:id="webcamView"
+                  fitWidth="640.0"
+                  fitHeight="480.0"
+                  preserveRatio="true"/>
+        
+        <Button fx:id="captureButton"
+                text="Capture"
+                onAction="#captureImage"
+                style="-fx-font-size: 14px; -fx-padding: 10 20;"/>
+        
+        <Label fx:id="statusLabel"
+               style="-fx-text-fill: red; -fx-font-size: 12px;"
+               visible="false"/>
+    </VBox>
+    
+</AnchorPane> 

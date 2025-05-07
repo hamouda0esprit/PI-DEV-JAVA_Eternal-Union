@@ -8,13 +8,13 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="Controllers.DiscussionDialogController"
-      spacing="20" style="-fx-background-color: white;">
+      spacing="20" style="-fx-background-color: white; -fx-min-width: 500;">
     
     <!-- Header with title -->
-    <HBox alignment="CENTER" style="-fx-background-color: #3498db; -fx-padding: 20;">
-        <Label text="Discussion" style="-fx-text-fill: white; -fx-font-size: 24;">
+    <HBox alignment="CENTER" style="-fx-background-color: #1877F2; -fx-padding: 20;">
+        <Label text="Nouvelle discussion" style="-fx-text-fill: white; -fx-font-size: 20;">
             <font>
-                <Font name="System Bold" size="24.0"/>
+                <Font name="System Bold" size="20.0"/>
             </font>
         </Label>
     </HBox>
@@ -22,32 +22,51 @@
     <!-- Content -->
     <VBox spacing="15" style="-fx-padding: 20;">
         <!-- Description Section -->
-        <Label text="Description" style="-fx-font-size: 16;">
-            <font>
-                <Font name="System Bold" size="16.0"/>
-            </font>
-        </Label>
-        <TextArea fx:id="descriptionArea" prefRowCount="3" wrapText="true"
-                  style="-fx-border-color: #e0e0e0; -fx-border-radius: 5;"/>
+        <Label text="Votre message" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+        <TextArea fx:id="descriptionArea" prefRowCount="4" wrapText="true"
+                  style="-fx-background-color: #F0F2F5; -fx-border-color: transparent; -fx-border-radius: 8; -fx-background-radius: 8;
+                         -fx-padding: 10; -fx-font-size: 14;"/>
         
-        <!-- Photo Upload Section -->
-        <Label text="Publier une photo" style="-fx-font-size: 16;">
-            <font>
-                <Font name="System Bold" size="16.0"/>
-            </font>
-        </Label>
+        <!-- Media Upload Section -->
+        <HBox spacing="10">
+            <Label text="Ajouter un média" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🎯 GIF" onAction="#handleChooseGif"
+                    style="-fx-background-color: #E4E6EB; -fx-text-fill: #050505; 
+                           -fx-padding: 5 15; -fx-background-radius: 6;"/>
+        </HBox>
         
         <!-- Photo Upload Area -->
-        <VBox fx:id="photoUploadBox" alignment="CENTER" spacing="10" 
-              style="-fx-border-style: dashed; -fx-border-color: #bdc3c7; -fx-border-width: 2; -fx-padding: 20;">
-            <ImageView fx:id="uploadedImage" fitWidth="200" fitHeight="200" preserveRatio="true" visible="false"/>
-            <VBox fx:id="uploadPrompt" alignment="CENTER" spacing="10">
-                <Label text="☁" style="-fx-font-size: 48; -fx-text-fill: #95a5a6;"/>
-                <Label text="Cliquez ou déposez une photo ici" style="-fx-text-fill: #7f8c8d;"/>
-            </VBox>
-            <Button fx:id="choosePhotoButton" text="Choisir une photo" 
-                    style="-fx-background-color: transparent; -fx-border-color: #3498db; -fx-text-fill: #3498db; -fx-border-radius: 5;"
-                    onAction="#handleChoosePhoto"/>
+        <VBox fx:id="photoUploadBox" alignment="CENTER" spacing="15" 
+              style="-fx-border-style: dashed; -fx-border-color: #CED0D4; -fx-border-width: 2; -fx-border-radius: 8; 
+                     -fx-padding: 20; -fx-background-color: #F0F2F5; -fx-background-radius: 8;">
+            
+            <!-- Preview Container -->
+            <StackPane>
+                <ImageView fx:id="uploadedImage" fitWidth="400" fitHeight="300" 
+                          preserveRatio="true" visible="false"
+                          style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);"/>
+                
+                <!-- Upload Prompt -->
+                <VBox fx:id="uploadPrompt" alignment="CENTER" spacing="10">
+                    <Label text="📸" style="-fx-font-size: 48;"/>
+                    <Label text="Glissez une photo ici ou" style="-fx-text-fill: #65676B;"/>
+                    <Button fx:id="choosePhotoButton" text="Parcourir" 
+                            onAction="#handleChoosePhoto"
+                            style="-fx-background-color: #1877F2; -fx-text-fill: white; 
+                                   -fx-padding: 8 20; -fx-background-radius: 6;"/>
+                </VBox>
+            </StackPane>
         </VBox>
+        
+        <!-- Action Buttons -->
+        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 20 0 0 0;">
+            <Button fx:id="cancelButton" text="Annuler" onAction="#handleCancel"
+                    style="-fx-background-color: #E4E6EB; -fx-text-fill: #050505; 
+                           -fx-padding: 8 20; -fx-background-radius: 6;"/>
+            <Button fx:id="saveButton" text="Publier" onAction="#handleSave"
+                    style="-fx-background-color: #1877F2; -fx-text-fill: white; 
+                           -fx-padding: 8 20; -fx-background-radius: 6;"/>
+        </HBox>
     </VBox>
 </VBox> 

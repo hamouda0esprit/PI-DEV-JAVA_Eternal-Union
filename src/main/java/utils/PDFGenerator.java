@@ -101,7 +101,7 @@ public class PDFGenerator {
             QuestionService questionService = new QuestionService();
             ReponseService reponseService = new ReponseService();
             
-            List<Question> questions = questionService.recupererParExamenId(examen.getId());
+            List<Question> questions = questionService.recupererParExamen(examen.getId());
             
             if (questions.isEmpty()) {
                 Paragraph noQuestions = new Paragraph("Aucune question n'a été définie pour cet examen.", normalFont);
@@ -124,7 +124,7 @@ public class PDFGenerator {
                     document.add(questionText);
                     
                     // Récupérer les réponses pour cette question
-                    List<Reponse> reponses = reponseService.recupererParQuestionId(question.getId());
+                    List<Reponse> reponses = reponseService.recupererParQuestion(question.getId());
                     if (!reponses.isEmpty()) {
                         // Créer une liste pour les réponses
                         com.lowagie.text.List responseList = new com.lowagie.text.List(false, 10);

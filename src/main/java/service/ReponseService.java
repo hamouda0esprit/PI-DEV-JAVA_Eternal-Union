@@ -26,19 +26,19 @@ public class ReponseService {
             ps.setString(2, reponse.getReponse());
             ps.setInt(3, reponse.getEtat());
             
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                // Récupérer l'ID généré
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        reponse.setId(rs.getInt(1));
+            int affectedRows = ps.executeUpdate();
+            
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        reponse.setId(generatedKeys.getInt(1));
                     }
                 }
                 return true;
             }
             return false;
         } catch (SQLException e) {
-            System.err.println("Erreur lors de l'ajout de la réponse: " + e.getMessage());
+            System.err.println("Erreur lors de l'ajout de réponse: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -111,7 +111,7 @@ public class ReponseService {
         return null;
     }
     
-    public List<Reponse> recupererParQuestionId(int questionId) {
+    public List<Reponse> recupererParQuestion(int questionId) {
         List<Reponse> reponses = new ArrayList<>();
         String query = "SELECT * FROM reponses WHERE questions_id = ?";
         
@@ -160,11 +160,12 @@ public class ReponseService {
     }
 
     private Reponse extractReponseFromResultSet(ResultSet rs) throws SQLException {
-        return new Reponse(
-            rs.getInt("id"),
-            rs.getObject("questions_id", Integer.class),
-            rs.getString("reponse"),
-            rs.getInt("etat")
-        );
+        Reponse reponse = new Reponse();
+        reponse.setId(rs.getInt("id"));
+        reponse.setQuestions_id(rs.getObject("questions_id", Integer.class));
+        reponse.setReponse(rs.getString("reponse"));
+        reponse.setEtat(rs.getInt("etat"));
+        
+        return reponse;
     }
 } 

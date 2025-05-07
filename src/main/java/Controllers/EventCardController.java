@@ -18,8 +18,16 @@ import service.IEvenementService;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.io.File;
+import java.io.IOException;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.TextField;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.fxml.Initializable;
+import entite.User;
+import service.WeatherService;
 
-public class EventCardController {
+public class EventCardController implements Initializable {
     @FXML
     private Label titleLabel;
     
@@ -33,6 +41,9 @@ public class EventCardController {
     private Label locationLabel;
     
     @FXML
+    private Label weatherLabel;
+    
+    @FXML
     private ImageView eventImage;
     
     @FXML
@@ -44,16 +55,26 @@ public class EventCardController {
     @FXML
     private Button deleteButton;
 
+    @FXML private TextField searchField;
+    @FXML private Button searchButton;
+
     private Evenement currentEvent;
     private IEvenementService evenementService;
     private EvenementController mainController;
+    private User currentUser;
+    private WeatherService weatherService;
 
     public EventCardController() {
         this.evenementService = new EvenementService();
+        this.weatherService = new WeatherService();
     }
 
     public void setMainController(EvenementController controller) {
         this.mainController = controller;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
     }
 
     public void setEventData(Evenement event) {
@@ -69,6 +90,13 @@ public class EventCardController {
         // Set location with icon (using Unicode character for location pin)
         locationLabel.setText("📍 " + event.getLocation());
         
+        // Get and set weather information
+        String weatherInfo = weatherService.getWeatherForLocation(
+            event.getLocation(), 
+            event.getDateevent().toLocalDate()
+        );
+        weatherLabel.setText(weatherInfo);
+        
         // Set description (limit to brief preview)
         String description = event.getDescription();
         if (description != null && description.length() > 100) {
@@ -83,7 +111,11 @@ public class EventCardController {
                 File file = new File(photoPath);
                 if (file.exists()) {
                     Image image = new Image(file.toURI().toString());
-                    eventImage.setImage(image);
+                    if (image != null && !image.isError()) {
+                        eventImage.setImage(image);
+                    } else {
+                        setDefaultImage();
+                    }
                 } else {
                     setDefaultImage();
                 }
@@ -98,8 +130,13 @@ public class EventCardController {
 
     private void setDefaultImage() {
         try {
-            Image defaultImage = new Image("https://via.placeholder.com/300x200?text=Event");
-            eventImage.setImage(defaultImage);
+            // Use a local resource instead of a URL
+            Image defaultImage = new Image(getClass().getResourceAsStream("/images/default-event.png"));
+            if (defaultImage != null) {
+                eventImage.setImage(defaultImage);
+            } else {
+                System.err.println("Failed to load default image");
+            }
         } catch (Exception e) {
             System.err.println("Error loading default image: " + e.getMessage());
         }
@@ -113,6 +150,7 @@ public class EventCardController {
             
             DiscussionFeedController controller = loader.getController();
             controller.setEvent(currentEvent);
+            controller.setCurrentUser(currentUser);
             
             Stage feedStage = new Stage();
             feedStage.initModality(Modality.APPLICATION_MODAL);
@@ -133,33 +171,44 @@ public class EventCardController {
     private void handleUpdateClick() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/AddEventDialog.fxml"));
-            VBox dialogContent = loader.load();
+            AnchorPane dialogPane = loader.load();
             
             AddEventDialogController controller = loader.getController();
             controller.setEvent(currentEvent);
             
+            // Create the dialog Stage
             Stage dialogStage = new Stage();
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setTitle("Update Event");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(updateButton.getScene().getWindow());
             
-            Scene scene = new Scene(dialogContent);
-            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
-            
+            Scene scene = new Scene(dialogPane);
             dialogStage.setScene(scene);
+            
+            // Set the dialog stage in the controller
             controller.setDialogStage(dialogStage);
             
+            // Show the dialog and wait for the user response
             dialogStage.showAndWait();
             
-            if (controller.isSaveClicked()) {
-                evenementService.update(controller.getEvent());
-                if (mainController != null) {
-                    mainController.refreshViews();
+            if (controller.isSaved()) {
+                // Update the event in the database
+                Evenement updatedEvent = controller.getEvent();
+                if (updatedEvent != null) {
+                    evenementService.update(updatedEvent);
+                    // Refresh the views through the main controller
+                    if (mainController != null) {
+                        mainController.refreshViews();
+                    }
                 }
             }
-            
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not load dialog: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Could not load the dialog");
+            alert.setContentText("An error occurred while loading the update event dialog.");
+            alert.showAndWait();
         }
     }
 
@@ -180,11 +229,47 @@ public class EventCardController {
         });
     }
 
+    public Button getUpdateButton() {
+        return updateButton;
+    }
+
+    public Button getDeleteButton() {
+        return deleteButton;
+    }
+
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        // Initialize search functionality
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterEvents(newValue);
+        });
+    }
+    
+    @FXML
+    private void toggleSearch() {
+        boolean isVisible = searchField.isVisible();
+        searchField.setVisible(!isVisible);
+        searchField.setManaged(!isVisible);
+        
+        if (!isVisible) {
+            searchField.requestFocus();
+        } else {
+            searchField.clear();
+            filterEvents("");
+        }
+    }
+    
+    public void filterEvents(String searchText) {
+        if (mainController != null) {
+            mainController.filterEvents(searchText);
+        }
     }
 } 

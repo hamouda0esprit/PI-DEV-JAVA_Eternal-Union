@@ -91,7 +91,7 @@ public class QuestionController implements Initializable {
     
     private void loadQuestions() {
         if (examen != null) {
-            List<Question> questions = questionService.recupererParExamenId(examen.getId());
+            List<Question> questions = questionService.recupererParExamen(examen.getId());
             questionsList.clear();
             questionsList.addAll(questions);
             

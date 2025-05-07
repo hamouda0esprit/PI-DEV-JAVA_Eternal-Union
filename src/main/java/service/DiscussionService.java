@@ -11,7 +11,7 @@ public class DiscussionService {
     private Connection conn;
 
     public DiscussionService() {
-        conn = DataSource.getInstance().getConncetion();
+        conn = DataSource.getInstance().getConnection();
     }
 
     public List<Discussion> getDiscussionsForEvent(int eventId) {
@@ -91,7 +91,7 @@ public class DiscussionService {
     public void deleteDiscussionsForEvent(int eventId) {
         try {
             String query = "DELETE FROM discussion WHERE event_id = ?";
-            PreparedStatement ps = DataSource.getInstance().getConncetion().prepareStatement(query);
+            PreparedStatement ps = DataSource.getInstance().getConnection().prepareStatement(query);
             ps.setInt(1, eventId);
             ps.executeUpdate();
         } catch (SQLException e) {

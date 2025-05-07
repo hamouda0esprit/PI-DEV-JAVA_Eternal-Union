@@ -17,7 +17,7 @@ public class ResponcesService implements IService<Responces>{
     private ResultSet rs;
 
     public ResponcesService(){
-        cnx= DataSource.getInstance().getConncetion();
+        cnx= DataSource.getInstance().getConnection();
     }
 
     public void createPst(Responces p){

@@ -46,6 +46,56 @@ public class ExamenController implements Initializable {
         
         // Définir la valeur par défaut
         typeComboBox.setValue("Test");
+        
+        // Définir la date minimum pour le DatePicker (aujourd'hui)
+        setupDatePicker();
+        
+        // Configurer les validations des champs numériques
+        setupNumericFields();
+    }
+    
+    /**
+     * Configure le DatePicker pour empêcher la sélection de dates antérieures à aujourd'hui
+     */
+    private void setupDatePicker() {
+        // Définir la valeur par défaut à aujourd'hui
+        datePicker.setValue(java.time.LocalDate.now());
+        
+        // Ajouter un filtre pour empêcher la sélection de dates passées
+        datePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(java.time.LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                
+                // Désactiver les dates antérieures à aujourd'hui
+                java.time.LocalDate today = java.time.LocalDate.now();
+                setDisable(empty || date.compareTo(today) < 0);
+                
+                // Ajouter un style pour les dates désactivées
+                if (date.compareTo(today) < 0) {
+                    setStyle("-fx-background-color: #ffc0cb;"); // Léger rouge pour les dates passées
+                }
+            }
+        });
+    }
+    
+    /**
+     * Configure les champs numériques pour accepter uniquement des nombres positifs
+     */
+    private void setupNumericFields() {
+        // Restriction pour le champ de durée (accepte uniquement des nombres positifs)
+        dureeField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                dureeField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+        
+        // Restriction pour le champ de nombre d'essais (accepte uniquement des nombres positifs)
+        nbrEssaiField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                nbrEssaiField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
     }
     
     /**
@@ -94,6 +144,12 @@ public class ExamenController implements Initializable {
     @FXML
     private void handleSubmit() {
         if (validateInputs()) {
+            // If type selected is "Quiz généré par IA", navigate to quiz generation form
+            if ("Quiz généré par IA".equals(typeComboBox.getValue())) {
+                navigateToGenerateQuizForm();
+                return;
+            }
+            
             Examen examen = getExamenFromFields();
             
             // Définir l'ID de l'utilisateur
@@ -128,6 +184,30 @@ public class ExamenController implements Initializable {
                 showAlert(Alert.AlertType.ERROR, "Erreur", 
                     isUpdateMode ? "Erreur lors de la modification de l'examen" : "Erreur lors de l'ajout de l'examen");
             }
+        }
+    }
+    
+    /**
+     * Navigates to the quiz generation form with AI
+     */
+    private void navigateToGenerateQuizForm() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/GenerateQuiz.fxml"));
+            Parent root = loader.load();
+            
+            GenerateQuizController controller = loader.getController();
+            // Pass data to the controller
+            controller.setFields(titreField.getText(), matiereField.getText(), userId);
+            controller.setAdminMode(isAdminMode);
+            
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) submitButton.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Générer un Quiz avec IA");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible de naviguer vers le formulaire de génération de quiz");
         }
     }
     
@@ -222,26 +302,38 @@ public class ExamenController implements Initializable {
         }
         if (datePicker.getValue() == null) {
             errorMessage.append("La date est requise\n");
+        } else {
+            // Vérifier que la date n'est pas antérieure à aujourd'hui
+            java.time.LocalDate today = java.time.LocalDate.now();
+            if (datePicker.getValue().compareTo(today) < 0) {
+                errorMessage.append("La date ne peut pas être antérieure à aujourd'hui\n");
+            }
         }
         
         try {
             if (!dureeField.getText().trim().isEmpty()) {
-                Integer.parseInt(dureeField.getText());
+                int duree = Integer.parseInt(dureeField.getText());
+                if (duree <= 0) {
+                    errorMessage.append("La durée doit être supérieure à 0\n");
+                }
             } else {
                 errorMessage.append("La durée est requise\n");
             }
         } catch (NumberFormatException e) {
-            errorMessage.append("La durée doit être un nombre\n");
+            errorMessage.append("La durée doit être un nombre entier positif\n");
         }
         
         try {
             if (!nbrEssaiField.getText().trim().isEmpty()) {
-                Integer.parseInt(nbrEssaiField.getText());
+                int nbrEssai = Integer.parseInt(nbrEssaiField.getText());
+                if (nbrEssai < 0) {
+                    errorMessage.append("Le nombre d'essais doit être supérieur ou égal à 0\n");
+                }
             } else {
                 errorMessage.append("Le nombre d'essais est requis\n");
             }
         } catch (NumberFormatException e) {
-            errorMessage.append("Le nombre d'essais doit être un nombre\n");
+            errorMessage.append("Le nombre d'essais doit être un nombre entier positif\n");
         }
         
         if (errorMessage.length() > 0) {

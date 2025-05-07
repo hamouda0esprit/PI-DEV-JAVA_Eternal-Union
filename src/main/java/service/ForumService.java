@@ -16,7 +16,7 @@ public class ForumService implements IService<Forum>{
     private ResultSet rs;
 
     public ForumService(){
-        cnx = DataSource.getInstance().getConncetion();
+        cnx = DataSource.getInstance().getConnection();
     }
 
     public void createPst(Forum p){

@@ -12,13 +12,14 @@ public class Evenement {
     private Time time;
     private int iduser;
     private String photo;
+    private int capacite;
 
     // Default constructor
     public Evenement() {
     }
 
     // Parameterized constructor
-    public Evenement(String name, String description, Date dateevent, String location, Time time, int iduser, String photo) {
+    public Evenement(String name, String description, Date dateevent, String location, Time time, int iduser, String photo, int capacite) {
         this.name = name;
         this.description = description;
         this.dateevent = dateevent;
@@ -26,6 +27,7 @@ public class Evenement {
         this.time = time;
         this.iduser = iduser;
         this.photo = photo;
+        this.capacite = capacite;
     }
 
     // Getters and Setters
@@ -93,6 +95,14 @@ public class Evenement {
         this.photo = photo;
     }
 
+    public int getCapacite() {
+        return capacite;
+    }
+
+    public void setCapacite(int capacite) {
+        this.capacite = capacite;
+    }
+
     @Override
     public String toString() {
         return "Evenement{" +
@@ -104,6 +114,7 @@ public class Evenement {
                 ", time=" + time +
                 ", iduser=" + iduser +
                 ", photo='" + photo + '\'' +
+                ", capacite=" + capacite +
                 '}';
     }
 }

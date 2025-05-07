@@ -57,11 +57,11 @@
                         </Button>
                         
                         <!-- Facebook Sign up button -->
-                        <Button fx:id="facebookSignUpButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" styleClass="btn-social" text="Sign Up with Facebook">
+                        <Button fx:id="facebookSignUpButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" styleClass="btn-social" text="Sign Up with Face Recognition">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../Images/webcam.png" />
+                                    <Image url="@../Images/wc.png" />
                                  </image>
                               </ImageView>
                            </graphic>

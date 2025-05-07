@@ -26,19 +26,19 @@ public class QuestionService {
             ps.setInt(2, question.getNbr_points());
             ps.setString(3, question.getQuestion());
             
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                // Récupérer l'ID généré
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        question.setId(rs.getInt(1));
+            int affectedRows = ps.executeUpdate();
+            
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        question.setId(generatedKeys.getInt(1));
                     }
                 }
                 return true;
             }
             return false;
         } catch (SQLException e) {
-            System.err.println("Erreur lors de l'ajout de la question: " + e.getMessage());
+            System.err.println("Erreur lors de l'ajout de question: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -62,15 +62,42 @@ public class QuestionService {
     }
 
     public boolean supprimer(int id) {
-        String query = "DELETE FROM questions WHERE id=?";
-        
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
+        try {
+            connection.setAutoCommit(false);
+            
+            // 1. D'abord supprimer les réponses associées à cette question
+            String deleteReponsesQuery = "DELETE FROM reponses WHERE questions_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteReponsesQuery)) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+            }
+            
+            // 2. Ensuite supprimer la question
+            String deleteQuestionQuery = "DELETE FROM questions WHERE id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteQuestionQuery)) {
+                ps.setInt(1, id);
+                int result = ps.executeUpdate();
+                
+                connection.commit();
+                return result > 0;
+            }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la suppression de la question: " + e.getMessage());
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                System.err.println("Erreur lors du rollback: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+            System.err.println("Erreur lors de la suppression de la question et ses réponses: " + e.getMessage());
             e.printStackTrace();
             return false;
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                System.err.println("Erreur lors de la restauration de l'autocommit: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -111,7 +138,7 @@ public class QuestionService {
         return null;
     }
     
-    public List<Question> recupererParExamenId(int examenId) {
+    public List<Question> recupererParExamen(int examenId) {
         List<Question> questions = new ArrayList<>();
         String query = "SELECT * FROM questions WHERE examen_id = ?";
         
@@ -130,13 +157,31 @@ public class QuestionService {
         
         return questions;
     }
+    
+    public int getLastInsertedId() {
+        String query = "SELECT LAST_INSERT_ID()";
+        
+        try (PreparedStatement ps = connection.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération du dernier ID inséré: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
 
     private Question extractQuestionFromResultSet(ResultSet rs) throws SQLException {
-        return new Question(
-            rs.getInt("id"),
-            rs.getObject("examen_id", Integer.class),
-            rs.getInt("nbr_points"),
-            rs.getString("question")
-        );
+        Question question = new Question();
+        question.setId(rs.getInt("id"));
+        question.setExamen_id(rs.getObject("examen_id", Integer.class));
+        question.setNbr_points(rs.getInt("nbr_points"));
+        question.setQuestion(rs.getString("question"));
+        
+        return question;
     }
 } 

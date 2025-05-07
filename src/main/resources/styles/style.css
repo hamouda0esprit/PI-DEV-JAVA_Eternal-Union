@@ -1,36 +1,26 @@
 .navbar {
-    -fx-background-color: #f0f0f0;
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 0 0 1 0;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-padding: 10 20;
 }
 
 .nav-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #666666;
+    -fx-text-fill: #2c3e50;
     -fx-font-size: 14px;
-    -fx-padding: 8 15;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
     -fx-cursor: hand;
-    -fx-background-radius: 5;
 }
 
 .nav-button:hover {
-    -fx-background-color: #e0e0e0;
-}
-
-.nav-button:pressed {
-    -fx-background-color: #d0d0d0;
+    -fx-text-fill: #3498db;
 }
 
 .nav-button.active {
-    -fx-background-color: #54a2e0;
-}
-
-.nav-button.active .label {
-    -fx-text-fill: white;
-}
-
-.nav-button.active:hover {
-    -fx-background-color: #3d8fd1;
+    -fx-text-fill: #3498db;
+    -fx-border-color: #3498db;
+    -fx-border-width: 0 0 2 0;
 }
 
 .profile-button {
@@ -377,4 +367,78 @@
 
 .sidebar-nav-button.active {
     -fx-background-color: #3498db;
+}
+
+/* Content Container */
+.content-container {
+    -fx-padding: 20;
+    -fx-background-color: #f8f9fa;
+}
+
+/* Hero Section */
+.hero-title {
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.hero-subtitle {
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+}
+
+/* Section Container */
+.section-container {
+    -fx-padding: 40 20;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.section-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Feature Boxes */
+.feature-box {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-min-width: 250;
+    -fx-min-height: 200;
+}
+
+.feature-box:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 0);
+    -fx-translate-y: -5;
+    -fx-transition: all 0.3s ease;
+}
+
+/* CTA Section */
+.cta-section {
+    -fx-background-color: linear-gradient(to right, #2c3e50, #3498db);
+    -fx-padding: 60 20;
+}
+
+.cta-title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.cta-button {
+    -fx-background-color: white;
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 30;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+}
+
+.cta-button:hover {
+    -fx-background-color: #f8f9fa;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
 } 

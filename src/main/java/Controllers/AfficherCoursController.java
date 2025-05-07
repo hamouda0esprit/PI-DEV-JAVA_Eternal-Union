@@ -1,5 +1,6 @@
 package Controllers;
 
+import Controllers.Navigation.NavbarController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,6 +14,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import models.Cours;
 import services.CoursService;
@@ -26,6 +28,8 @@ import java.util.List;
 
 public class AfficherCoursController {
 
+    @FXML
+    private BorderPane mainContainer;
     @FXML
     private ComboBox<String> filterSubjectComboBox;
 
@@ -59,6 +63,7 @@ public class AfficherCoursController {
 
     @FXML
     void initialize() throws SQLException {
+
         CoursService service = new CoursService();
         ObservableList<Cours> obs = FXCollections.observableList(service.recuperer());
 
