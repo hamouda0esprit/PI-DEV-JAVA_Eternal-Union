@@ -99,13 +99,8 @@
             <version>20231013</version>
         </dependency>
 
-        <!-- Giphy API SDK -->
-        <dependency>
-            <groupId>com.giphy.sdk</groupId>
-            <artifactId>giphy-java-client</artifactId>
-            <version>2.1.0</version>
-        </dependency>
-        
+
+
         <!-- For handling JSON -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>

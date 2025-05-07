@@ -158,8 +158,10 @@ public class NavbarController implements Initializable {
             
             // Get the parent scene and update its content
             Stage stage = (Stage) evenementsButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/styles/style.css").toExternalForm());
+            stage.setScene(scene);
+            stage.show();
             System.out.println("Successfully navigated to events view for user: " + currentUser.getName() + " (Type: " + currentUser.getType() + ")");
             
         } catch (IOException e) {
