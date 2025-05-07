@@ -64,4 +64,178 @@
 /* Hover effect for buttons */
 .update-button:hover, .delete-button:hover, .add-questions-button:hover {
     -fx-opacity: 0.8;
+}
+
+/* Styles pour le tableau */
+.exam-table {
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+}
+
+.exam-table .column-header {
+    -fx-background-color: #4dabf7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 10px;
+}
+
+.exam-table .column-header .label {
+    -fx-text-fill: white;
+}
+
+.exam-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f5f5f5;
+    -fx-border-width: 0 0 1 0;
+}
+
+.exam-table .table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+.exam-table .table-row-cell:hover {
+    -fx-background-color: #e9ecef;
+}
+
+.exam-table .table-row-cell:selected {
+    -fx-background-color: #cfe2f3;
+    -fx-text-fill: #495057;
+}
+
+/* Styles pour les boutons d'action */
+.view-button {
+    -fx-background-color: #74b9ff;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-background-radius: 15;
+    -fx-cursor: hand;
+}
+
+.view-button:hover {
+    -fx-background-color: #0984e3;
+}
+
+.edit-button {
+    -fx-background-color: #ffeaa7;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-background-radius: 15;
+    -fx-cursor: hand;
+}
+
+.edit-button:hover {
+    -fx-background-color: #fdcb6e;
+}
+
+.delete-button {
+    -fx-background-color: #ff7675;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-background-radius: 15;
+    -fx-cursor: hand;
+}
+
+.delete-button:hover {
+    -fx-background-color: #d63031;
+}
+
+.add-questions-button {
+    -fx-background-color: #55efc4;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-background-radius: 15;
+    -fx-cursor: hand;
+}
+
+.add-questions-button:hover {
+    -fx-background-color: #00b894;
+}
+
+/* Styles pour les composants de recherche et filtres */
+.search-section {
+    -fx-background-color: white;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 1);
+}
+
+.search-field {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 20;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 20;
+    -fx-padding: 8 15;
+    -fx-prompt-text-fill: #6c757d;
+}
+
+.search-field:focused {
+    -fx-border-color: #4dabf7;
+}
+
+.filter-box {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 5;
+}
+
+.filter-box:focused {
+    -fx-border-color: #4dabf7;
+}
+
+.search-button {
+    -fx-background-color: #4dabf7;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.search-button:hover {
+    -fx-background-color: #3793dd;
+}
+
+.reset-button {
+    -fx-background-color: #e9ecef;
+    -fx-text-fill: #495057;
+    -fx-background-radius: 20;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+}
+
+.reset-button:hover {
+    -fx-background-color: #dee2e6;
+}
+
+.filter-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #495057;
+}
+
+.date-filter {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 5;
+}
+
+.date-filter:focused {
+    -fx-border-color: #4dabf7;
+}
+
+.date-filter .arrow-button {
+    -fx-background-color: #f0f0f0;
+    -fx-background-radius: 0 5 5 0;
 } 

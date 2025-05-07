@@ -116,7 +116,7 @@ public class ReponseController implements Initializable {
     private void updateQuestionInfo() {
         if (selectedQuestion != null) {
             int totalQuestions = (questionsList != null) ? questionsList.size() : 0;
-            questionLabel.setText("Question " + selectedQuestion.getId() + " (" + (currentQuestionIndex + 1) + "/" + totalQuestions + "): " + selectedQuestion.getQuestion());
+            questionLabel.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestions + ": " + selectedQuestion.getQuestion());
         } else {
             questionLabel.setText("Aucune question sélectionnée");
         }

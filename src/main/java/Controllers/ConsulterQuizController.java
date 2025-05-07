@@ -176,15 +176,61 @@ public class ConsulterQuizController implements Initializable {
         }
         
         if (questions.isEmpty()) {
-            Label emptyLabel = new Label("Aucune question disponible pour ce quiz.");
-            emptyLabel.setStyle("-fx-padding: 20; -fx-font-style: italic;");
-            questionsContainer.getChildren().add(emptyLabel);
+            // Message spécial pour les quiz générés par IA
+            if (examen.getType() != null && examen.getType().equals("Quiz généré par IA")) {
+                VBox messageBox = new VBox(10);
+                messageBox.setAlignment(Pos.CENTER);
+                messageBox.setPadding(new Insets(30));
+                messageBox.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);");
+                
+                Label titleLabel = new Label("Quiz généré par IA");
+                titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18; -fx-text-fill: #2196F3;");
+                
+                Label infoLabel = new Label("Ce quiz a été généré par Intelligence Artificielle mais ne contient pas encore de questions.");
+                infoLabel.setStyle("-fx-font-size: 14;");
+                infoLabel.setWrapText(true);
+                
+                Label instructionLabel = new Label("Utilisez l'interface d'édition pour ajouter des questions et des réponses.");
+                instructionLabel.setStyle("-fx-font-size: 14;");
+                instructionLabel.setWrapText(true);
+                
+                Button addQuestionsBtn = new Button("Ajouter des questions");
+                addQuestionsBtn.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white; -fx-padding: 10 20;");
+                addQuestionsBtn.setOnAction(e -> {
+                    try {
+                        // Naviguer vers la vue des questions
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/QuestionView.fxml"));
+                        Parent root = loader.load();
+                        
+                        QuestionController controller = loader.getController();
+                        controller.setExamenId(examen.getId());
+                        controller.setExamenInfo(examen.getTitre(), examen.getDescription());
+                        
+                        Scene scene = questionsContainer.getScene();
+                        Stage stage = (Stage) scene.getWindow();
+                        stage.setScene(new Scene(root));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        showAlert("Erreur", "Erreur lors de la navigation vers l'éditeur de questions", Alert.AlertType.ERROR);
+                    }
+                });
+                
+                messageBox.getChildren().addAll(titleLabel, infoLabel, instructionLabel, addQuestionsBtn);
+                questionsContainer.getChildren().add(messageBox);
+            } else {
+                Label emptyLabel = new Label("Aucune question disponible pour ce quiz.");
+                emptyLabel.setStyle("-fx-padding: 20; -fx-font-style: italic;");
+                questionsContainer.getChildren().add(emptyLabel);
+            }
             return;
         }
         
+        // Numéroter les questions séquentiellement (1, 2, 3, ...) au lieu d'utiliser leur ID
+        int questionNumber = 1;
         for (Question question : questions) {
-            VBox questionCard = createQuestionCard(question);
+            VBox questionCard = createQuestionCard(question, questionNumber);
             questionsContainer.getChildren().add(questionCard);
+            questionNumber++;
         }
     }
     
@@ -202,13 +248,13 @@ public class ConsulterQuizController implements Initializable {
         }
     }
     
-    private VBox createQuestionCard(Question question) {
+    private VBox createQuestionCard(Question question, int questionNumber) {
         VBox questionCard = new VBox();
         questionCard.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-padding: 20;");
         questionCard.setSpacing(20);
         
-        // Titre de la question
-        Label questionLabel = new Label("Question " + question.getId() + ": " + question.getQuestion());
+        // Titre de la question avec numéro séquentiel au lieu de l'ID
+        Label questionLabel = new Label("Question " + questionNumber + ": " + question.getQuestion());
         questionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16;");
         questionCard.getChildren().add(questionLabel);
         

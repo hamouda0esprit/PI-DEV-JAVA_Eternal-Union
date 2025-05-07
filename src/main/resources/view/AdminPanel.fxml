@@ -19,11 +19,6 @@
         <HBox alignment="CENTER_LEFT" spacing="20" styleClass="admin-header">
             <Label text="Gestion des Examens" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <TextField fx:id="searchField" promptText="Rechercher des examens..." prefWidth="300" styleClass="search-field">
-                <HBox.margin>
-                    <Insets right="20"/>
-                </HBox.margin>
-            </TextField>
             <Button fx:id="addExamButton" text="Ajouter un examen" styleClass="add-button" onAction="#handleAddExam">
                 <padding>
                     <Insets top="8" right="15" bottom="8" left="15"/>
@@ -32,6 +27,38 @@
             <padding>
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
+        </HBox>
+        
+        <!-- Recherche et Filtres -->
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="search-filters-bar">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            
+            <!-- Champ de recherche -->
+            <TextField fx:id="searchField" promptText="Rechercher par titre, description ou matière..." prefWidth="300" styleClass="search-field"/>
+            
+            <!-- Bouton de recherche -->
+            <Button fx:id="searchButton" text="Rechercher" styleClass="search-button"/>
+            
+            <!-- Séparateur -->
+            <Separator orientation="VERTICAL" visible="true" styleClass="separator">
+                <padding>
+                    <Insets left="5" right="5"/>
+                </padding>
+            </Separator>
+            
+            <!-- Filtres -->
+            <Label text="Matière:" styleClass="filter-label"/>
+            <ComboBox fx:id="matiereFilter" prefWidth="150" styleClass="filter-combo"/>
+            
+            <Label text="Type:" styleClass="filter-label"/>
+            <ComboBox fx:id="typeFilter" prefWidth="150" styleClass="filter-combo"/>
+            
+            <!-- Bouton de réinitialisation des filtres -->
+            <Button fx:id="resetFiltersButton" text="Réinitialiser" styleClass="reset-button"/>
+            
+            <Region HBox.hgrow="ALWAYS"/>
         </HBox>
         
         <!-- Table -->

@@ -178,3 +178,110 @@
 .admin-sidebar ImageView {
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 4, 0, 0, 0);
 }
+
+/* Styles pour les composants de recherche et filtrage avancés */
+.advanced-search-container {
+    -fx-background-color: #ffffff;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+
+.search-bar {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-color: #d0d0d0;
+    -fx-border-radius: 20;
+    -fx-padding: 8 15;
+    -fx-prompt-text-fill: #999999;
+    -fx-font-size: 13px;
+}
+
+.search-bar:focused {
+    -fx-border-color: #4E8ACF;
+}
+
+.filter-combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-color: #d0d0d0;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}
+
+.filter-combo-box:focused {
+    -fx-border-color: #4E8ACF;
+}
+
+.filter-combo-box .list-cell {
+    -fx-padding: 5 10;
+}
+
+.filter-combo-box .list-view {
+    -fx-background-color: white;
+    -fx-border-color: #d0d0d0;
+}
+
+.date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-color: #d0d0d0;
+    -fx-border-radius: 5;
+}
+
+.date-picker:focused {
+    -fx-border-color: #4E8ACF;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #f6f6f6;
+    -fx-background-radius: 0 5 5 0;
+}
+
+.search-action-button {
+    -fx-background-color: #4E8ACF;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-padding: 8 15;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.search-action-button:hover {
+    -fx-background-color: #3A75B8;
+}
+
+.clear-filter-button {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #555;
+    -fx-background-radius: 5;
+    -fx-padding: 8 15;
+    -fx-border-color: #d0d0d0;
+    -fx-border-radius: 5;
+    -fx-cursor: hand;
+}
+
+.clear-filter-button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.filter-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+    -fx-font-size: 12px;
+}
+
+.filter-chip {
+    -fx-background-color: #e8f4fd;
+    -fx-background-radius: 15;
+    -fx-border-color: #b8daff;
+    -fx-border-radius: 15;
+    -fx-padding: 5 10;
+    -fx-font-size: 11px;
+}
+
+.filter-chip:hover {
+    -fx-background-color: #d1e9fc;
+}

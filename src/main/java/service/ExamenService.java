@@ -67,25 +67,44 @@ public class ExamenService {
         try {
             connection.setAutoCommit(false);
             
-            // 1. D'abord supprimer les réponses associées aux questions de cet examen
+            // 1. D'abord supprimer les entrées feedback liées à cet examen
+            String deleteFeedbackQuery = "DELETE FROM feedback WHERE examen_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteFeedbackQuery)) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+                System.out.println("Suppression des feedbacks pour l'examen " + id);
+            }
+            
+            // 2. Supprimer les résultats de quiz associés à cet examen
+            String deleteResultatsQuery = "DELETE FROM resultat_quiz WHERE examen_id = ?";
+            try (PreparedStatement ps = connection.prepareStatement(deleteResultatsQuery)) {
+                ps.setInt(1, id);
+                ps.executeUpdate();
+                System.out.println("Suppression des résultats de quiz pour l'examen " + id);
+            }
+            
+            // 3. Supprimer les réponses associées aux questions de cet examen
             String deleteReponsesQuery = "DELETE FROM reponses WHERE questions_id IN (SELECT id FROM questions WHERE examen_id = ?)";
             try (PreparedStatement ps = connection.prepareStatement(deleteReponsesQuery)) {
                 ps.setInt(1, id);
                 ps.executeUpdate();
+                System.out.println("Suppression des réponses pour l'examen " + id);
             }
             
-            // 2. Ensuite supprimer les questions associées à cet examen
+            // 4. Ensuite supprimer les questions associées à cet examen
             String deleteQuestionsQuery = "DELETE FROM questions WHERE examen_id = ?";
             try (PreparedStatement ps = connection.prepareStatement(deleteQuestionsQuery)) {
                 ps.setInt(1, id);
                 ps.executeUpdate();
+                System.out.println("Suppression des questions pour l'examen " + id);
             }
             
-            // 3. Finalement supprimer l'examen
+            // 5. Finalement supprimer l'examen
             String deleteExamenQuery = "DELETE FROM examen WHERE id = ?";
             try (PreparedStatement ps = connection.prepareStatement(deleteExamenQuery)) {
                 ps.setInt(1, id);
                 int result = ps.executeUpdate();
+                System.out.println("Suppression de l'examen " + id + " : " + (result > 0 ? "réussie" : "échouée"));
                 
                 connection.commit();
                 return result > 0;
@@ -126,6 +145,114 @@ public class ExamenService {
         }
         
         return examens;
+    }
+
+    /**
+     * Recherche des examens selon différents critères
+     * 
+     * @param searchTerm Terme de recherche pour le titre, la description ou la matière
+     * @param idUser ID de l'utilisateur si on veut limiter les résultats à un utilisateur spécifique (peut être null)
+     * @param matiere Matière spécifique à rechercher (peut être null)
+     * @param type Type d'examen à rechercher (peut être null)
+     * @return Liste des examens correspondant aux critères de recherche
+     */
+    public List<Examen> rechercherExamens(String searchTerm, Integer idUser, String matiere, String type) {
+        List<Examen> examens = new ArrayList<>();
+        
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT * FROM examen WHERE 1=1");
+        
+        // Liste pour stocker les paramètres
+        List<Object> parameters = new ArrayList<>();
+        
+        // Ajouter les conditions selon les paramètres fournis
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            String searchParam = "%" + searchTerm.trim() + "%";
+            queryBuilder.append(" AND (titre LIKE ? OR description LIKE ? OR matiere LIKE ?)");
+            parameters.add(searchParam);
+            parameters.add(searchParam);
+            parameters.add(searchParam);
+        }
+        
+        if (idUser != null) {
+            queryBuilder.append(" AND id_user_id = ?");
+            parameters.add(idUser);
+        }
+        
+        if (matiere != null && !matiere.trim().isEmpty()) {
+            queryBuilder.append(" AND matiere = ?");
+            parameters.add(matiere);
+        }
+        
+        if (type != null && !type.trim().isEmpty()) {
+            queryBuilder.append(" AND type = ?");
+            parameters.add(type);
+        }
+        
+        // Ajouter un tri par défaut
+        queryBuilder.append(" ORDER BY date DESC");
+        
+        try (PreparedStatement ps = connection.prepareStatement(queryBuilder.toString())) {
+            // Définir les paramètres
+            for (int i = 0; i < parameters.size(); i++) {
+                ps.setObject(i + 1, parameters.get(i));
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    examens.add(extractExamenFromResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la recherche des examens: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return examens;
+    }
+    
+    /**
+     * Récupère la liste des matières distinctes présentes dans les examens
+     * @return Liste des matières
+     */
+    public List<String> recupererMatieresDistinctes() {
+        List<String> matieres = new ArrayList<>();
+        String query = "SELECT DISTINCT matiere FROM examen WHERE matiere IS NOT NULL AND matiere <> '' ORDER BY matiere";
+        
+        try (PreparedStatement ps = connection.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                matieres.add(rs.getString("matiere"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des matières: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return matieres;
+    }
+    
+    /**
+     * Récupère la liste des types d'examens distincts
+     * @return Liste des types d'examens
+     */
+    public List<String> recupererTypesDistincts() {
+        List<String> types = new ArrayList<>();
+        String query = "SELECT DISTINCT type FROM examen WHERE type IS NOT NULL AND type <> '' ORDER BY type";
+        
+        try (PreparedStatement ps = connection.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                types.add(rs.getString("type"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des types d'examens: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return types;
     }
 
     public Examen recupererParId(int id) {

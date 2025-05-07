@@ -43,6 +43,13 @@ public class AdminPanelController implements Initializable {
     @FXML private Button eventsButton;
     @FXML private Button addExamButton;
     
+    // Ajout des champs pour la recherche et les filtres
+    @FXML private TextField searchField;
+    @FXML private Button searchButton;
+    @FXML private ComboBox<String> matiereFilter;
+    @FXML private ComboBox<String> typeFilter;
+    @FXML private Button resetFiltersButton;
+    
     @FXML private TableView<Examen> examensTable;
     @FXML private TableColumn<Examen, String> titreColumn;
     @FXML private TableColumn<Examen, String> instructeurColumn;
@@ -64,7 +71,101 @@ public class AdminPanelController implements Initializable {
         // Configuration des colonnes du tableau
         setupTableColumns();
         
+        // Initialisation des filtres
+        initializeFilters();
+        
+        // Configuration des événements de recherche
+        setupSearchEvents();
+        
         // Charger les examens
+        loadExamens();
+    }
+    
+    /**
+     * Initialise les filtres pour les matières et types d'examens
+     */
+    private void initializeFilters() {
+        // Initialiser les combos avec l'option "Tous"
+        ObservableList<String> matieresList = FXCollections.observableArrayList();
+        ObservableList<String> typesList = FXCollections.observableArrayList();
+        
+        matieresList.add("Toutes les matières");
+        typesList.add("Tous les types");
+        
+        // Récupérer les listes de matières et types
+        matieresList.addAll(examenService.recupererMatieresDistinctes());
+        typesList.addAll(examenService.recupererTypesDistincts());
+        
+        // Configurer les ComboBox
+        matiereFilter.setItems(matieresList);
+        typeFilter.setItems(typesList);
+        
+        // Définir les valeurs par défaut
+        matiereFilter.setValue("Toutes les matières");
+        typeFilter.setValue("Tous les types");
+    }
+    
+    /**
+     * Configure les événements pour la recherche et les filtres
+     */
+    private void setupSearchEvents() {
+        // Action pour le bouton de recherche
+        searchButton.setOnAction(e -> applyFilters());
+        
+        // Action pour le bouton de réinitialisation des filtres
+        resetFiltersButton.setOnAction(e -> resetFilters());
+        
+        // Action pour la recherche avec Enter dans le champ de recherche
+        searchField.setOnAction(e -> applyFilters());
+        
+        // Actions pour les changements dans les filtres
+        matiereFilter.setOnAction(e -> applyFilters());
+        typeFilter.setOnAction(e -> applyFilters());
+    }
+    
+    /**
+     * Applique les filtres actuels et met à jour la liste des examens
+     */
+    private void applyFilters() {
+        String searchTerm = searchField.getText().trim();
+        String matiere = matiereFilter.getValue();
+        String type = typeFilter.getValue();
+        
+        // Convertir les valeurs "Tous" en null pour la recherche
+        if (matiere != null && matiere.equals("Toutes les matières")) {
+            matiere = null;
+        }
+        
+        if (type != null && type.equals("Tous les types")) {
+            type = null;
+        }
+        
+        // Effectuer la recherche avec les critères spécifiés
+        examens.clear();
+        examens.addAll(examenService.rechercherExamens(searchTerm, null, matiere, type));
+        examensTable.setItems(examens);
+        
+        // Mettre à jour le titre du tableau pour indiquer le résultat de la recherche
+        int count = examens.size();
+        if (searchTerm.isEmpty() && matiere == null && type == null) {
+            examensTable.setPlaceholder(new Label("Aucun examen trouvé"));
+        } else {
+            examensTable.setPlaceholder(new Label("Aucun résultat pour cette recherche"));
+        }
+        
+        // Afficher le nombre de résultats
+        System.out.println(count + " examens trouvés pour la recherche");
+    }
+    
+    /**
+     * Réinitialise tous les filtres et recharge la liste complète des examens
+     */
+    private void resetFilters() {
+        searchField.clear();
+        matiereFilter.setValue("Toutes les matières");
+        typeFilter.setValue("Tous les types");
+        
+        // Recharger tous les examens
         loadExamens();
     }
     

@@ -5,6 +5,7 @@ module com.example.pijava {
     requires org.json;
     requires java.net.http;
     requires transitive javafx.graphics;
+    requires javafx.media;
     requires itextpdf;
     requires com.github.librepdf.openpdf;
     requires java.desktop;
