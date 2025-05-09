@@ -44,8 +44,8 @@ public class AdminSidebarController implements Initializable {
         dashboardButton.setOnAction(event -> navigateTo("/view/AdminDashboard.fxml"));
         usersButton.setOnAction(event -> navigateTo("/view/AdminUser.fxml"));
         forumsButton.setOnAction(event -> navigateTo("/view/AdminForum.fxml"));
-        coursesButton.setOnAction(event -> navigateTo("/view/AdminCourse.fxml"));
-        examsButton.setOnAction(event -> navigateTo("/view/AdminExam.fxml"));
+        coursesButton.setOnAction(event -> navigateTo("/AdminCours.fxml"));
+        examsButton.setOnAction(event -> navigateTo("/view/AdminPanel.fxml"));
         eventsButton.setOnAction(event -> navigateTo("/view/AdminEvenement.fxml"));
         
         backButton.setOnAction(event -> {

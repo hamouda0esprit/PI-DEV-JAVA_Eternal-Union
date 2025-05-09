@@ -12,7 +12,7 @@
       stylesheets="@../styles/admin.css">
       
     <!-- Include Sidebar -->
-    <fx:include source="AdminSidebar.fxml"/>
+    <fx:include source="../AdminSidebar.fxml"/>
     
     <!-- Main Content -->
     <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white;">

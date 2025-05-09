@@ -82,7 +82,7 @@ public class DataSource {
                 "rate DOUBLE DEFAULT 0.0, " +
                 "score INT DEFAULT 0, " +
                 "bio TEXT DEFAULT 'Vous n''avez pas encore de bio', " +
-                "verified BOOLEAN DEFAULT FALSE, " +
+                "verified VARCHAR(1) DEFAULT '0', " +
                 "google_id VARCHAR(255) DEFAULT NULL" +
                 ")";
         

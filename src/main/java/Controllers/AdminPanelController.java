@@ -397,7 +397,7 @@ public class AdminPanelController implements Initializable {
         fileChooser.setTitle("Enregistrer le document de l'examen");
         fileChooser.setInitialFileName(examen.getTitre().replaceAll("[^a-zA-Z0-9]", "_") + ".docx");
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Documents Word (*.docx)", "*.docx")
+                new FileChooser.ExtensionFilter("Documents Word (.docx)", ".docx")
         );
 
         // Afficher le dialogue de sauvegarde

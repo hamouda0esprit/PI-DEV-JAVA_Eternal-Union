@@ -2,16 +2,13 @@ package Controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import models.Item;
 import services.ItemService;
-import services.GeminiAIService;
 import javafx.scene.Parent;
-import java.io.IOException;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -26,16 +23,12 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 
 import javafx.scene.input.MouseEvent;
@@ -46,7 +39,6 @@ import javafx.scene.text.TextFlow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 

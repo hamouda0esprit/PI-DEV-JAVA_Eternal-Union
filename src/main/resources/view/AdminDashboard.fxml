@@ -8,10 +8,10 @@
 <?import javafx.scene.image.Image?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-            fx:controller="Controllers.AdminDashboardController">
+            fx:controller="Controllers.AdminDashboardController" stylesheets="@../styles/admin.css">
     
     <left>
-        <fx:include source="AdminSidebar.fxml" />
+        <fx:include source="../AdminSidebar.fxml" />
     </left>
     
     <center>

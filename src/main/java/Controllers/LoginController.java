@@ -293,8 +293,16 @@ public class LoginController implements Initializable {
                     
                     // Load the home page
                     try {
-                        FXMLLoader homeLoader = new FXMLLoader(getClass().getResource("/view/Home.fxml"));
-                        Parent homeRoot = homeLoader.load();
+                        Parent homeRoot;
+                        if (authenticatedUser.getType().equals("ADMIN")){
+                            FXMLLoader homeLoader = new FXMLLoader(getClass().getResource("/view/AdminDashboard.fxml"));
+                            homeRoot = homeLoader.load();
+
+                        }else{
+                            FXMLLoader homeLoader = new FXMLLoader(getClass().getResource("/view/Home.fxml"));
+                            homeRoot = homeLoader.load();
+                        }
+
                         
                         // Make sure the stage is available
                         if (stage == null) {

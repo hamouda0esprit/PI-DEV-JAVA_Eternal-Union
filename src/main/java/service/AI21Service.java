@@ -42,7 +42,7 @@ public class AI21Service {
         try {
             // Create the request body
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "jamba-1.5-large");
+            requestBody.put("model", "jamba-large-1.6");
             requestBody.put("messages", List.of(Map.of(
                 "role", "user",
                 "content", inputText

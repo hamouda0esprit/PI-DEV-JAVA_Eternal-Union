@@ -23,24 +23,24 @@ import javafx.fxml.FXMLLoader;
 public class LoginDialogController implements Initializable {
     @FXML
     private TextField emailField;
-    
+
     @FXML
     private PasswordField passwordField;
-    
+
     @FXML
     private Button closeButton;
-    
+
     @FXML
     private Button cancelButton;
-    
+
     @FXML
     private Button connectButton;
-    
+
     private Stage dialogStage;
     private UserService userService;
     private boolean loginSuccessful = false;
     private User authenticatedUser = null;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userService = new UserService();
@@ -48,23 +48,23 @@ public class LoginDialogController implements Initializable {
         cancelButton.setOnAction(e -> closeDialog());
         connectButton.setOnAction(e -> handleLogin());
     }
-    
+
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
     }
-    
+
     public boolean isLoginSuccessful() {
         return loginSuccessful;
     }
-    
+
     public User getAuthenticatedUser() {
         return authenticatedUser;
     }
-    
+
     private void handleLogin() {
         String email = emailField.getText().trim();
         String password = passwordField.getText().trim();
-        
+
         if (email.isEmpty() || password.isEmpty()) {
             // Show error message for empty fields
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -74,17 +74,21 @@ public class LoginDialogController implements Initializable {
             alert.showAndWait();
             return;
         }
-        
+
         try {
             // Verify credentials against database
             authenticatedUser = authenticateUser(email, password);
-            
+
             if (authenticatedUser != null) {
                 // Check verification status
-                if (!"1".equals(authenticatedUser.getVerified())) {
+                String verifiedStatus = authenticatedUser.getVerified();
+                System.out.println("Checking verification status: " + verifiedStatus);
+                if (verifiedStatus == null || !"1".equals(verifiedStatus.trim())) {
+                    System.out.println("User is not verified, showing verification dialog");
                     // User is not verified, show verification dialog
                     showVerificationDialog();
                 } else {
+                    System.out.println("User is verified, proceeding with login");
                     // User is verified, proceed with login
                     loginSuccessful = true;
                     closeDialog();
@@ -104,24 +108,24 @@ public class LoginDialogController implements Initializable {
             alert.setHeaderText("Connection Problem");
             alert.setContentText("Could not connect to the database: " + e.getMessage());
             alert.showAndWait();
-            
+
             System.out.println("Error during login: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
+
     private User authenticateUser(String email, String password) {
         try {
             System.out.println("Attempting to authenticate user with email: " + email);
-            
+
             // Create a SQL query to check email and password directly
             String query = "SELECT * FROM user WHERE email = ? AND password = ?";
             java.sql.PreparedStatement stmt = userService.getConnection().prepareStatement(query);
             stmt.setString(1, email);
             stmt.setString(2, password);
-            
+
             java.sql.ResultSet rs = stmt.executeQuery();
-            
+
             // If a row is returned, authentication is successful
             if (rs.next()) {
                 User user = new User();
@@ -136,9 +140,12 @@ public class LoginDialogController implements Initializable {
                 user.setImg(rs.getString("img"));
                 user.setScore(rs.getInt("score"));
                 user.setBio(rs.getString("bio"));
-                
+                user.setVerified(rs.getString("verified"));
+                user.setGoogle_id(rs.getString("google_id"));
+
                 System.out.println("Authentication successful for user: " + user.getName());
-                
+                System.out.println("User verification status: " + user.getVerified());
+
                 return user;
             } else {
                 System.out.println("No matching user found with provided email and password");
@@ -150,7 +157,7 @@ public class LoginDialogController implements Initializable {
             return null;
         }
     }
-    
+
     private void closeDialog() {
         if (dialogStage != null) {
             dialogStage.close();
@@ -161,16 +168,16 @@ public class LoginDialogController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/VerificationDialog.fxml"));
             Parent root = loader.load();
-            
+
             VerificationDialogController controller = loader.getController();
             controller.setUserEmail(authenticatedUser.getEmail());
-            
+
             Stage stage = new Stage();
             stage.setTitle("Email Verification");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
-            
+
             // After verification dialog closes, check if user is now verified
             if (authenticatedUser != null) {
                 authenticatedUser = userService.getUserByEmail(authenticatedUser.getEmail());
