@@ -78,8 +78,8 @@ public class LoginDialogController implements Initializable {
         try {
             // Verify credentials against database
             authenticatedUser = authenticateUser(email, password);
-
-            if (authenticatedUser != null) {
+            System.out.println(authenticatedUser.getWarnings());
+            if (authenticatedUser != null && authenticatedUser.getWarnings()<3) {
                 // Check verification status
                 String verifiedStatus = authenticatedUser.getVerified();
                 System.out.println("Checking verification status: " + verifiedStatus);
@@ -96,10 +96,20 @@ public class LoginDialogController implements Initializable {
             } else {
                 // Show error message for invalid credentials
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Login Failed");
-                alert.setHeaderText("Authentication Error");
-                alert.setContentText("Invalid email or password. Please try again.");
-                alert.showAndWait();
+
+                if (authenticatedUser.getWarnings()>=3) {
+                    alert.setTitle("Login Failed");
+                    alert.setHeaderText("Account locked");
+                    alert.setContentText("Your account has been locked.");
+                    alert.showAndWait();
+                }else{
+                    // Show error message for invalid credentials
+
+                    alert.setTitle("Login Failed");
+                    alert.setHeaderText("Authentication Error");
+                    alert.setContentText("Invalid email or password. Please try again.");
+                    alert.showAndWait();
+                }
             }
         } catch (Exception e) {
             // Show error message for database errors
@@ -142,6 +152,7 @@ public class LoginDialogController implements Initializable {
                 user.setBio(rs.getString("bio"));
                 user.setVerified(rs.getString("verified"));
                 user.setGoogle_id(rs.getString("google_id"));
+                user.setWarnings(rs.getInt("warnings"));
 
                 System.out.println("Authentication successful for user: " + user.getName());
                 System.out.println("User verification status: " + user.getVerified());

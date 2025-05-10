@@ -23,7 +23,7 @@ public class User {
     
     public User(String name, String email, int phone, String type, 
                 Date date_of_birth, String password, String img, int score, 
-                String bio, String verified, String google_id, double rate) {
+                String bio, String verified, String google_id, double rate, int warnings) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -36,12 +36,12 @@ public class User {
         this.bio = bio;
         this.verified = verified;
         this.google_id = google_id;
-        this.warnings = 0;
+        this.warnings = warnings;
     }
     
     public User(int id, String name, String email, int phone, String type, 
                 Date date_of_birth, String password, String img, int score, 
-                String bio, String verified, String google_id, double rate) {
+                String bio, String verified, String google_id, double rate, int warnings) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -55,7 +55,7 @@ public class User {
         this.bio = bio;
         this.verified = verified;
         this.google_id = google_id;
-        this.warnings = 0;
+        this.warnings = warnings;
     }
     
     // Getters and Setters
