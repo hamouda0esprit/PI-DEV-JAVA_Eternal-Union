@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.GifPickerController"
+      spacing="15" style="-fx-background-color: white;">
+    
+    <!-- Search Bar -->
+    <HBox spacing="10" style="-fx-padding: 15;">
+        <TextField fx:id="searchField" promptText="Search GIFs..." 
+                  HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: #F0F2F5; -fx-background-radius: 20;
+                         -fx-padding: 8 15; -fx-font-size: 14;"/>
+        <Button text="Search" onAction="#handleSearch"
+                style="-fx-background-color: #1877F2; -fx-text-fill: white;
+                       -fx-background-radius: 20; -fx-padding: 8 20;"/>
+    </HBox>
+    
+    <!-- Results Grid -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" 
+                style="-fx-background-color: transparent; -fx-padding: 0 15;">
+        <FlowPane fx:id="gifGrid" hgap="10" vgap="10"/>
+    </ScrollPane>
+    
+    <!-- Loading Indicator -->
+    <ProgressIndicator fx:id="loadingIndicator" visible="false"
+                      maxHeight="50" maxWidth="50"/>
+    
+    <!-- Status Message -->
+    <Label fx:id="statusLabel" visible="false" 
+           style="-fx-text-fill: #65676B; -fx-padding: 0 15;"/>
+</VBox> 

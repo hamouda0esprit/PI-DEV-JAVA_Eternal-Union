@@ -1,0 +1,46 @@
+/* styles.css */
+.root {
+    -fx-background-color: #f0f0f0; /* Light gray background for the entire window */
+}
+
+.text-area {
+    -fx-background-color: #ffffff; /* White background for text area */
+    -fx-border-color: #40a1e1; /* Border color */
+    -fx-border-width: 2px; /* Border width */
+    -fx-font-size: 14px; /* Font size */
+    -fx-padding: 10px; /* Padding inside the text area */
+    -fx-background-insets: 5; /* Inset for background */
+}
+
+.text-area:focused {
+    -fx-border-color: #0077cc; /* Change border color when focused */
+}
+
+.button {
+    -fx-background-color: #40a1e1; /* Button color */
+    -fx-text-fill: white; /* Text color */
+    -fx-font-size: 14px; /* Font size */
+    -fx-padding: 10px 20px; /* Padding */
+    -fx-border-radius: 5px; /* Rounded corners */
+    -fx-background-radius: 5px; /* Rounded corners */
+}
+
+.button:hover {
+    -fx-background-color: #0077cc; /* Darker blue on hover */
+}
+
+.label {
+    -fx-font-size: 20px; /* Larger font for labels */
+    -fx-text-fill: #40a1e1; /* Label color */
+}
+
+.text {
+    -fx-font-size: 16px; /* Font size for text */
+    -fx-text-fill: #333333; /* Dark gray text color */
+}
+
+.title {
+    -fx-font-size: 24px; /* Larger font size for titles */
+    -fx-text-fill: #40a1e1; /* Title color */
+    -fx-font-weight: bold; /* Bold text */
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane fx:id="mainContainer" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Controllers.HomeController"
+            stylesheets="@../styles/style.css">
+    
+    <center>
+        <VBox fx:id="contentContainer" spacing="20" styleClass="content-container">
+            <!-- Hero Section -->
+            <StackPane fx:id="heroSection" prefHeight="400">
+                <VBox alignment="CENTER" spacing="20">
+                    <Label fx:id="welcomeLabel" styleClass="hero-title"/>
+                    <Label fx:id="subtitleLabel" styleClass="hero-subtitle"/>
+                </VBox>
+            </StackPane>
+            
+            <!-- Features Section -->
+            <VBox spacing="20" styleClass="section-container">
+                <Label text="What We Offer" styleClass="section-title"/>
+                <HBox fx:id="featuresContainer" spacing="20" alignment="CENTER">
+                    <!-- Feature boxes will be added dynamically -->
+                </HBox>
+            </VBox>
+            
+            <!-- Call to Action Section -->
+            <StackPane styleClass="cta-section">
+                <VBox alignment="CENTER" spacing="20">
+                    <Label text="Ready to Start Learning?" styleClass="cta-title"/>
+                    <Button text="Get Started" styleClass="cta-button"/>
+                </VBox>
+            </StackPane>
+        </VBox>
+    </center>
+</BorderPane> 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="Controllers.DiscussionCardController"
+      spacing="12"
+      style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3); -fx-background-radius: 8;">
+    
+    <padding>
+        <Insets top="16" right="20" bottom="16" left="20"/>
+    </padding>
+    
+    <!-- Content area -->
+    <VBox spacing="10">
+        <!-- Timestamp -->
+        <Label fx:id="timestampLabel" 
+               style="-fx-text-fill: #65676B; -fx-font-size: 12;"/>
+        
+        <!-- Discussion content -->
+        <Label fx:id="contentLabel" wrapText="true" 
+               style="-fx-font-size: 14; -fx-text-fill: #1c1e21; -fx-line-spacing: 1.5;"/>
+    </VBox>
+    
+    <!-- Discussion image container -->
+    <VBox fx:id="imageContainer" managed="${imageContainer.visible}" visible="false">
+        <ImageView fx:id="discussionImageView"
+                  fitWidth="400" fitHeight="300" preserveRatio="true"
+                  style="-fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 1);"/>
+    </VBox>
+
+    <!-- Action buttons -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="modifyButton" text="Modifier" onAction="#handleModify"
+                style="-fx-background-color: #E4E6EB; -fx-text-fill: #050505; -fx-padding: 5 15; -fx-background-radius: 6;"/>
+        <Button fx:id="deleteButton" text="Supprimer" onAction="#handleDelete"
+                style="-fx-background-color: #ff4d4f; -fx-text-fill: white; -fx-padding: 5 15; -fx-background-radius: 6;"/>
+    </HBox>
+</VBox> 

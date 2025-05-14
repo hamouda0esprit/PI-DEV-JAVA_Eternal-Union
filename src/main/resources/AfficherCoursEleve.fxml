@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AfficherCoursController">
+    <fx:include source="view/Navbar.fxml"/>
+    <children>
+        <ComboBox fx:id="filterSubjectComboBox" layoutX="47.0" layoutY="150.0" prefWidth="200.0" />
+        <ComboBox fx:id="filterRateComboBox" layoutX="270.0" layoutY="150.0" prefWidth="150.0" />
+        <Button layoutX="440.0" layoutY="150.0" mnemonicParsing="false" onAction="#filterCourses" text="Filter" />
+        <TableView fx:id="tableview" layoutX="47.0" layoutY="200.0" prefHeight="550.0" prefWidth="900.0">
+            <columns>
+                <TableColumn fx:id="idCol" prefWidth="60.0" text="id" />
+                <TableColumn fx:id="userIdCol" prefWidth="120.0" text="id_professor" />
+                <TableColumn fx:id="titleCol" prefWidth="150.0" text="title" />
+                <TableColumn fx:id="imageCol" prefWidth="250.0" text="image" />
+                <TableColumn fx:id="subjectCol" prefWidth="150.0" text="subject" />
+                <TableColumn fx:id="rateCol" prefWidth="80.0" text="rate" />
+                <TableColumn fx:id="lastUpdateCol" prefWidth="150.0" text="last-update" />
+            </columns>
+        </TableView>
+
+        <Text fill="#40a1e1" layoutX="47.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cours" wrappingWidth="335.13671875">
+            <font>
+                <Font name="Arial" size="49.0" />
+            </font>
+        </Text>
+        <Button layoutX="970.0" layoutY="200.0" mnemonicParsing="false" onAction="#showLessonsEleve" prefHeight="45.0" prefWidth="180.0" style="-fx-border-color: #40a1e1; -fx-background-color: transparent; -fx-border-radius: 10px;" text="SHOW LESSONS" textFill="#40a1e1" />
+        <Button layoutX="970.0" layoutY="260.0" mnemonicParsing="false"
+                onAction="#rateCoursePopup"
+                prefHeight="45.0" prefWidth="180.0"
+                style="-fx-border-color: #40a1e1; -fx-background-color: transparent; -fx-border-radius: 10px;"
+                text="RATE COURSE" textFill="#40a1e1" />
+    </children>
+</AnchorPane>

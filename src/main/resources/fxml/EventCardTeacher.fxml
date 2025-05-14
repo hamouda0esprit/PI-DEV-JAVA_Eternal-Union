@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.EventCardTeacherController"
+      styleClass="event-card" 
+      style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0); -fx-background-radius: 15; -fx-min-width: 320; -fx-max-width: 320;">
+    
+    <!-- Event Image -->
+    <ImageView fx:id="eventImage" fitWidth="320" fitHeight="180" preserveRatio="true" 
+               AnchorPane.topAnchor="0.0"
+               style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);"/>
+    
+    <!-- Content Container -->
+    <VBox spacing="12" AnchorPane.topAnchor="190.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+          style="-fx-padding: 20;">
+        
+        <!-- Event Title -->
+        <Label fx:id="titleLabel" styleClass="event-title" 
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"
+               wrapText="true"/>
+        
+        <!-- Event Date -->
+        <Label fx:id="dateLabel" styleClass="event-date">
+            <graphic>
+                <Label text="📅" style="-fx-font-size: 16px;"/>
+            </graphic>
+            <style>
+                -fx-font-size: 14px;
+                -fx-text-fill: #3498db;
+            </style>
+        </Label>
+        
+        <!-- Event Location -->
+        <Label fx:id="locationLabel" styleClass="event-location">
+            <style>
+                -fx-font-size: 14px;
+                -fx-text-fill: #7f8c8d;
+            </style>
+        </Label>
+        
+        <!-- Event Weather -->
+        <Label fx:id="weatherLabel" styleClass="event-weather">
+            <style>
+                -fx-font-size: 14px;
+                -fx-text-fill: #2196F3;
+                -fx-font-weight: bold;
+            </style>
+        </Label>
+        
+        <!-- Event Capacity -->
+        <Label fx:id="capacityLabel" styleClass="event-capacity">
+            <style>
+                -fx-font-size: 14px;
+                -fx-font-weight: bold;
+            </style>
+        </Label>
+        
+        <!-- Event Description -->
+        <Label fx:id="descriptionLabel" styleClass="event-description" 
+               style="-fx-font-size: 14px; -fx-text-fill: #34495e; -fx-opacity: 0.9;" 
+               wrapText="true" maxWidth="280"/>
+        
+        <!-- Spacer -->
+        <Region VBox.vgrow="ALWAYS" minHeight="10"/>
+        
+        <!-- Action Buttons -->
+        <HBox spacing="12" alignment="CENTER">
+            <Button fx:id="modifyButton" text="Modifier" 
+                    style="-fx-background-color: #FFC107; -fx-text-fill: white; -fx-font-weight: bold;
+                           -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;
+                           -fx-effect: dropshadow(three-pass-box, rgba(255,193,7,0.4), 10, 0, 0, 2);"
+                    onAction="#handleModifyClick">
+                <graphic>
+                    <Label text="✏️" style="-fx-font-size: 16px;"/>
+                </graphic>
+            </Button>
+            <Button fx:id="deleteButton" text="Supprimer" 
+                    style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;
+                           -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;
+                           -fx-effect: dropshadow(three-pass-box, rgba(244,67,54,0.4), 10, 0, 0, 2);"
+                    onAction="#handleDeleteClick">
+                <graphic>
+                    <Label text="🗑️" style="-fx-font-size: 16px;"/>
+                </graphic>
+            </Button>
+            <Button fx:id="participantsButton" text="Participants" 
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;
+                           -fx-padding: 10 20; -fx-background-radius: 20; -fx-cursor: hand;
+                           -fx-effect: dropshadow(three-pass-box, rgba(76,175,80,0.4), 10, 0, 0, 2);"
+                    onAction="#handleParticipantsClick">
+                <graphic>
+                    <Label text="👥" style="-fx-font-size: 16px;"/>
+                </graphic>
+            </Button>
+        </HBox>
+    </VBox>
+</AnchorPane> 

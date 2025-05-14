@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.AdminEvenementController"
+      stylesheets="@../styles/admin.css">
+      
+    <!-- Include Sidebar -->
+    <fx:include source="../AdminSidebar.fxml"/>
+    
+    <!-- Main Content -->
+    <VBox HBox.hgrow="ALWAYS" style="-fx-background-color: white;">
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="admin-header">
+            <Label text="Gestion des Événements" styleClass="admin-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="searchField" promptText="Rechercher des événements..." prefWidth="300" styleClass="search-field">
+                <HBox.margin>
+                    <Insets right="20"/>
+                </HBox.margin>
+            </TextField>
+            <Button fx:id="addButton" text="Ajouter un événement" styleClass="add-button">
+                <padding>
+                    <Insets top="8" right="15" bottom="8" left="15"/>
+                </padding>
+            </Button>
+        </HBox>
+
+        <!-- Table -->
+        <TableView fx:id="eventTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="titleColumn" text="Titre" prefWidth="200"/>
+                <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
+                <TableColumn fx:id="timeColumn" text="Heure" prefWidth="100"/>
+                <TableColumn fx:id="locationColumn" text="Lieu" prefWidth="150"/>
+                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="300"/>
+                <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150"/>
+            </columns>
+            <VBox.margin>
+                <Insets top="10" right="20" bottom="20" left="20"/>
+            </VBox.margin>
+        </TableView>
+
+        <!-- Status Bar -->
+        <HBox styleClass="status-bar">
+            <Label fx:id="statusLabel" text="Total événements: 0"/>
+        </HBox>
+    </VBox>
+</HBox> 

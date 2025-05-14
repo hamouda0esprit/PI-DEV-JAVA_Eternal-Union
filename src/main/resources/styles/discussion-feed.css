@@ -1,0 +1,46 @@
+.event-header {
+    -fx-background-color: white;
+}
+
+.event-title {
+    -fx-text-fill: #1c1e21;
+}
+
+.event-info {
+    -fx-text-fill: #65676b;
+    -fx-font-size: 14px;
+}
+
+.discussion-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-padding: 16;
+}
+
+.discussion-header {
+    -fx-padding: 0 0 12 0;
+}
+
+.discussion-timestamp {
+    -fx-text-fill: #65676b;
+    -fx-font-size: 12px;
+}
+
+.discussion-content {
+    -fx-padding: 0 0 12 0;
+}
+
+.discussion-image {
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
+}
+
+#addDiscussionButton {
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+#addDiscussionButton:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+} 

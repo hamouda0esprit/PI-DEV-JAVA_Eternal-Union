@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.String?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.DiscussionFeedController"
+      style="-fx-background-color: white;"
+      maxWidth="800" maxHeight="700">
+      
+    <!-- Event Header -->
+    <VBox style="-fx-background-color: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 4, 0, 0, 2);">
+        <!-- Event Cover Image -->
+        <ImageView fx:id="eventCoverImage" fitWidth="800" fitHeight="200" 
+                  preserveRatio="true"
+                  style="-fx-background-color: #f0f2f5;"/>
+        
+        <!-- Event Info -->
+        <VBox style="-fx-padding: 20;">
+            <Label fx:id="eventTitleLabel" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+            
+            <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-padding: 10 0;">
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <Label text="📅" style="-fx-font-size: 16;"/>
+                    <Label fx:id="eventDateLabel" style="-fx-font-size: 14; -fx-text-fill: #65676B;"/>
+                </HBox>
+                
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <Label text="📍" style="-fx-font-size: 16;"/>
+                    <Label fx:id="eventLocationLabel" style="-fx-font-size: 14; -fx-text-fill: #65676B;"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </VBox>
+    
+    <!-- Divider -->
+    <Separator style="-fx-background-color: #f0f2f5; -fx-padding: 1;"/>
+    
+    <!-- Main Content Area -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" 
+                style="-fx-background-color: transparent; -fx-padding: 0;">
+        <VBox spacing="15" style="-fx-padding: 20;">
+            <!-- Add Discussion Button -->
+            <Button fx:id="addDiscussionButton" onAction="#handleAddDiscussion"
+                    style="-fx-background-color: #1877F2; -fx-background-radius: 8; -fx-cursor: hand;">
+                <padding>
+                    <Insets top="12" right="16" bottom="12" left="16"/>
+                </padding>
+                <graphic>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="➕" style="-fx-font-size: 18; -fx-text-fill: white;"/>
+                        <Label text="Ajouter une post" style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                    </HBox>
+                </graphic>
+            </Button>
+            
+            <!-- Discussions Container -->
+            <VBox fx:id="discussionsContainer" spacing="15"/>
+        </VBox>
+    </ScrollPane>
+</VBox> 

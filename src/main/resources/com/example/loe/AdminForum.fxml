@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox prefHeight="675.0" prefWidth="1200.0" stylesheets="@../styles/admin.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.Forum.ForumAdminController">
+
+    <!-- Sidebar -->
+
+    <VBox prefWidth="250" spacing="10" styleClass="admin-sidebar">
+        <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" spacing="10.0">
+                <padding>
+                    <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                </padding>
+                <children>
+                    <ImageView fx:id="logoImage" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                        <!-- ?><Image url="@Images/logo.png" />-->
+                    </ImageView>
+                    <VBox>
+                        <children>
+                            <Label prefHeight="8.0" prefWidth="65.0" text="Panneau" textFill="#3498db">
+                                <font>
+                                    <Font name="System Bold" size="16.0" />
+                                </font>
+                                <VBox.margin>
+                                    <Insets top="16.0" />
+                                </VBox.margin>
+                            </Label>
+                            <Label prefHeight="6.0" prefWidth="101.0" text="d'administration" textFill="#7f8c8d">
+                                <font>
+                                    <Font size="14.0" />
+                                </font>
+                            </Label>
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
+            <Separator />
+            <Button fx:id="dashboardButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" mnemonicParsing="false" onAction="#handleDashboard" prefHeight="50.0" prefWidth="250.0" styleClass="admin-button" text="🏠 Tableau de bord">
+                <padding>
+                    <Insets left="20.0" />
+                </padding>
+            </Button>
+            <Button fx:id="usersButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" mnemonicParsing="false" onAction="#handleUsers" prefHeight="50.0" prefWidth="250.0" styleClass="admin-button" text="👥 Utilisateurs">
+                <padding>
+                    <Insets left="20.0" />
+                </padding>
+            </Button>
+            <Button fx:id="forumsButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" mnemonicParsing="false" onAction="#handleForums" prefHeight="50.0" prefWidth="250.0" styleClass="admin-button, active" text="💬 Forums">
+                <padding>
+                    <Insets left="20.0" />
+                </padding>
+            </Button>
+            <Button fx:id="coursesButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" mnemonicParsing="false" onAction="#handleCourses" prefHeight="50.0" prefWidth="250.0" styleClass="admin-button" text="📚 Cours">
+                <padding>
+                    <Insets left="20.0" />
+                </padding>
+            </Button>
+            <Button fx:id="examensButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" mnemonicParsing="false" onAction="#handleExamens" prefHeight="50.0" prefWidth="250.0" styleClass="admin-button" text="📝 Examens">
+                <padding>
+                    <Insets left="20.0" />
+                </padding>
+            </Button>
+            <Button fx:id="eventsButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" mnemonicParsing="false" onAction="#handleEvents" prefHeight="50.0" prefWidth="250.0" styleClass="admin-button" text="📅 Événements">
+                <padding>
+                    <Insets left="20.0" />
+                </padding>
+            </Button>
+            <Separator />
+            <Button fx:id="backButton" alignment="BASELINE_LEFT" graphicTextGap="10.0" mnemonicParsing="false" onAction="#handleBack" prefHeight="50.0" prefWidth="250.0" styleClass="admin-button" text="Retour au site">
+                <padding>
+                    <Insets left="20.0" />
+                </padding>
+            </Button>
+        </children>
+    </VBox>
+
+    <!-- Main Content -->
+    <VBox style="-fx-background-color: white;" HBox.hgrow="ALWAYS">
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #f8f9fa; -fx-padding: 20;">
+            <Label style="-fx-font-size: 24; -fx-font-weight: bold;" text="Gestion des Forums" />
+            <Region HBox.hgrow="ALWAYS" />
+            <TextField fx:id="searchField" prefWidth="300" promptText="Rechercher des forums..." styleClass="search-field">
+                <HBox.margin>
+                    <Insets right="20" />
+                </HBox.margin>
+            </TextField>
+            <Button fx:id="addButton" styleClass="admin-button" text="Ajouter un forum">
+                <padding>
+                    <Insets bottom="8" left="15" right="15" top="8" />
+                </padding>
+            </Button>
+        </HBox>
+
+        <!-- Table -->
+        <TableView fx:id="forumTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="titleColumn" prefWidth="200" text="Titre" />
+                <TableColumn fx:id="subjectColumn" prefWidth="120" text="Sujet" />
+                <TableColumn fx:id="authorColumn" prefWidth="120" text="Auteur" />
+                <TableColumn fx:id="dateColumn" prefWidth="150" text="Date" />
+                <TableColumn fx:id="descriptionColumn" prefWidth="300" text="Description" />
+                <TableColumn fx:id="actionsColumn" prefWidth="150" text="Actions" />
+            </columns>
+            <VBox.margin>
+                <Insets bottom="20" left="20" right="20" top="10" />
+            </VBox.margin>
+        </TableView>
+
+        <!-- Status Bar -->
+        <HBox styleClass="status-bar">
+            <Label fx:id="statusLabel" text="Total forums: 0" />
+        </HBox>
+    </VBox>
+</HBox>

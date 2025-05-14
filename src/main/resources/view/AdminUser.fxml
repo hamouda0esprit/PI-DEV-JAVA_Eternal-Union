@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="Controllers.AdminUserController" stylesheets="@../styles/admin.css">
+    
+    <left>
+        <fx:include source="../AdminSidebar.fxml" />
+    </left>
+    
+    <center>
+        <VBox spacing="20" style="-fx-background-color: #f4f6f8;" prefWidth="900">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/>
+            </padding>
+            
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="Gestion des Utilisateurs" style="-fx-text-fill: #2c3e50;">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="refreshButton" text="Rafraîchir" style="-fx-background-color: #3498db; -fx-text-fill: white;">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                </Button>
+            </HBox>
+            
+            <!-- Stats Cards -->
+            <HBox spacing="15">
+                <VBox styleClass="stat-card" style="-fx-background-color: white; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);" 
+                      prefWidth="220" prefHeight="100" alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="Total Utilisateurs" style="-fx-text-fill: #7f8c8d;">
+                        <font>
+                            <Font size="14"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="totalUsersLabel" text="0" style="-fx-text-fill: #2c3e50;">
+                        <font>
+                            <Font name="System Bold" size="26"/>
+                        </font>
+                    </Label>
+                </VBox>
+                
+                <VBox styleClass="stat-card" style="-fx-background-color: white; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);" 
+                      prefWidth="220" prefHeight="100" alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="Étudiants" style="-fx-text-fill: #7f8c8d;">
+                        <font>
+                            <Font size="14"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="studentCountLabel" text="0" style="-fx-text-fill: #2c3e50;">
+                        <font>
+                            <Font name="System Bold" size="26"/>
+                        </font>
+                    </Label>
+                </VBox>
+                
+                <VBox styleClass="stat-card" style="-fx-background-color: white; -fx-background-radius: 5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);" 
+                      prefWidth="220" prefHeight="100" alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="15" right="15" bottom="15" left="15"/>
+                    </padding>
+                    <Label text="Enseignants" style="-fx-text-fill: #7f8c8d;">
+                        <font>
+                            <Font size="14"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="teacherCountLabel" text="0" style="-fx-text-fill: #2c3e50;">
+                        <font>
+                            <Font name="System Bold" size="26"/>
+                        </font>
+                    </Label>
+                </VBox>
+            </HBox>
+            
+            <!-- Search and Actions -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Rechercher un utilisateur..." prefWidth="300">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                </TextField>
+                <Button fx:id="searchButton" text="Rechercher" style="-fx-background-color: #3498db; -fx-text-fill: white;">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                </Button>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="deleteSelectedButton" text="Supprimer sélection" style="-fx-background-color: #e74c3c; -fx-text-fill: white;">
+                    <font>
+                        <Font size="14"/>
+                    </font>
+                </Button>
+            </HBox>
+            
+            <!-- Users Table -->
+            <TableView fx:id="usersTableView" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+                    <TableColumn fx:id="nameColumn" text="Nom" prefWidth="150"/>
+                    <TableColumn fx:id="emailColumn" text="Email" prefWidth="200"/>
+                    <TableColumn fx:id="typeColumn" text="Type" prefWidth="100"/>
+                    <TableColumn fx:id="dobColumn" text="Date de naissance" prefWidth="120"/>
+                    <TableColumn fx:id="phoneColumn" text="Téléphone" prefWidth="100"/>
+                    <TableColumn fx:id="scoreColumn" text="Score" prefWidth="70"/>
+                    <TableColumn fx:id="verifiedColumn" text="Vérifié" prefWidth="70"/>
+                    <TableColumn fx:id="actionColumn" text="Actions" prefWidth="120"/>
+                </columns>
+            </TableView>
+            
+            <!-- Pagination -->
+            <HBox alignment="CENTER">
+                <Pagination fx:id="usersPagination" pageCount="1" prefHeight="40" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane> 
